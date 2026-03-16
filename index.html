@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROLINK | نظام الشراكة الرقمية المتكامل</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <style>
+        /* جعل الخط عريض (Bold) في كل الموقع */
+        body { 
+            font-family: 'Tajawal', sans-serif; 
+            background-color: #f8fafc; 
+            overflow-x: hidden;
+            font-weight: 700; /* Bold للفقرات والنصوص العادية */
+        }
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px); }
+        .hero-gradient { background: radial-gradient(circle at top right, #eff6ff 0%, #ffffff 100%); }
+        h1, h2, h3, h4, span, button { font-weight: 900 !important; } /* Black weight للعناوين والأزرار */
+    </style>
+</head>
+<body>
+
+    <nav class="glass-nav fixed w-full z-[100] border-b border-slate-100 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-300">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <span class="text-2xl text-slate-900 tracking-tighter uppercase">PRO<span class="text-blue-600">LINK</span></span>
+            </div>
+            <button onclick="goToLogin()" class="bg-slate-900 text-white px-6 py-2.5 rounded-xl text-sm hover:scale-105 transition active:scale-95 shadow-lg">دخول الأعضاء</button>
+        </div>
+    </nav>
+
+    <div id="landing-page">
+        <section class="hero-gradient pt-48 pb-24 px-6 text-center border-b border-slate-100">
+            <div class="max-w-4xl mx-auto" data-aos="fade-up">
+                <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-xs mb-8 shadow-sm">
+                    <span class="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
+                    نظام معتمد من قبل +1200 مسوق نشط
+                </div>
+                <h1 class="text-5xl md:text-7xl text-slate-900 leading-[1.1] mb-8">
+                    ابنِ شبكتك <span class="text-blue-600">التسويقية</span> <br>واستلم عمولاتك فوراً
+                </h1>
+                <p class="text-xl text-slate-500 max-w-2xl mx-auto mb-12 leading-relaxed">
+                    منصة "برولينك" توفر لك البنية التحتية المتكاملة لبدء عملك كمسوق معتمد وتحقيق عوائد مجزية.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="goToLogin()" class="bg-blue-600 text-white px-12 py-5 rounded-[2rem] text-xl shadow-2xl shadow-blue-200 hover:bg-blue-700 transition active:scale-95">ابدأ الآن</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 bg-white overflow-hidden">
+            <div class="max-w-7xl mx-auto px-6 flex flex-wrap justify-center gap-12 md:gap-24 opacity-40 grayscale items-center">
+                <i class="fab fa-stripe text-6xl"></i>
+                <i class="fab fa-cc-visa text-6xl"></i>
+                <i class="fab fa-cc-mastercard text-6xl"></i>
+                <i class="fab fa-paypal text-6xl"></i>
+                <span class="text-3xl italic uppercase tracking-tighter">Secure Pay</span>
+            </div>
+        </section>
+
+        <section class="py-32 px-6 bg-slate-50">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white p-12 rounded-[3.5rem] shadow-xl border border-slate-100 flex flex-col md:flex-row items-center gap-10" data-aos="fade-up">
+                    <img src="https://i.pravatar.cc/150?u=44" class="w-32 h-32 rounded-[2.5rem] shadow-lg border-4 border-blue-100" alt="user">
+                    <div>
+                        <div class="flex text-yellow-400 mb-4"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <p class="text-2xl text-slate-700 italic mb-6 leading-relaxed">"بصراحة، أفضل قرار اتخذته هذا العام. انضممت للشبكة وقمت بدعوة زملائي، وحصلت على الحوافز في أقل من يومين."</p>
+                        <h5 class="text-xl text-slate-900">— أحمد بن جلال، مسوق مستقل</h5>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-white border-t border-slate-100 pt-20 pb-10 px-8">
+            <div class="max-w-7xl mx-auto text-center md:text-right">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                    <div class="col-span-1 md:col-span-1">
+                        <div class="flex items-center gap-2 mb-6 text-blue-600 justify-center md:justify-start">
+                            <i class="fas fa-chart-line text-2xl"></i>
+                            <span class="text-2xl text-slate-900 tracking-tighter uppercase">PROLINK</span>
+                        </div>
+                        <p class="text-sm text-slate-500 leading-relaxed">المنصة الرائدة لتمكين المسوقين وبناء الشبكات الرقمية المستدامة.</p>
+                    </div>
+                </div>
+                <div class="border-t border-slate-50 pt-8">
+                    <p class="text-center text-[12px] text-slate-400 tracking-widest uppercase">© 2026 PROLINK NETWORK TECH. ALL RIGHTS RESERVED.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        AOS.init({ duration: 1000, once: true });
+
+        function goToLogin() {
+            window.location.href = 'login.html';
+        }
+
+        window.onload = () => {
+            const params = new URLSearchParams(window.location.search);
+            if(params.has('ref')) {
+                localStorage.setItem('referred_by', params.get('ref'));
+            }
+        }
+    </script>
+</body>
+</html>
