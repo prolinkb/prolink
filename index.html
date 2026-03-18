@@ -123,16 +123,15 @@
     </footer>
 
     <script>
-        // الرابط الجديد الذي زودتني به
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuTAuzBxu49VuNrFSl3qj7nyFUv9rkARUnkberkOHZb3eEqV2nHPkk8Aprj2vFUXQm/exec";
         let serverOTP = "";
         let mode = "login"; 
 
-        // التحقق من وجود جلسة سابقة عند تحميل الصفحة
+        // 1. التحقق من الجلسة عند فتح الصفحة (استخدام .html لتجنب التحميل)
         window.onload = function() {
             const savedEmail = localStorage.getItem('userEmail');
             if (savedEmail) {
-                window.location.href = "w/check";
+                window.location.href = "w/check.html";
             }
         };
 
@@ -150,7 +149,6 @@
             }
             modal.classList.remove('hidden');
         }
-        
         function closeModal() { document.getElementById('customModal').classList.add('hidden'); }
 
         function toggleSignUp() {
@@ -181,24 +179,19 @@
             const email = document.getElementById('userEmail').value;
             const pass = document.getElementById('userPass').value;
             if(!email) return showMsg("تنبيه", "المرجو ادخال البريد الالكتروني للمتابعة");
-            
             document.getElementById('text1').classList.add('hidden');
             document.getElementById('load1').style.display = "block";
-            
             try {
                 if(mode === "login") {
                     if(!pass) { showMsg("تنبيه", "يرجى ادخال كلمة المرور"); return; }
                     const res = await fetch(`${SCRIPT_URL}?action=login&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}`);
                     const data = await res.json();
-                    
                     if(data.status === "success") {
-                        // حفظ البيانات في localStorage للتحقق المستقبلي
                         localStorage.setItem('userEmail', email);
                         localStorage.setItem('userName', data.user);
-                        window.location.href = "w/check";
-                    } else { 
-                        showMsg("خطأ", "البريد الالكتروني أو كلمة المرور غير صحيحة"); 
-                    }
+                        // 2. التوجيه لـ .html لتجنب مشكلة التحميل
+                        window.location.href = "w/check.html";
+                    } else { showMsg("خطأ", "البريد الالكتروني أو كلمة المرور غير صحيحة"); }
                 } else {
                     const res = await fetch(`${SCRIPT_URL}?action=sendOTP&email=${encodeURIComponent(email)}&isForgot=${mode==='forgot'}`);
                     const data = await res.json();
@@ -209,13 +202,10 @@
                         if(mode === "forgot") document.getElementById('new-pass-box').classList.remove('hidden');
                     } else if(data.status === "already_exists") {
                         showMsg("تنبيه", "هذا البريد مسجل مسبقا، يمكنك تسجيل الدخول مباشرة");
-                    } else { 
-                        showMsg("خطأ", "لم يتم العثور على الحساب أو حدث مشكل في الارسال"); 
-                    }
+                    } else { showMsg("خطأ", "لم يتم العثور على الحساب أو حدث مشكل في الارسال"); }
                 }
-            } catch(e) { 
-                showMsg("خطأ", "حدث مشكل في الاتصال بالسيرفر"); 
-            } finally {
+            } catch(e) { showMsg("خطأ", "حدث مشكل في الاتصال بالسيرفر"); }
+            finally {
                 document.getElementById('text1').classList.remove('hidden');
                 document.getElementById('load1').style.display = "none";
             }
@@ -226,12 +216,9 @@
             const email = document.getElementById('userEmail').value;
             const pass = mode === "forgot" ? document.getElementById('newPass').value : document.getElementById('userPass').value;
             const name = document.getElementById('userName').value || "User";
-            
             if(otp !== serverOTP) return showMsg("خطأ", "رمز التحقق الذي أدخلته غير صحيح");
-            
             document.getElementById('text2').classList.add('hidden');
             document.getElementById('load2').style.display = "block";
-            
             let action = mode === "signup" ? "saveData" : "updatePass";
             try {
                 const res = await fetch(`${SCRIPT_URL}?action=${action}&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}&name=${encodeURIComponent(name)}`);
@@ -240,9 +227,7 @@
                     showMsg("نجاح", "تمت العملية بنجاح. يرجى تسجيل الدخول", "success");
                     setTimeout(() => { window.location.href = window.location.pathname; }, 2000);
                 }
-            } catch(e) { 
-                window.location.href = window.location.pathname; 
-            }
+            } catch(e) { window.location.href = window.location.pathname; }
         }
     </script>
 </body>
