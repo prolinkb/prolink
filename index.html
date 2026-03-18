@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -35,7 +35,7 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <nav class="sticky top-0 z-50 px-4 w-full">
+    <nav class="px-4 w-full">
         <div class="compact-nav flex justify-center items-center">
             <a href="#">
                 <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" alt="LikCash" class="h-10 w-auto object-contain">
@@ -179,7 +179,6 @@
                     const res = await fetch(`${SCRIPT_URL}?action=login&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}`);
                     const data = await res.json();
                     if(data.status === "success") {
-                        // تحويل المستخدم عند النجاح
                         window.location.href = "https://likcash.com/w/bedg";
                     } else { showMsg("خطأ", "البريد الالكتروني أو كلمة المرور غير صحيحة"); }
                 } else {
