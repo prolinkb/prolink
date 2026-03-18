@@ -9,7 +9,7 @@
     <style>
         body { font-family: 'Tajawal', sans-serif; background: #ffffff; overflow-x: hidden; margin: 0; }
         .hidden { display: none !important; }
-        .input-pro { background: #f8fafc; border: 2px solid #e2e8f0; transition: all 0.3s ease; }
+        .input-pro { background: #f8fafc; border: 2px solid #e2e8f0; transition: all 0.3s ease; font-weight: 700 !important; }
         .input-pro:focus { border-color: #2563eb; background: #fff; outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
         .loader { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -59,9 +59,6 @@
         <div id="marketing-text" class="mb-10 max-w-2xl">
             <span class="inline-block bg-blue-50 text-blue-600 px-4 py-1 rounded-full text-[10px] mb-4 uppercase tracking-[0.2em]">الجيل الجديد من الإدارة المالية</span>
             <h1 class="text-5xl md:text-6xl mb-6 tracking-tighter leading-tight text-slate-900">مستقبلك المالي، <br><span class="text-blue-600">يبدأ من هنا.</span></h1>
-            <p class="text-slate-400 text-sm italic leading-relaxed max-w-xs mx-auto">
-                LikCash هو بوابتك الذكية للتحكم في الباقات والعمليات الرقمية بكل دقة واحترافية.
-            </p>
         </div>
 
         <div class="max-w-md w-full bg-white rounded-[3rem] p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-slate-50 text-center relative overflow-hidden">
@@ -127,10 +124,11 @@
         let serverOTP = "";
         let mode = "login"; 
 
-        // 1. التحقق من الجلسة عند فتح الصفحة (استخدام .html لتجنب التحميل)
+        // 1. فحص الجلسة عند التحميل (Redirect تلقائي)
         window.onload = function() {
             const savedEmail = localStorage.getItem('userEmail');
             if (savedEmail) {
+                // توجيه لصفحة الـ check مع .html لتجنب مشاكل GitHub Pages
                 window.location.href = "w/check.html";
             }
         };
@@ -149,17 +147,13 @@
             }
             modal.classList.remove('hidden');
         }
+
         function closeModal() { document.getElementById('customModal').classList.add('hidden'); }
 
         function toggleSignUp() {
             mode = (mode === "signup") ? "login" : "signup";
-            const marketingText = document.getElementById('marketing-text');
-            if (mode === "signup") { marketingText.classList.add('hidden'); } 
-            else { marketingText.classList.remove('hidden'); }
-
             document.getElementById('title').innerText = mode === "signup" ? "انشاء حساب" : "تسجيل الدخول";
             document.getElementById('name-field').classList.toggle('hidden', mode !== "signup");
-            document.getElementById('pass-field').classList.remove('hidden');
             document.getElementById('text1').innerText = mode === "signup" ? "تسجيل" : "دخول للنظام";
             document.getElementById('toggle-text').innerText = mode === "signup" ? "عندك حساب؟" : "ليس لديك حساب؟";
             document.getElementById('toggle-btn').innerText = mode === "signup" ? "دخول" : "انشاء حساب";
@@ -167,7 +161,6 @@
 
         function switchToForgot() {
             mode = "forgot";
-            document.getElementById('marketing-text').classList.add('hidden');
             document.getElementById('title').innerText = "استعادة الحساب";
             document.getElementById('pass-field').classList.add('hidden');
             document.getElementById('text1').innerText = "بحث عن الحساب";
@@ -179,19 +172,25 @@
             const email = document.getElementById('userEmail').value;
             const pass = document.getElementById('userPass').value;
             if(!email) return showMsg("تنبيه", "المرجو ادخال البريد الالكتروني للمتابعة");
+            
             document.getElementById('text1').classList.add('hidden');
             document.getElementById('load1').style.display = "block";
+
             try {
                 if(mode === "login") {
                     if(!pass) { showMsg("تنبيه", "يرجى ادخال كلمة المرور"); return; }
                     const res = await fetch(`${SCRIPT_URL}?action=login&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}`);
                     const data = await res.json();
+                    
                     if(data.status === "success") {
+                        // حفظ الجلسة في المتصفح
                         localStorage.setItem('userEmail', email);
                         localStorage.setItem('userName', data.user);
-                        // 2. التوجيه لـ .html لتجنب مشكلة التحميل
+                        // التوجيه النهائي للتحقق
                         window.location.href = "w/check.html";
-                    } else { showMsg("خطأ", "البريد الالكتروني أو كلمة المرور غير صحيحة"); }
+                    } else {
+                        showMsg("خطأ", "البيانات غير صحيحة");
+                    }
                 } else {
                     const res = await fetch(`${SCRIPT_URL}?action=sendOTP&email=${encodeURIComponent(email)}&isForgot=${mode==='forgot'}`);
                     const data = await res.json();
@@ -200,12 +199,13 @@
                         document.getElementById('step-1').classList.add('hidden');
                         document.getElementById('step-2').classList.remove('hidden');
                         if(mode === "forgot") document.getElementById('new-pass-box').classList.remove('hidden');
-                    } else if(data.status === "already_exists") {
-                        showMsg("تنبيه", "هذا البريد مسجل مسبقا، يمكنك تسجيل الدخول مباشرة");
-                    } else { showMsg("خطأ", "لم يتم العثور على الحساب أو حدث مشكل في الارسال"); }
+                    } else {
+                        showMsg("خطأ", "حدث مشكل، المرجو المحاولة لاحقاً");
+                    }
                 }
-            } catch(e) { showMsg("خطأ", "حدث مشكل في الاتصال بالسيرفر"); }
-            finally {
+            } catch(e) {
+                showMsg("خطأ", "مشكل في الاتصال بالسيرفر");
+            } finally {
                 document.getElementById('text1').classList.remove('hidden');
                 document.getElementById('load1').style.display = "none";
             }
@@ -216,18 +216,23 @@
             const email = document.getElementById('userEmail').value;
             const pass = mode === "forgot" ? document.getElementById('newPass').value : document.getElementById('userPass').value;
             const name = document.getElementById('userName').value || "User";
-            if(otp !== serverOTP) return showMsg("خطأ", "رمز التحقق الذي أدخلته غير صحيح");
+            
+            if(otp !== serverOTP) return showMsg("خطأ", "رمز التحقق غير صحيح");
+            
             document.getElementById('text2').classList.add('hidden');
             document.getElementById('load2').style.display = "block";
+            
             let action = mode === "signup" ? "saveData" : "updatePass";
             try {
                 const res = await fetch(`${SCRIPT_URL}?action=${action}&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}&name=${encodeURIComponent(name)}`);
                 const result = await res.json();
                 if(result.status === "done") {
-                    showMsg("نجاح", "تمت العملية بنجاح. يرجى تسجيل الدخول", "success");
-                    setTimeout(() => { window.location.href = window.location.pathname; }, 2000);
+                    showMsg("نجاح", "تمت العملية! المرجو تسجيل الدخول الآن", "success");
+                    setTimeout(() => { location.reload(); }, 2000);
                 }
-            } catch(e) { window.location.href = window.location.pathname; }
+            } catch(e) {
+                location.reload();
+            }
         }
     </script>
 </body>
