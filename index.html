@@ -123,10 +123,17 @@
     </footer>
 
     <script>
-        // الرابط الجديد الذي طلبته
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz41xIFtO-3Ino5MpjtI3UMjA-xXf1dwkn0dt2at4Jb7mNVNOIQkZ2BOrpBMlddNtSB/exec";
         let serverOTP = "";
         let mode = "login"; 
+
+        // --- إضافة: فحص الجلسة عند فتح الصفحة لمنع تسجيل الدخول المتكرر ---
+        window.onload = function() {
+            const savedEmail = localStorage.getItem('userEmail');
+            if (savedEmail) {
+                window.location.href = "w/check";
+            }
+        };
 
         function showMsg(title, message, type = 'error') {
             const modal = document.getElementById('customModal');
@@ -180,7 +187,10 @@
                     const res = await fetch(`${SCRIPT_URL}?action=login&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}`);
                     const data = await res.json();
                     if(data.status === "success") {
-                        window.location.href = "https://likcash.com/w/bedg";
+                        // --- إضافة: حفظ بيانات المستخدم وتوجيهه لصفحة التحقق ---
+                        localStorage.setItem('userEmail', email);
+                        localStorage.setItem('userName', data.user);
+                        window.location.href = "w/check";
                     } else { showMsg("خطأ", "البريد الالكتروني أو كلمة المرور غير صحيحة"); }
                 } else {
                     const res = await fetch(`${SCRIPT_URL}?action=sendOTP&email=${encodeURIComponent(email)}&isForgot=${mode==='forgot'}`);
