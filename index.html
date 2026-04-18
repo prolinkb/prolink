@@ -96,15 +96,13 @@
     <footer class="p-8 text-center text-slate-200 text-[9px] tracking-[0.5em] uppercase">LikCash Digital Intelligence • 2026</footer>
 
     <script>
-        // رابط السكربت الخاص بك
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSHuNqJPngZlNrTNRDtK8KnaRuIAqYHb_zTXRUY8pFOZfjO3hFoq9PRBAsE7Gc6RKcuA/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx5Gq47TZEyAJIfJ4NIYRyy5kQ-vGUF2Ipdwvg9-gcE7aYLv25XC2jR1hcPPHpGuhxWQw/exec";
         let serverOTP = "";
         let mode = "login"; 
 
-        // 1. تصفير الجلسة فور تحميل الصفحة لضمان تسجيل دخول جديد دائماً
         window.onload = function() {
-            sessionStorage.clear(); 
-            localStorage.clear();
+            sessionStorage.clear(); //
+            localStorage.clear(); //
         };
 
         function showMsg(title, message, type = 'error') {
@@ -143,8 +141,10 @@
         }
 
         async function handleAction() {
-            const email = document.getElementById('userEmail').value;
-            const pass = document.getElementById('userPass').value;
+            // تنظيف المدخلات من الفراغات وتوحيد حالة أحرف البريد
+            const email = document.getElementById('userEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('userPass').value.trim();
+            
             if(!email) return showMsg("تنبيه", "المرجو ادخال البريد الالكتروني للمتابعة");
             
             document.getElementById('text1').classList.add('hidden');
@@ -161,12 +161,12 @@
                     const data = await res.json();
                     
                     if(data.status === "success") {
-                        // 2. إعطاء "تذكرة العبور" للمتصفح
+                        // حفظ الجلسة للانتقال للصفحة المحمية
                         sessionStorage.setItem('userEmail', email);
                         sessionStorage.setItem('userName', data.user);
                         
-                        // 3. التحويل باستخدام replace لقتل سجل الرجوع
-                        window.location.replace("w/check.html");
+                        // التوجيه للمسار المطلوب
+                        window.location.replace("w/check.html"); 
                     } else { 
                         showMsg("خطأ", "البريد الالكتروني أو كلمة المرور غير صحيحة"); 
                     }
@@ -197,10 +197,10 @@
         }
 
         async function finalAction() {
-            const otp = document.getElementById('otpInput').value;
-            const email = document.getElementById('userEmail').value;
-            const pass = mode === "forgot" ? document.getElementById('newPass').value : document.getElementById('userPass').value;
-            const name = document.getElementById('userName').value || "User";
+            const otp = document.getElementById('otpInput').value.trim();
+            const email = document.getElementById('userEmail').value.trim().toLowerCase();
+            const pass = mode === "forgot" ? document.getElementById('newPass').value.trim() : document.getElementById('userPass').value.trim();
+            const name = document.getElementById('userName').value.trim() || "User";
             
             if(otp !== serverOTP) return showMsg("خطأ", "رمز التحقق الذي أدخلته غير صحيح");
             
