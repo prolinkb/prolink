@@ -96,13 +96,15 @@
     <footer class="p-8 text-center text-slate-200 text-[9px] tracking-[0.5em] uppercase">LikCash Digital Intelligence • 2026</footer>
 
     <script>
+        // رابط السكربت الخاص بك
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuanyDa47Kkp8qzsE9UYMfZaNKtG1kqjcPZZB0tzfRPu1y9tQ3au3h0G3kqFNjzChAIw/exec";
         let serverOTP = "";
         let mode = "login"; 
 
-        // تم حذف التحويل التلقائي لضمان طلب البيانات في كل مرة
+        // 1. تصفير الجلسة فور تحميل الصفحة لضمان تسجيل دخول جديد دائماً
         window.onload = function() {
-            sessionStorage.clear(); // مسح الجلسة القديمة عند فتح الصفحة من جديد
+            sessionStorage.clear(); 
+            localStorage.clear();
         };
 
         function showMsg(title, message, type = 'error') {
@@ -119,6 +121,7 @@
             }
             modal.classList.remove('hidden');
         }
+
         function closeModal() { document.getElementById('customModal').classList.add('hidden'); }
 
         function toggleSignUp() {
@@ -143,19 +146,30 @@
             const email = document.getElementById('userEmail').value;
             const pass = document.getElementById('userPass').value;
             if(!email) return showMsg("تنبيه", "المرجو ادخال البريد الالكتروني للمتابعة");
+            
             document.getElementById('text1').classList.add('hidden');
             document.getElementById('load1').style.display = "block";
+            
             try {
                 if(mode === "login") {
-                    if(!pass) { showMsg("تنبيه", "يرجى ادخال كلمة المرور"); return; }
+                    if(!pass) { 
+                        showMsg("تنبيه", "يرجى ادخال كلمة المرور"); 
+                        resetBtn1();
+                        return; 
+                    }
                     const res = await fetch(`${SCRIPT_URL}?action=login&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}`);
                     const data = await res.json();
+                    
                     if(data.status === "success") {
-                        // استخدام sessionStorage لحماية الجلسة المؤقتة فقط
+                        // 2. إعطاء "تذكرة العبور" للمتصفح
                         sessionStorage.setItem('userEmail', email);
                         sessionStorage.setItem('userName', data.user);
-                        window.location.href = "w/check.html";
-                    } else { showMsg("خطأ", "البريد الالكتروني أو كلمة المرور غير صحيحة"); }
+                        
+                        // 3. التحويل باستخدام replace لقتل سجل الرجوع
+                        window.location.replace("w/check.html");
+                    } else { 
+                        showMsg("خطأ", "البريد الالكتروني أو كلمة المرور غير صحيحة"); 
+                    }
                 } else {
                     const res = await fetch(`${SCRIPT_URL}?action=sendOTP&email=${encodeURIComponent(email)}&isForgot=${mode==='forgot'}`);
                     const data = await res.json();
@@ -166,13 +180,20 @@
                         if(mode === "forgot") document.getElementById('new-pass-box').classList.remove('hidden');
                     } else if(data.status === "already_exists") {
                         showMsg("تنبيه", "هذا البريد مسجل مسبقا، يمكنك تسجيل الدخول مباشرة");
-                    } else { showMsg("خطأ", "لم يتم العثور على الحساب أو حدث مشكل في الارسال"); }
+                    } else { 
+                        showMsg("خطأ", "لم يتم العثور على الحساب أو حدث مشكل في الارسال"); 
+                    }
                 }
-            } catch(e) { showMsg("خطأ", "حدث مشكل في الاتصال بالسيرفر"); }
-            finally {
-                document.getElementById('text1').classList.remove('hidden');
-                document.getElementById('load1').style.display = "none";
+            } catch(e) { 
+                showMsg("خطأ", "حدث مشكل في الاتصال بالسيرفر"); 
+            } finally {
+                resetBtn1();
             }
+        }
+
+        function resetBtn1() {
+            document.getElementById('text1').classList.remove('hidden');
+            document.getElementById('load1').style.display = "none";
         }
 
         async function finalAction() {
@@ -180,9 +201,12 @@
             const email = document.getElementById('userEmail').value;
             const pass = mode === "forgot" ? document.getElementById('newPass').value : document.getElementById('userPass').value;
             const name = document.getElementById('userName').value || "User";
+            
             if(otp !== serverOTP) return showMsg("خطأ", "رمز التحقق الذي أدخلته غير صحيح");
+            
             document.getElementById('text2').classList.add('hidden');
             document.getElementById('load2').style.display = "block";
+            
             let action = mode === "signup" ? "saveData" : "updatePass";
             try {
                 const res = await fetch(`${SCRIPT_URL}?action=${action}&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}&name=${encodeURIComponent(name)}`);
