@@ -3,219 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LikCash | بوابة الدخول الآمنة</title>
+    <title>LikCash | بوابة الدخول الذكي</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;900&display=swap" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         body { font-family: 'Tajawal', sans-serif; background: #ffffff; overflow-x: hidden; margin: 0; }
         .hidden { display: none !important; }
-        .input-pro { background: #f8fafc; border: 2px solid #e2e8f0; transition: all 0.3s ease; }
+        .input-pro { background: #f8fafc; border: 2px solid #e2e8f0; transition: all 0.3s ease; font-weight: 700; }
         .input-pro:focus { border-color: #2563eb; background: #fff; outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
         .loader { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         * { font-weight: 900 !important; }
-        .compact-nav { padding: 0.6rem 1.5rem; max-width: 400px; margin: 1.5rem auto; border-radius: 2rem; background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); }
-        .modal-animate { animation: modalShow 0.3s ease-out; }
-        @keyframes modalShow { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-50">
 
-    <nav class="px-4 w-full">
-        <div class="compact-nav flex justify-center items-center">
-            <a href="#">
-                <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" alt="LikCash" class="h-10 w-auto object-contain">
-            </a>
-        </div>
-    </nav>
-
-    <div id="customModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-        <div class="bg-white rounded-[2.5rem] max-w-xs w-full p-8 shadow-2xl text-center modal-animate border border-slate-100">
-            <div id="modalIcon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"></div>
-            <h3 id="modalTitle" class="text-xl text-slate-900 mb-2 text-center"></h3>
-            <p id="modalMessage" class="text-slate-500 text-sm mb-6 leading-relaxed text-center"></p>
-            <button onclick="closeModal()" class="w-full bg-blue-600 text-white py-4 rounded-2xl hover:bg-blue-700 transition-all shadow-lg">موافق</button>
+    <div id="customModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 text-center">
+        <div class="bg-white rounded-[2.5rem] max-w-xs w-full p-8 shadow-2xl">
+            <div id="modalIcon" class="text-4xl mb-4"></div>
+            <h3 id="modalTitle" class="text-xl mb-2 text-slate-900"></h3>
+            <p id="modalMessage" class="text-slate-500 text-sm mb-6"></p>
+            <button onclick="closeModal()" class="w-full bg-blue-600 text-white py-4 rounded-2xl">موافق</button>
         </div>
     </div>
 
-    <main class="flex-grow flex flex-col items-center justify-center p-6 text-center">
-        <div id="marketing-text" class="mb-10 max-w-2xl">
-            <span class="inline-block bg-blue-50 text-blue-600 px-4 py-1 rounded-full text-[10px] mb-4 uppercase tracking-[0.2em]">نظام حماية الجلسة المطور</span>
-            <h1 class="text-5xl md:text-6xl mb-6 tracking-tighter leading-tight text-slate-900">أهلاً بك في، <br><span class="text-blue-600">LikCash Digital.</span></h1>
-        </div>
+    <div class="max-w-md w-full bg-white rounded-[3rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 text-center">
+        <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" alt="LikCash" class="h-12 mx-auto mb-8">
+        
+        <h2 id="title" class="text-2xl text-slate-900 mb-6 italic">تسجيل الدخول</h2>
 
-        <div class="max-w-md w-full bg-white rounded-[3rem] p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-slate-50 text-center relative overflow-hidden">
-            <h2 id="title" class="text-2xl text-slate-900 mb-2 font-black italic">تسجيل الدخول</h2>
-            <p id="desc" class="text-slate-400 text-[10px] mb-8 uppercase tracking-[0.3em]">أدخل بياناتك للوصول الآمن</p>
+        <div class="space-y-4 text-right">
+            <div id="name-field" class="hidden space-y-1">
+                <label class="text-[10px] text-slate-400 mr-2 uppercase">الاسم الكامل</label>
+                <input type="text" id="userName" placeholder="الاسم الكامل" class="input-pro w-full px-5 py-4 rounded-2xl">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] text-slate-400 mr-2 uppercase">البريد الالكتروني</label>
+                <input type="email" id="userEmail" placeholder="mail@example.com" class="input-pro w-full px-5 py-4 rounded-2xl text-left font-sans">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] text-slate-400 mr-2 uppercase">كلمة المرور</label>
+                <input type="password" id="userPass" placeholder="••••••••" class="input-pro w-full px-5 py-4 rounded-2xl text-left">
+            </div>
+            
+            <button onclick="handleAction()" id="btn1" class="w-full bg-slate-900 text-white py-5 rounded-2xl text-lg flex items-center justify-center gap-3 hover:bg-blue-600 transition-all shadow-xl mt-4">
+                <span id="text1">دخول للنظام</span>
+                <div id="load1" class="loader"></div>
+            </button>
 
-            <div id="step-1" class="space-y-4 text-right">
-                <div id="name-field" class="hidden space-y-1">
-                    <label class="text-[10px] text-slate-400 mr-2 uppercase tracking-tighter font-bold">الاسم الكامل</label>
-                    <input type="text" id="userName" placeholder="الاسم الكامل" class="input-pro w-full px-5 py-4 rounded-2xl">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] text-slate-400 mr-2 uppercase tracking-tighter font-bold">البريد الالكتروني</label>
-                    <input type="email" id="userEmail" placeholder="name@mail.com" class="input-pro w-full px-5 py-4 rounded-2xl text-left font-sans">
-                </div>
-                <div id="pass-field" class="space-y-1 relative">
-                    <label class="text-[10px] text-slate-400 mr-2 uppercase tracking-tighter font-bold">كلمة المرور</label>
-                    <input type="password" id="userPass" placeholder="••••••••" class="input-pro w-full px-5 py-4 rounded-2xl text-left">
-                    <div class="flex justify-start mt-1">
-                        <button onclick="switchToForgot()" class="text-[10px] text-blue-600 hover:underline italic font-bold">نسيت كلمة السر؟</button>
-                    </div>
-                </div>
-                <button onclick="handleAction()" id="btn1" class="w-full bg-slate-900 text-white py-5 rounded-2xl text-lg flex items-center justify-center gap-3 hover:bg-blue-600 transition-all shadow-xl mt-4">
-                    <span id="text1">دخول للنظام</span>
-                    <div id="load1" class="loader"></div>
-                </button>
-                <div id="toggle-box" class="text-center mt-8 pt-4 border-t border-slate-50">
-                    <span id="toggle-text" class="text-slate-400 text-xs font-bold">ليس لديك حساب؟</span>
-                    <button onclick="toggleSignUp()" id="toggle-btn" class="text-blue-600 text-[11px] mr-1 uppercase font-black">انشاء حساب</button>
-                </div>
+            <div class="relative my-6 flex items-center justify-center">
+                <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-100"></span></div>
+                <span class="relative bg-white px-4 text-slate-400 text-[10px] uppercase">أو عبر حساب جوجل</span>
             </div>
 
-            <div id="step-2" class="hidden space-y-6 text-right">
-                <div class="bg-blue-50 p-4 rounded-2xl text-center border border-blue-100">
-                    <p class="text-blue-700 text-sm italic">أدخل رمز التحقق المرسل لبريدك</p>
+            <div class="flex justify-center">
+                <div id="g_id_onload"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="true">
                 </div>
-                <div class="space-y-1 text-center">
-                    <input type="text" id="otpInput" maxlength="4" placeholder="0000" class="w-full text-center text-4xl py-4 rounded-2xl bg-slate-50 border-2 border-blue-600 text-blue-600 outline-none tracking-[0.5rem]">
-                </div>
-                <div id="new-pass-box" class="hidden space-y-1 text-right">
-                    <label class="text-[11px] text-slate-500 mr-2 uppercase">كلمة المرور الجديدة</label>
-                    <input type="password" id="newPass" placeholder="••••••••" class="input-pro w-full px-5 py-4 rounded-2xl text-left">
-                </div>
-                <button onclick="finalAction()" id="btn2" class="w-full bg-slate-900 text-white py-5 rounded-2xl text-lg flex items-center justify-center gap-3 hover:bg-black transition-all">
-                    <span id="text2">تأكيد</span>
-                    <div id="load2" class="loader"></div>
-                </button>
+                <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-size="large" data-logo_alignment="left"></div>
+            </div>
+
+            <div class="text-center mt-8 pt-4 border-t border-slate-50">
+                <span id="toggle-text" class="text-slate-400 text-xs font-bold">ليس لديك حساب؟</span>
+                <button onclick="toggleSignUp()" id="toggle-btn" class="text-blue-600 text-[11px] mr-1 uppercase font-black">انشاء حساب</button>
             </div>
         </div>
-    </main>
-
-    <footer class="p-8 text-center text-slate-200 text-[9px] tracking-[0.5em] uppercase">LikCash Digital Intelligence • 2026</footer>
+    </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyE0u7GTEEk-4QwGr4fTZgIVnjva_YDjovvOFW0xxBGIythIXfyW782JAgmWT5bVwPHbA/exec";
-        let serverOTP = "";
-        let mode = "login"; 
+        // الرابط الجديد الذي زودتني به
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2kugwxc5lDNFEA0-7Xb7hvxQAXxt-yQcpdHMvEcGlielN_zfIyxYjXZH7HAWT-qsPzQ/exec";
+        let mode = "login";
 
-        window.onload = function() {
-            sessionStorage.clear(); //
-            localStorage.clear(); //
-        };
+        function toggleSignUp() {
+            mode = (mode === "signup") ? "login" : "signup";
+            document.getElementById('title').innerText = mode === "signup" ? "انشاء حساب جديد" : "تسجيل الدخول";
+            document.getElementById('name-field').classList.toggle('hidden', mode !== "signup");
+            document.getElementById('text1').innerText = mode === "signup" ? "تسجيل الآن" : "دخول للنظام";
+            document.getElementById('toggle-btn').innerText = mode === "signup" ? "تسجيل الدخول" : "انشاء حساب";
+        }
 
         function showMsg(title, message, type = 'error') {
-            const modal = document.getElementById('customModal');
-            const iconBox = document.getElementById('modalIcon');
+            document.getElementById('modalIcon').innerText = type === 'success' ? '✔️' : '⚠️';
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalMessage').innerText = message;
-            if (type === 'success') {
-                iconBox.innerHTML = '<svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>';
-                iconBox.className = "w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4";
-            } else {
-                iconBox.innerHTML = '<svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M6 18L18 6M6 6l12 12"></path></svg>';
-                iconBox.className = "w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4";
-            }
-            modal.classList.remove('hidden');
+            document.getElementById('customModal').classList.remove('hidden');
         }
 
         function closeModal() { document.getElementById('customModal').classList.add('hidden'); }
 
-        function toggleSignUp() {
-            mode = (mode === "signup") ? "login" : "signup";
-            document.getElementById('title').innerText = mode === "signup" ? "انشاء حساب" : "تسجيل الدخول";
-            document.getElementById('name-field').classList.toggle('hidden', mode !== "signup");
-            document.getElementById('text1').innerText = mode === "signup" ? "تسجيل" : "دخول للنظام";
-            document.getElementById('toggle-text').innerText = mode === "signup" ? "عندك حساب؟" : "ليس لديك حساب؟";
-            document.getElementById('toggle-btn').innerText = mode === "signup" ? "دخول" : "انشاء حساب";
-        }
-
-        function switchToForgot() {
-            mode = "forgot";
-            document.getElementById('title').innerText = "استعادة الحساب";
-            document.getElementById('pass-field').classList.add('hidden');
-            document.getElementById('text1').innerText = "بحث عن الحساب";
-            document.getElementById('toggle-btn').innerText = "رجوع";
-            document.getElementById('toggle-btn').onclick = () => location.reload();
-        }
-
         async function handleAction() {
-            // تنظيف المدخلات من الفراغات وتوحيد حالة أحرف البريد
-            const email = document.getElementById('userEmail').value.trim().toLowerCase();
+            const email = document.getElementById('userEmail').value.trim();
             const pass = document.getElementById('userPass').value.trim();
-            
-            if(!email) return showMsg("تنبيه", "المرجو ادخال البريد الالكتروني للمتابعة");
-            
+            const name = document.getElementById('userName').value.trim() || "User";
+
+            if(!email || !pass) return showMsg("تنبيه", "يرجى تعبئة جميع البيانات");
+
             document.getElementById('text1').classList.add('hidden');
             document.getElementById('load1').style.display = "block";
-            
+
             try {
-                if(mode === "login") {
-                    if(!pass) { 
-                        showMsg("تنبيه", "يرجى ادخال كلمة المرور"); 
-                        resetBtn1();
-                        return; 
-                    }
-                    const res = await fetch(`${SCRIPT_URL}?action=login&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}`);
-                    const data = await res.json();
-                    
-                    if(data.status === "success") {
-                        // حفظ الجلسة للانتقال للصفحة المحمية
-                        sessionStorage.setItem('userEmail', email);
-                        sessionStorage.setItem('userName', data.user);
-                        
-                        // التوجيه للمسار المطلوب
-                        window.location.replace("w/check.html"); 
-                    } else { 
-                        showMsg("خطأ", "البريد الالكتروني أو كلمة المرور غير صحيحة"); 
-                    }
+                let action = mode === "login" ? "login" : "saveData";
+                const response = await fetch(`${SCRIPT_URL}?action=${action}&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}&name=${encodeURIComponent(name)}`);
+                const data = await response.json();
+
+                if(data.status === "success" || data.status === "done") {
+                    sessionStorage.setItem('userEmail', email);
+                    window.location.replace("w/check.html");
                 } else {
-                    const res = await fetch(`${SCRIPT_URL}?action=sendOTP&email=${encodeURIComponent(email)}&isForgot=${mode==='forgot'}`);
-                    const data = await res.json();
-                    if(data.status === "sent") {
-                        serverOTP = String(data.otp);
-                        document.getElementById('step-1').classList.add('hidden');
-                        document.getElementById('step-2').classList.remove('hidden');
-                        if(mode === "forgot") document.getElementById('new-pass-box').classList.remove('hidden');
-                    } else if(data.status === "already_exists") {
-                        showMsg("تنبيه", "هذا البريد مسجل مسبقا، يمكنك تسجيل الدخول مباشرة");
-                    } else { 
-                        showMsg("خطأ", "لم يتم العثور على الحساب أو حدث مشكل في الارسال"); 
-                    }
+                    showMsg("خطأ", "البيانات غير صحيحة أو الحساب مسجل مسبقاً");
                 }
-            } catch(e) { 
-                showMsg("خطأ", "حدث مشكل في الاتصال بالسيرفر"); 
+            } catch(e) {
+                showMsg("خطأ في الاتصال", "تأكد من نشر السكربت بوضعية 'Anyone'");
             } finally {
-                resetBtn1();
+                document.getElementById('text1').classList.remove('hidden');
+                document.getElementById('load1').style.display = "none";
             }
         }
 
-        function resetBtn1() {
-            document.getElementById('text1').classList.remove('hidden');
-            document.getElementById('load1').style.display = "none";
+        // استقبال بيانات جوجل المباشرة
+        function handleCredentialResponse(response) {
+            const payload = JSON.parse(atob(response.credential.split('.')[1]));
+            loginWithGoogle(payload.email, payload.name);
         }
 
-        async function finalAction() {
-            const otp = document.getElementById('otpInput').value.trim();
-            const email = document.getElementById('userEmail').value.trim().toLowerCase();
-            const pass = mode === "forgot" ? document.getElementById('newPass').value.trim() : document.getElementById('userPass').value.trim();
-            const name = document.getElementById('userName').value.trim() || "User";
-            
-            if(otp !== serverOTP) return showMsg("خطأ", "رمز التحقق الذي أدخلته غير صحيح");
-            
-            document.getElementById('text2').classList.add('hidden');
-            document.getElementById('load2').style.display = "block";
-            
-            let action = mode === "signup" ? "saveData" : "updatePass";
+        async function loginWithGoogle(email, name) {
             try {
-                const res = await fetch(`${SCRIPT_URL}?action=${action}&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}&name=${encodeURIComponent(name)}`);
-                const result = await res.json();
-                if(result.status === "done") {
-                    showMsg("نجاح", "تمت العملية بنجاح. يرجى تسجيل الدخول", "success");
-                    setTimeout(() => { location.reload(); }, 2000);
+                const res = await fetch(`${SCRIPT_URL}?action=login&email=${encodeURIComponent(email)}&isGoogle=true`);
+                const data = await res.json();
+                if(data.status === "success") {
+                    sessionStorage.setItem('userEmail', email);
+                    window.location.replace("w/check.html");
+                } else {
+                    showMsg("تنبيه", "هذا الحساب غير مسجل، يرجى إنشاء حساب أولاً");
                 }
-            } catch(e) { location.reload(); }
+            } catch(e) { showMsg("خطأ", "فشل الدخول عبر جوجل"); }
         }
     </script>
 </body>
