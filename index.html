@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LikCash | بوابة الدخول الذكي</title>
+    <title>LikCash | الدخول الذكي</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;900&display=swap" rel="stylesheet">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
-        body { font-family: 'Tajawal', sans-serif; background: #ffffff; overflow-x: hidden; margin: 0; }
+        body { font-family: 'Tajawal', sans-serif; background: #ffffff; margin: 0; }
         .hidden { display: none !important; }
         .input-pro { background: #f8fafc; border: 2px solid #e2e8f0; transition: all 0.3s ease; font-weight: 700; }
-        .input-pro:focus { border-color: #2563eb; background: #fff; outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        .input-pro:focus { border-color: #2563eb; background: #fff; outline: none; }
         .loader { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         * { font-weight: 900 !important; }
@@ -21,63 +21,56 @@
 
     <div id="customModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 text-center">
         <div class="bg-white rounded-[2.5rem] max-w-xs w-full p-8 shadow-2xl">
-            <div id="modalIcon" class="text-4xl mb-4"></div>
             <h3 id="modalTitle" class="text-xl mb-2 text-slate-900"></h3>
             <p id="modalMessage" class="text-slate-500 text-sm mb-6"></p>
-            <button onclick="closeModal()" class="w-full bg-blue-600 text-white py-4 rounded-2xl">موافق</button>
+            <button onclick="closeModal()" class="w-full bg-blue-600 text-white py-4 rounded-2xl italic">موافق</button>
         </div>
     </div>
 
-    <div class="max-w-md w-full bg-white rounded-[3rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 text-center">
+    <div class="max-w-md w-full bg-white rounded-[3rem] p-10 shadow-2xl border border-slate-100 text-center">
         <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" alt="LikCash" class="h-12 mx-auto mb-8">
-        
         <h2 id="title" class="text-2xl text-slate-900 mb-6 italic">تسجيل الدخول</h2>
 
-        <div class="space-y-4 text-right">
+        <form id="authForm" onsubmit="handleAction(event)" class="space-y-4 text-right">
             <div id="name-field" class="hidden space-y-1">
                 <label class="text-[10px] text-slate-400 mr-2 uppercase">الاسم الكامل</label>
-                <input type="text" id="userName" placeholder="الاسم الكامل" class="input-pro w-full px-5 py-4 rounded-2xl">
+                <input type="text" id="userName" name="name" autocomplete="name" placeholder="الاسم الكامل" class="input-pro w-full px-5 py-4 rounded-2xl">
             </div>
+
             <div class="space-y-1">
                 <label class="text-[10px] text-slate-400 mr-2 uppercase">البريد الالكتروني</label>
-                <input type="email" id="userEmail" placeholder="mail@example.com" class="input-pro w-full px-5 py-4 rounded-2xl text-left font-sans">
+                <input type="email" id="userEmail" name="email" autocomplete="username" placeholder="mail@example.com" class="input-pro w-full px-5 py-4 rounded-2xl text-left font-sans" required>
             </div>
+
             <div class="space-y-1">
                 <label class="text-[10px] text-slate-400 mr-2 uppercase">كلمة المرور</label>
-                <input type="password" id="userPass" placeholder="••••••••" class="input-pro w-full px-5 py-4 rounded-2xl text-left">
+                <input type="password" id="userPass" name="password" autocomplete="current-password" placeholder="••••••••" class="input-pro w-full px-5 py-4 rounded-2xl text-left" required>
             </div>
             
-            <button onclick="handleAction()" id="btn1" class="w-full bg-slate-900 text-white py-5 rounded-2xl text-lg flex items-center justify-center gap-3 hover:bg-blue-600 transition-all shadow-xl mt-4">
+            <button type="submit" id="btn1" class="w-full bg-slate-900 text-white py-5 rounded-2xl text-lg flex items-center justify-center gap-3 hover:bg-blue-600 transition-all shadow-xl mt-4">
                 <span id="text1">دخول للنظام</span>
                 <div id="load1" class="loader"></div>
             </button>
+        </form>
 
-            <div class="relative my-6 flex items-center justify-center">
-                <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-100"></span></div>
-                <span class="relative bg-white px-4 text-slate-400 text-[10px] uppercase">أو عبر حساب جوجل</span>
-            </div>
+        <div class="relative my-6 flex items-center justify-center">
+            <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-100"></span></div>
+            <span class="relative bg-white px-4 text-slate-400 text-[10px] uppercase font-bold italic">أو عبر جوجل</span>
+        </div>
 
-            <div class="flex justify-center">
-                <div id="g_id_onload"
-                     data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
-                     data-context="signin"
-                     data-ux_mode="popup"
-                     data-callback="handleCredentialResponse"
-                     data-auto_prompt="true">
-                </div>
-                <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-size="large" data-logo_alignment="left"></div>
-            </div>
+        <div class="flex justify-center">
+            <div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
+            <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
+        </div>
 
-            <div class="text-center mt-8 pt-4 border-t border-slate-50">
-                <span id="toggle-text" class="text-slate-400 text-xs font-bold">ليس لديك حساب؟</span>
-                <button onclick="toggleSignUp()" id="toggle-btn" class="text-blue-600 text-[11px] mr-1 uppercase font-black">انشاء حساب</button>
-            </div>
+        <div class="text-center mt-6 pt-4 border-t border-slate-50">
+            <span id="toggle-text" class="text-slate-400 text-xs">ليس لديك حساب؟</span>
+            <button onclick="toggleSignUp()" id="toggle-btn" class="text-blue-600 text-[11px] mr-1 uppercase font-black">انشاء حساب</button>
         </div>
     </div>
 
     <script>
-        // الرابط الجديد الذي زودتني به
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2kugwxc5lDNFEA0-7Xb7hvxQAXxt-yQcpdHMvEcGlielN_zfIyxYjXZH7HAWT-qsPzQ/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzld_Cvim51B4KX9y7RSYjFqrLO52w7gooksgk4I9A9UqjAXqDOKA69yw1Yo-qF7dD58g/exec";
         let mode = "login";
 
         function toggleSignUp() {
@@ -88,8 +81,7 @@
             document.getElementById('toggle-btn').innerText = mode === "signup" ? "تسجيل الدخول" : "انشاء حساب";
         }
 
-        function showMsg(title, message, type = 'error') {
-            document.getElementById('modalIcon').innerText = type === 'success' ? '✔️' : '⚠️';
+        function showMsg(title, message) {
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalMessage').innerText = message;
             document.getElementById('customModal').classList.remove('hidden');
@@ -97,12 +89,12 @@
 
         function closeModal() { document.getElementById('customModal').classList.add('hidden'); }
 
-        async function handleAction() {
+        async function handleAction(event) {
+            if (event) event.preventDefault();
+
             const email = document.getElementById('userEmail').value.trim();
             const pass = document.getElementById('userPass').value.trim();
             const name = document.getElementById('userName').value.trim() || "User";
-
-            if(!email || !pass) return showMsg("تنبيه", "يرجى تعبئة جميع البيانات");
 
             document.getElementById('text1').classList.add('hidden');
             document.getElementById('load1').style.display = "block";
@@ -114,35 +106,33 @@
 
                 if(data.status === "success" || data.status === "done") {
                     sessionStorage.setItem('userEmail', email);
+                    // التحويل المباشر مع تفعيل خاصية حفظ كلمة المرور
                     window.location.replace("w/check.html");
                 } else {
-                    showMsg("خطأ", "البيانات غير صحيحة أو الحساب مسجل مسبقاً");
+                    showMsg("تنبيه", "البيانات غير صحيحة أو الحساب موجود مسبقاً");
                 }
             } catch(e) {
-                showMsg("خطأ في الاتصال", "تأكد من نشر السكربت بوضعية 'Anyone'");
+                showMsg("خطأ", "مشكلة في الاتصال بالسيرفر");
             } finally {
                 document.getElementById('text1').classList.remove('hidden');
                 document.getElementById('load1').style.display = "none";
             }
         }
 
-        // استقبال بيانات جوجل المباشرة
         function handleCredentialResponse(response) {
             const payload = JSON.parse(atob(response.credential.split('.')[1]));
             loginWithGoogle(payload.email, payload.name);
         }
 
         async function loginWithGoogle(email, name) {
-            try {
-                const res = await fetch(`${SCRIPT_URL}?action=login&email=${encodeURIComponent(email)}&isGoogle=true`);
-                const data = await res.json();
-                if(data.status === "success") {
-                    sessionStorage.setItem('userEmail', email);
-                    window.location.replace("w/check.html");
-                } else {
-                    showMsg("تنبيه", "هذا الحساب غير مسجل، يرجى إنشاء حساب أولاً");
-                }
-            } catch(e) { showMsg("خطأ", "فشل الدخول عبر جوجل"); }
+            const res = await fetch(`${SCRIPT_URL}?action=login&email=${encodeURIComponent(email)}&isGoogle=true`);
+            const data = await res.json();
+            if(data.status === "success") {
+                sessionStorage.setItem('userEmail', email);
+                window.location.replace("w/check.html");
+            } else {
+                showMsg("تنبيه", "الحساب غير مسجل لدينا");
+            }
         }
     </script>
 </body>
