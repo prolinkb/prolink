@@ -1,62 +1,93 @@
 <!DOCTYPE html> 
-<html lang="fr" dir="rtl">
+<html lang="fr" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LikCash | Connexion</title>
+    <title>LikCash Pro | Access</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
-        body { font-family: 'Tajawal', sans-serif; background: #f8fafc; }
-        .input-field { background: #ffffff; border: 2px solid #e2e8f0; transition: all 0.3s ease; font-weight: 900; text-align: left; }
-        .input-field:focus { border-color: #2563eb; outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-        .loader { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        * { font-weight: 900 !important; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .glass-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .loader {
+            width: 20px; height: 20px; border: 3px solid #FFF;
+            border-bottom-color: transparent; border-radius: 50%;
+            display: inline-block; animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation { 0% { transform: rotate(0deg) } 100% { transform: rotate(360deg) } }
+        .hidden-step { display: none; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body>
 
-    <div class="max-w-md w-full bg-white rounded-[2.5rem] p-10 shadow-2xl border border-slate-100 text-center">
-        <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" alt="LikCash" class="h-10 mx-auto mb-8">
+    <div class="w-full max-w-[420px] glass-card rounded-[2.5rem] p-8 md:p-10 shadow-xl">
         
-        <h2 class="text-2xl text-blue-600 mb-8 italic uppercase text-center">Connexion</h2>
-
-        <form onsubmit="handleLogin(event)" class="space-y-4 text-right">
-            <div class="space-y-1">
-                <label class="text-[10px] text-slate-400 mr-2 uppercase">Email</label>
-                <input type="email" id="uEmail" placeholder="mail@example.com" class="input-field w-full px-5 py-4 rounded-2xl font-sans" required>
+        <div class="text-center mb-8">
+            <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" alt="LikCash" class="h-8 mx-auto mb-4">
+            <h1 id="title" class="text-2xl font-800 text-slate-900">Identification</h1>
+            <div id="step-indicator" class="flex justify-center gap-2 mt-4">
+                <span class="w-8 h-1 rounded-full bg-blue-600 transition-all duration-300"></span>
+                <span class="w-2 h-1 rounded-full bg-slate-200 transition-all duration-300"></span>
             </div>
-
-            <div class="space-y-1">
-                <label class="text-[10px] text-slate-400 mr-2 uppercase">Mot de passe</label>
-                <input type="password" id="uPass" placeholder="••••••••" class="input-field w-full px-5 py-4 rounded-2xl" required>
-            </div>
-            
-            <button type="submit" id="mainBtn" class="w-full bg-slate-900 text-white py-5 rounded-2xl text-lg flex items-center justify-center gap-3 hover:bg-blue-600 transition-all shadow-xl mt-4">
-                <span id="btnText">SE CONNECTER</span>
-                <div id="btnLoader" class="loader"></div>
-            </button>
-        </form>
-
-        <div class="relative my-8 flex items-center justify-center">
-            <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-100"></span></div>
-            <span class="relative bg-white px-4 text-slate-400 text-[10px] font-bold italic uppercase">Ou</span>
         </div>
 
-        <button onclick="loginGoogle()" class="flex items-center justify-center gap-3 w-full border-2 border-slate-100 py-4 rounded-2xl hover:bg-slate-50 transition-all">
+        <form id="authForm" class="space-y-5">
+            <div id="step1" class="space-y-4">
+                <div class="space-y-2">
+                    <label class="text-[11px] font-bold text-slate-400 uppercase ml-1">Email Personnel</label>
+                    <input type="email" id="uEmail" placeholder="mail@example.com" required
+                        class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:border-blue-500 font-semibold transition-all">
+                </div>
+                <button type="button" onclick="toStep(2)" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-blue-600 transition-all shadow-lg">
+                    Suivant
+                </button>
+            </div>
+
+            <div id="step2" class="space-y-4 hidden-step">
+                <div class="space-y-2">
+                    <label class="text-[11px] font-bold text-slate-400 uppercase ml-1">Mot de passe</label>
+                    <input type="password" id="uPass" placeholder="••••••••"
+                        class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:border-blue-500 font-semibold transition-all">
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="toStep(1)" class="w-1/3 bg-slate-100 text-slate-600 py-4 rounded-2xl font-bold">Retour</button>
+                    <button type="submit" id="mainBtn" class="w-2/3 bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg flex items-center justify-center gap-2">
+                        <span id="btnText">Connexion</span>
+                        <span id="btnLoader" class="loader hidden"></span>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div class="relative my-8">
+            <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-100"></span></div>
+            <span class="relative bg-white px-4 text-slate-400 text-[10px] font-bold uppercase mx-auto block w-fit">Ou</span>
+        </div>
+
+        <button onclick="loginGoogle()" class="w-full flex items-center justify-center gap-3 border border-slate-200 py-4 rounded-2xl hover:bg-slate-50 transition-all">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
-            <span class="text-[11px] font-black uppercase text-slate-700">Google Account</span>
+            <span class="text-sm font-bold text-slate-700">Continuer avec Google</span>
         </button>
     </div>
 
     <script>
-        // الرابط اللي عطيتيني
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbybX-_C3QCchPtomRm0BOsOXjSxxcPFs1tLWA2A3F-5vKyZ_6htnBggbFbHDN3K-Atg0g/exec";
+        // --- إعدادات الربط (ضع روابطك هنا) ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKNcZ3SaK1Bd21Zz-7RKqchsMOzeh1h-BqrLYZ2Hyjnnx-DSJGi9f2ekwpgn-VKlJfIQ/exec"; 
         
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
@@ -68,56 +99,68 @@
         };
         firebase.initializeApp(firebaseConfig);
 
-        async function handleLogin(e) {
+        // --- نظام التنقل بين الخطوات ---
+        function toStep(step) {
+            const s1 = document.getElementById('step1');
+            const s2 = document.getElementById('step2');
+            const indicators = document.querySelectorAll('#step-indicator span');
+
+            if(step === 2) {
+                if(!document.getElementById('uEmail').value.includes('@')) return alert("Email invalide");
+                s1.classList.add('hidden-step');
+                s2.classList.remove('hidden-step');
+                indicators[1].className = "w-8 h-1 rounded-full bg-blue-600 transition-all";
+                indicators[0].className = "w-2 h-1 rounded-full bg-slate-200 transition-all";
+            } else {
+                s2.classList.add('hidden-step');
+                s1.classList.remove('hidden-step');
+                indicators[0].className = "w-8 h-1 rounded-full bg-blue-600 transition-all";
+                indicators[1].className = "w-2 h-1 rounded-full bg-slate-200 transition-all";
+            }
+        }
+
+        // --- معالجة الدخول ---
+        document.getElementById('authForm').onsubmit = async (e) => {
             e.preventDefault();
             const email = document.getElementById('uEmail').value.trim();
             const pass = document.getElementById('uPass').value.trim();
 
-            // اللودر
-            document.getElementById('btnText').style.display = "none";
-            document.getElementById('btnLoader').style.display = "block";
-
+            setLoading(true);
             try {
-                // 1. التحقق من السكربت (loginCheck)
-                const response = await fetch(`${SCRIPT_URL}?action=loginCheck&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}`);
-                const result = await response.text();
+                const res = await fetch(`${SCRIPT_URL}?action=loginCheck&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}`);
+                const result = await res.text();
 
                 if (result === "FOUND") {
-                    // 2. نجاح: تسجيل البصمة والتوجيه
                     sessionStorage.setItem('isAuth', 'true');
-                    sessionStorage.setItem('userEmail', email);
                     window.location.href = "w/check.html";
                 } else {
-                    alert("Email ou Mot de passe incorrect !");
-                    resetBtn();
+                    alert("Email ou Mot de passe incorrect");
+                    setLoading(false);
                 }
             } catch (err) {
-                alert("Erreur de connexion au serveur.");
-                resetBtn();
+                alert("Erreur serveur");
+                setLoading(false);
             }
-        }
+        };
 
+        // --- جوجل ---
         async function loginGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
                 const res = await firebase.auth().signInWithPopup(provider);
                 const user = res.user;
-
-                // إرسال البيانات للجدول (saveData)
-                fetch(`${SCRIPT_URL}?action=saveData&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`, { mode: 'no-cors' });
-
-                sessionStorage.setItem('isAuth', 'true');
-                sessionStorage.setItem('userEmail', user.email);
+                // حفظ البيانات في السكرت
+                fetch(`${SCRIPT_URL}?action=saveData&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`);
                 
-                setTimeout(() => {
-                    window.location.href = "w/check.html";
-                }, 800);
-            } catch (err) { alert("Erreur Google Auth"); }
+                sessionStorage.setItem('isAuth', 'true');
+                window.location.href = "w/check.html";
+            } catch (err) { alert("Erreur Google"); }
         }
 
-        function resetBtn() {
-            document.getElementById('btnText').style.display = "block";
-            document.getElementById('btnLoader').style.display = "none";
+        function setLoading(status) {
+            document.getElementById('btnText').classList.toggle('hidden', status);
+            document.getElementById('btnLoader').classList.toggle('hidden', !status);
+            document.getElementById('mainBtn').disabled = status;
         }
     </script>
 </body>
