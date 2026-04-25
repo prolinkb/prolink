@@ -1,94 +1,109 @@
 <!DOCTYPE html> 
-<html lang="fr" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LikCash Pro | Access</title>
+    <title>LikCash | المنصة المالية الاحترافية</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: #f8fafc;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        body { font-family: 'Tajawal', sans-serif; background: #f4f7f9; }
+        
+        /* Dynamic Island (iPhone 14 Pro Style) */
+        .dynamic-island {
+            width: 180px; height: 35px; background: #000; border-radius: 50px;
+            margin: 20px auto; display: flex; align-items: center; justify-content: center;
+            transition: all 0.4s ease-in-out; color: white; position: sticky; top: 15px; z-index: 100;
         }
-        .glass-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .dynamic-island:hover { width: 280px; height: 45px; }
+        .logo-img { height: 18px; filter: brightness(0) invert(1); }
+
+        .premium-card {
+            background: white; border-radius: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            border: 1px solid #edf2f7;
         }
-        .loader {
-            width: 20px; height: 20px; border: 3px solid #FFF;
-            border-bottom-color: transparent; border-radius: 50%;
-            display: inline-block; animation: rotation 1s linear infinite;
-        }
+        
+        input { transition: all 0.3s; }
+        input:focus { transform: translateY(-2px); }
+        .loader { width: 20px; height: 20px; border: 3px solid #FFF; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
         @keyframes rotation { 0% { transform: rotate(0deg) } 100% { transform: rotate(360deg) } }
-        .hidden-step { display: none; }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-10">
 
-    <div class="w-full max-w-[420px] glass-card rounded-[2.5rem] p-8 md:p-10 shadow-xl">
+    <div class="dynamic-island">
+        <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" class="logo-img" alt="LikCash">
+    </div>
+
+    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center mt-12">
         
-        <div class="text-center mb-8">
-            <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" alt="LikCash" class="h-8 mx-auto mb-4">
-            <h1 id="title" class="text-2xl font-800 text-slate-900">Identification</h1>
-            <div id="step-indicator" class="flex justify-center gap-2 mt-4">
-                <span class="w-8 h-1 rounded-full bg-blue-600 transition-all duration-300"></span>
-                <span class="w-2 h-1 rounded-full bg-slate-200 transition-all duration-300"></span>
+        <div class="text-right space-y-8">
+            <h1 class="text-5xl font-900 text-slate-900 leading-tight">ادفع، استلم، ووفر مع <span class="text-blue-600">LikCash</span></h1>
+            <p class="text-slate-600 text-xl font-medium">أقوى منصة مغربية لإدارة معاملاتك المالية الرقمية بكل أمان وسهولة. انضم إلى أكثر من 50,000 مستخدم.</p>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-white rounded-2xl shadow-sm border border-slate-100">
+                    <span class="block text-2xl mb-2">🔒</span>
+                    <h3 class="font-bold text-slate-800">أمان فائق</h3>
+                </div>
+                <div class="p-4 bg-white rounded-2xl shadow-sm border border-slate-100">
+                    <span class="block text-2xl mb-2">⚡</span>
+                    <h3 class="font-bold text-slate-800">سرعة خيالية</h3>
+                </div>
             </div>
         </div>
 
-        <form id="authForm" class="space-y-5">
-            <div id="step1" class="space-y-4">
-                <div class="space-y-2">
-                    <label class="text-[11px] font-bold text-slate-400 uppercase ml-1">Email Personnel</label>
-                    <input type="email" id="uEmail" placeholder="mail@example.com" required
-                        class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:border-blue-500 font-semibold transition-all">
+        <div class="premium-card p-10">
+            <div class="flex gap-8 mb-10 border-b border-slate-50 pb-4">
+                <button onclick="setMode('login')" id="tabLogin" class="text-lg font-900 text-blue-600 border-b-4 border-blue-600 pb-2 transition-all">دخول</button>
+                <button onclick="setMode('signup')" id="tabSignup" class="text-lg font-900 text-slate-300 pb-2 transition-all">إنشاء حساب</button>
+            </div>
+
+            <form id="mainForm" class="space-y-6">
+                <div id="field-name" class="hidden animate-fade-in">
+                    <label class="block text-sm font-bold text-slate-500 mb-2">الإسم الكامل</label>
+                    <input type="text" id="uName" placeholder="الإسم الكامل" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 ring-blue-400 font-bold">
                 </div>
-                <button type="button" onclick="toStep(2)" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-blue-600 transition-all shadow-lg">
-                    Suivant
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-500 mb-2">البريد الإلكتروني</label>
+                    <input type="email" id="uEmail" placeholder="mail@example.com" required class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 ring-blue-400 font-bold text-left">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-500 mb-2">كلمة المرور</label>
+                    <input type="password" id="uPass" placeholder="••••••••" required class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 ring-blue-400 font-bold text-left">
+                </div>
+
+                <button type="submit" id="btnAction" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-900 text-lg shadow-xl hover:bg-blue-600 transform active:scale-95 transition-all flex items-center justify-center gap-3">
+                    <span id="txtAction">تسجيل الدخول</span>
+                    <span id="loader" class="loader hidden"></span>
                 </button>
+            </form>
+
+            <div class="relative my-8 flex items-center">
+                <div class="flex-grow border-t border-slate-100"></div>
+                <span class="px-4 text-slate-400 text-xs font-bold">أو استمر بواسطة</span>
+                <div class="flex-grow border-t border-slate-100"></div>
             </div>
 
-            <div id="step2" class="space-y-4 hidden-step">
-                <div class="space-y-2">
-                    <label class="text-[11px] font-bold text-slate-400 uppercase ml-1">Mot de passe</label>
-                    <input type="password" id="uPass" placeholder="••••••••"
-                        class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:border-blue-500 font-semibold transition-all">
-                </div>
-                <div class="flex gap-2">
-                    <button type="button" onclick="toStep(1)" class="w-1/3 bg-slate-100 text-slate-600 py-4 rounded-2xl font-bold">Retour</button>
-                    <button type="submit" id="mainBtn" class="w-2/3 bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg flex items-center justify-center gap-2">
-                        <span id="btnText">Connexion</span>
-                        <span id="btnLoader" class="loader hidden"></span>
-                    </button>
-                </div>
-            </div>
-        </form>
-
-        <div class="relative my-8">
-            <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-100"></span></div>
-            <span class="relative bg-white px-4 text-slate-400 text-[10px] font-bold uppercase mx-auto block w-fit">Ou</span>
+            <button onclick="loginGoogle()" class="w-full flex items-center justify-center gap-3 border-2 border-slate-50 py-4 rounded-2xl hover:bg-slate-50 transition-all font-bold group">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
+                <span class="group-hover:text-blue-600">حساب جوجل</span>
+            </button>
         </div>
-
-        <button onclick="loginGoogle()" class="w-full flex items-center justify-center gap-3 border border-slate-200 py-4 rounded-2xl hover:bg-slate-50 transition-all">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
-            <span class="text-sm font-bold text-slate-700">Continuer avec Google</span>
-        </button>
     </div>
 
     <script>
-        // --- إعدادات الربط (ضع روابطك هنا) ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKNcZ3SaK1Bd21Zz-7RKqchsMOzeh1h-BqrLYZ2Hyjnnx-DSJGi9f2ekwpgn-VKlJfIQ/exec"; 
-        
+        // --- 1. ضع رابط السكريبت الخاص بك هنا ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUcEwraRmMRROXaBkqnhGkterrhbAQofHx3eXk5awQC9Cdy497lX_Qf5VdzE9fpxscxA/execا";
+
+        // --- 2. إعدادات Firebase ---
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
             authDomain: "likcash-auth.firebaseapp.com",
@@ -99,68 +114,69 @@
         };
         firebase.initializeApp(firebaseConfig);
 
-        // --- نظام التنقل بين الخطوات ---
-        function toStep(step) {
-            const s1 = document.getElementById('step1');
-            const s2 = document.getElementById('step2');
-            const indicators = document.querySelectorAll('#step-indicator span');
+        let currentMode = 'login';
 
-            if(step === 2) {
-                if(!document.getElementById('uEmail').value.includes('@')) return alert("Email invalide");
-                s1.classList.add('hidden-step');
-                s2.classList.remove('hidden-step');
-                indicators[1].className = "w-8 h-1 rounded-full bg-blue-600 transition-all";
-                indicators[0].className = "w-2 h-1 rounded-full bg-slate-200 transition-all";
+        function setMode(mode) {
+            currentMode = mode;
+            const fieldName = document.getElementById('field-name');
+            const tabL = document.getElementById('tabLogin');
+            const tabS = document.getElementById('tabSignup');
+            const txt = document.getElementById('txtAction');
+
+            if(mode === 'signup') {
+                fieldName.classList.remove('hidden');
+                tabS.className = "text-lg font-900 text-blue-600 border-b-4 border-blue-600 pb-2";
+                tabL.className = "text-lg font-900 text-slate-300 pb-2";
+                txt.innerText = "إنشاء حساب بريميوم";
             } else {
-                s2.classList.add('hidden-step');
-                s1.classList.remove('hidden-step');
-                indicators[0].className = "w-8 h-1 rounded-full bg-blue-600 transition-all";
-                indicators[1].className = "w-2 h-1 rounded-full bg-slate-200 transition-all";
+                fieldName.classList.add('hidden');
+                tabL.className = "text-lg font-900 text-blue-600 border-b-4 border-blue-600 pb-2";
+                tabS.className = "text-lg font-900 text-slate-300 pb-2";
+                txt.innerText = "تسجيل الدخول";
             }
         }
 
-        // --- معالجة الدخول ---
-        document.getElementById('authForm').onsubmit = async (e) => {
+        document.getElementById('mainForm').onsubmit = async (e) => {
             e.preventDefault();
-            const email = document.getElementById('uEmail').value.trim();
-            const pass = document.getElementById('uPass').value.trim();
+            toggleLoader(true);
 
-            setLoading(true);
+            const email = document.getElementById('uEmail').value;
+            const pass = document.getElementById('uPass').value;
+            const name = document.getElementById('uName').value;
+
             try {
-                const res = await fetch(`${SCRIPT_URL}?action=loginCheck&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}`);
-                const result = await res.text();
+                // نرسل الـ action بناءً على الوضع الحالي (login أو signup)
+                const response = await fetch(`${SCRIPT_URL}?action=${currentMode}&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}&name=${encodeURIComponent(name)}`);
+                const result = await response.text();
 
-                if (result === "FOUND") {
+                if (result === "LOGIN_SUCCESS" || result === "SIGNUP_SUCCESS") {
                     sessionStorage.setItem('isAuth', 'true');
                     window.location.href = "w/check.html";
+                } else if (result === "EMAIL_ALREADY_EXISTS") {
+                    alert("هذا البريد مسجل مسبقاً، يرجى تسجيل الدخول.");
                 } else {
-                    alert("Email ou Mot de passe incorrect");
-                    setLoading(false);
+                    alert("بيانات الدخول غير صحيحة.");
                 }
-            } catch (err) {
-                alert("Erreur serveur");
-                setLoading(false);
-            }
+            } catch (err) { alert("خطأ في الاتصال بالسيرفر."); }
+            toggleLoader(false);
         };
 
-        // --- جوجل ---
         async function loginGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
                 const res = await firebase.auth().signInWithPopup(provider);
                 const user = res.user;
-                // حفظ البيانات في السكرت
-                fetch(`${SCRIPT_URL}?action=saveData&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`);
-                
+                // عند الدخول بجوجل، نقوم دائماً بمحاولة "Signup" لتخزينه في الجدول إذا كان جديداً
+                fetch(`${SCRIPT_URL}?action=signup&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`);
                 sessionStorage.setItem('isAuth', 'true');
                 window.location.href = "w/check.html";
-            } catch (err) { alert("Erreur Google"); }
+            } catch (err) { alert("فشل الدخول عبر جوجل (تأكد من سماح المتصفح بالـ Pop-up)"); }
         }
 
-        function setLoading(status) {
-            document.getElementById('btnText').classList.toggle('hidden', status);
-            document.getElementById('btnLoader').classList.toggle('hidden', !status);
-            document.getElementById('mainBtn').disabled = status;
+        function toggleLoader(show) {
+            document.getElementById('loader').classList.toggle('hidden', !show);
+            document.getElementById('txtAction').classList.toggle('hidden', show);
+            document.getElementById('btnAction').disabled = show;
         }
     </script>
 </body>
