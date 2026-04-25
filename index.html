@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LikCash | Authentification</title>
+    <title>LikCash | Connexion</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;900&display=swap" rel="stylesheet">
     
@@ -14,7 +14,7 @@
         body { font-family: 'Tajawal', sans-serif; background: #f8fafc; }
         .input-field { background: #ffffff; border: 2px solid #e2e8f0; transition: all 0.3s ease; font-weight: 900; text-align: left; }
         .input-field:focus { border-color: #2563eb; outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-        .loader { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
+        .loader { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         * { font-weight: 900 !important; }
     </style>
@@ -24,17 +24,17 @@
     <div class="max-w-md w-full bg-white rounded-[2.5rem] p-10 shadow-2xl border border-slate-100 text-center">
         <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" alt="LikCash" class="h-10 mx-auto mb-8">
         
-        <h2 id="title" class="text-2xl text-blue-600 mb-8 italic uppercase">Connexion</h2>
+        <h2 class="text-2xl text-blue-600 mb-8 italic uppercase text-center">Connexion</h2>
 
-        <form id="authForm" onsubmit="handleAction(event)" class="space-y-4 text-right">
+        <form onsubmit="handleLogin(event)" class="space-y-4 text-right">
             <div class="space-y-1">
                 <label class="text-[10px] text-slate-400 mr-2 uppercase">Email</label>
-                <input type="email" id="userEmail" placeholder="mail@example.com" class="input-field w-full px-5 py-4 rounded-2xl font-sans" required>
+                <input type="email" id="uEmail" placeholder="mail@example.com" class="input-field w-full px-5 py-4 rounded-2xl font-sans" required>
             </div>
 
             <div class="space-y-1">
                 <label class="text-[10px] text-slate-400 mr-2 uppercase">Mot de passe</label>
-                <input type="password" id="userPass" placeholder="••••••••" class="input-field w-full px-5 py-4 rounded-2xl" required>
+                <input type="password" id="uPass" placeholder="••••••••" class="input-field w-full px-5 py-4 rounded-2xl" required>
             </div>
             
             <button type="submit" id="mainBtn" class="w-full bg-slate-900 text-white py-5 rounded-2xl text-lg flex items-center justify-center gap-3 hover:bg-blue-600 transition-all shadow-xl mt-4">
@@ -48,15 +48,15 @@
             <span class="relative bg-white px-4 text-slate-400 text-[10px] font-bold italic uppercase">Ou</span>
         </div>
 
-        <button onclick="loginWithGoogle()" class="flex items-center justify-center gap-3 w-full border-2 border-slate-100 py-4 rounded-2xl hover:bg-slate-50 transition-all">
+        <button onclick="loginGoogle()" class="flex items-center justify-center gap-3 w-full border-2 border-slate-100 py-4 rounded-2xl hover:bg-slate-50 transition-all">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
             <span class="text-[11px] font-black uppercase text-slate-700">Google Account</span>
         </button>
     </div>
 
     <script>
-        // 1. إعدادات Firebase و Apps Script
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuIYzC8mLwQwqTMgwK6dQiwUopsGbrc8fA60VGjfTNx9OqDX9YbgvdYoH5BF_1kd8g-w/exec";
+        // الرابط اللي عطيتيني
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbybX-_C3QCchPtomRm0BOsOXjSxxcPFs1tLWA2A3F-5vKyZ_6htnBggbFbHDN3K-Atg0g/exec";
         
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
@@ -67,62 +67,57 @@
             appId: "1:19126222896:web:0a6416948afa024e53adf5"
         };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
 
-        // 2. دالة تسجيل الدخول العادي
-        async function handleAction(event) {
-            event.preventDefault();
-            const email = document.getElementById('userEmail').value;
-            const pass = document.getElementById('userPass').value;
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('uEmail').value.trim();
+            const pass = document.getElementById('uPass').value.trim();
 
-            // إظهار اللودر
-            document.getElementById('btnText').classList.add('hidden');
+            // اللودر
+            document.getElementById('btnText').style.display = "none";
             document.getElementById('btnLoader').style.display = "block";
 
-            // حفظ البصمة فوراً في المتصفح
-            sessionStorage.setItem('isAuth', 'true');
-            sessionStorage.setItem('userEmail', email);
-
             try {
-                // إرسال للجدول مع mode: 'no-cors' لضمان السرعة
-                fetch(`${SCRIPT_URL}?action=saveData&email=${encodeURIComponent(email)}&name=User&pass=${encodeURIComponent(pass)}`, {
-                    method: 'GET',
-                    mode: 'no-cors'
-                });
+                // 1. التحقق من السكربت (loginCheck)
+                const response = await fetch(`${SCRIPT_URL}?action=loginCheck&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}`);
+                const result = await response.text();
 
-                // تأخير بسيط 800ms باش نضمنوا الـ fetch خرج عاد نوجهوه
-                setTimeout(() => {
+                if (result === "FOUND") {
+                    // 2. نجاح: تسجيل البصمة والتوجيه
+                    sessionStorage.setItem('isAuth', 'true');
+                    sessionStorage.setItem('userEmail', email);
                     window.location.href = "w/check.html";
-                }, 800);
-
-            } catch (e) {
-                window.location.href = "w/check.html";
+                } else {
+                    alert("Email ou Mot de passe incorrect !");
+                    resetBtn();
+                }
+            } catch (err) {
+                alert("Erreur de connexion au serveur.");
+                resetBtn();
             }
         }
 
-        // 3. دالة تسجيل الدخول بجوجل
-        async function loginWithGoogle() {
+        async function loginGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
-                const result = await auth.signInWithPopup(provider);
-                const user = result.user;
-                
+                const res = await firebase.auth().signInWithPopup(provider);
+                const user = res.user;
+
+                // إرسال البيانات للجدول (saveData)
+                fetch(`${SCRIPT_URL}?action=saveData&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`, { mode: 'no-cors' });
+
                 sessionStorage.setItem('isAuth', 'true');
                 sessionStorage.setItem('userEmail', user.email);
-
-                // إرسال بيانات جوجل للجدول
-                fetch(`${SCRIPT_URL}?action=saveData&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`, {
-                    method: 'GET',
-                    mode: 'no-cors'
-                });
-
+                
                 setTimeout(() => {
                     window.location.href = "w/check.html";
                 }, 800);
-                
-            } catch (e) {
-                alert("Erreur Google Auth");
-            }
+            } catch (err) { alert("Erreur Google Auth"); }
+        }
+
+        function resetBtn() {
+            document.getElementById('btnText').style.display = "block";
+            document.getElementById('btnLoader').style.display = "none";
         }
     </script>
 </body>
