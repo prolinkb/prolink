@@ -11,99 +11,108 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
-        body { font-family: 'Tajawal', sans-serif; background: #f4f7f9; }
+        body { font-family: 'Tajawal', sans-serif; background: #f8fafc; color: #1e293b; }
         
-        /* Dynamic Island (iPhone 14 Pro Style) */
+        /* Dynamic Island - iPhone 14 Pro Style */
         .dynamic-island {
-            width: 180px; height: 35px; background: #000; border-radius: 50px;
-            margin: 20px auto; display: flex; align-items: center; justify-content: center;
-            transition: all 0.4s ease-in-out; color: white; position: sticky; top: 15px; z-index: 100;
+            width: 160px; height: 32px; background: #000; border-radius: 50px;
+            margin: 15px auto; display: flex; align-items: center; justify-content: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: sticky; top: 15px; z-index: 1000;
         }
-        .dynamic-island:hover { width: 280px; height: 45px; }
-        .logo-img { height: 18px; filter: brightness(0) invert(1); }
+        .dynamic-island:hover { width: 260px; height: 45px; }
+        .logo-island { height: 16px; filter: brightness(0) invert(1); }
 
         .premium-card {
             background: white; border-radius: 2.5rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
-            border: 1px solid #edf2f7;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+            border: 1px solid rgba(226, 232, 240, 0.8);
         }
-        
-        input { transition: all 0.3s; }
-        input:focus { transform: translateY(-2px); }
-        .loader { width: 20px; height: 20px; border: 3px solid #FFF; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
+
+        .loader {
+            width: 20px; height: 20px; border: 3px solid #FFF;
+            border-bottom-color: transparent; border-radius: 50%;
+            display: inline-block; animation: rotation 1s linear infinite;
+        }
         @keyframes rotation { 0% { transform: rotate(0deg) } 100% { transform: rotate(360deg) } }
+        
+        .hidden-element { display: none; }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="p-4 md:p-8">
 
-    <div class="dynamic-island">
-        <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" class="logo-img" alt="LikCash">
+    <div class="dynamic-island shadow-2xl">
+        <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" class="logo-island" alt="LikCash">
     </div>
 
-    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center mt-12">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center mt-8">
         
-        <div class="text-right space-y-8">
-            <h1 class="text-5xl font-900 text-slate-900 leading-tight">ادفع، استلم، ووفر مع <span class="text-blue-600">LikCash</span></h1>
-            <p class="text-slate-600 text-xl font-medium">أقوى منصة مغربية لإدارة معاملاتك المالية الرقمية بكل أمان وسهولة. انضم إلى أكثر من 50,000 مستخدم.</p>
+        <div class="text-right space-y-8 p-4">
+            <h1 class="text-5xl font-900 text-slate-900 leading-tight">أموالك تحت سيطرتك مع <span class="text-blue-600 italic">LikCash</span></h1>
+            <p class="text-slate-500 text-xl font-medium leading-relaxed">
+                انضم إلى المنصة المالية الأكثر أماناً في المغرب. حلول رقمية مبتكرة لإرسال واستلام الأموال بلمسة واحدة.
+            </p>
             
-            <div class="grid grid-cols-2 gap-4">
-                <div class="p-4 bg-white rounded-2xl shadow-sm border border-slate-100">
-                    <span class="block text-2xl mb-2">🔒</span>
-                    <h3 class="font-bold text-slate-800">أمان فائق</h3>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <div class="text-2xl mb-2">⚡</div>
+                    <h3 class="font-900 text-slate-800 text-sm">سرعة البرق</h3>
+                    <p class="text-xs text-slate-400 mt-1">معالجة فورية لكل العمليات</p>
                 </div>
-                <div class="p-4 bg-white rounded-2xl shadow-sm border border-slate-100">
-                    <span class="block text-2xl mb-2">⚡</span>
-                    <h3 class="font-bold text-slate-800">سرعة خيالية</h3>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <div class="text-2xl mb-2">🛡️</div>
+                    <h3 class="font-900 text-slate-800 text-sm">حماية قصوى</h3>
+                    <p class="text-xs text-slate-400 mt-1">تشفير بنكي لبياناتك</p>
                 </div>
             </div>
         </div>
 
-        <div class="premium-card p-10">
+        <div class="premium-card p-10 relative overflow-hidden">
             <div class="flex gap-8 mb-10 border-b border-slate-50 pb-4">
-                <button onclick="setMode('login')" id="tabLogin" class="text-lg font-900 text-blue-600 border-b-4 border-blue-600 pb-2 transition-all">دخول</button>
-                <button onclick="setMode('signup')" id="tabSignup" class="text-lg font-900 text-slate-300 pb-2 transition-all">إنشاء حساب</button>
+                <button onclick="switchMode('login')" id="tabLogin" class="text-lg font-900 text-blue-600 border-b-4 border-blue-600 pb-2 transition-all">تسجيل الدخول</button>
+                <button onclick="switchMode('signup')" id="tabSignup" class="text-lg font-900 text-slate-300 pb-2 transition-all">إنشاء حساب</button>
             </div>
 
-            <form id="mainForm" class="space-y-6">
-                <div id="field-name" class="hidden animate-fade-in">
-                    <label class="block text-sm font-bold text-slate-500 mb-2">الإسم الكامل</label>
-                    <input type="text" id="uName" placeholder="الإسم الكامل" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 ring-blue-400 font-bold">
+            <form id="authForm" class="space-y-5">
+                <div id="nameGroup" class="hidden-element space-y-2">
+                    <label class="text-xs font-bold text-slate-400 mr-2 uppercase">الإسم الكامل</label>
+                    <input type="text" id="uName" placeholder="الإسم الكامل" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 ring-blue-500 font-bold transition-all">
                 </div>
 
-                <div>
-                    <label class="block text-sm font-bold text-slate-500 mb-2">البريد الإلكتروني</label>
-                    <input type="email" id="uEmail" placeholder="mail@example.com" required class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 ring-blue-400 font-bold text-left">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 mr-2 uppercase">البريد الإلكتروني</label>
+                    <input type="email" id="uEmail" placeholder="mail@example.com" required class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 ring-blue-500 font-bold transition-all text-left">
                 </div>
 
-                <div>
-                    <label class="block text-sm font-bold text-slate-500 mb-2">كلمة المرور</label>
-                    <input type="password" id="uPass" placeholder="••••••••" required class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 ring-blue-400 font-bold text-left">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 mr-2 uppercase">كلمة المرور</label>
+                    <input type="password" id="uPass" placeholder="••••••••" required class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 ring-blue-500 font-bold transition-all text-left">
                 </div>
 
-                <button type="submit" id="btnAction" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-900 text-lg shadow-xl hover:bg-blue-600 transform active:scale-95 transition-all flex items-center justify-center gap-3">
-                    <span id="txtAction">تسجيل الدخول</span>
-                    <span id="loader" class="loader hidden"></span>
+                <button type="submit" id="mainBtn" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-900 text-lg shadow-xl hover:bg-blue-600 active:scale-95 transition-all flex items-center justify-center gap-3 mt-4">
+                    <span id="btnText">دخول</span>
+                    <span id="btnLoader" class="loader hidden-element"></span>
                 </button>
             </form>
 
-            <div class="relative my-8 flex items-center">
+            <div class="relative my-10 flex items-center">
                 <div class="flex-grow border-t border-slate-100"></div>
-                <span class="px-4 text-slate-400 text-xs font-bold">أو استمر بواسطة</span>
+                <span class="px-4 text-slate-400 text-[10px] font-bold uppercase tracking-widest">أو</span>
                 <div class="flex-grow border-t border-slate-100"></div>
             </div>
 
-            <button onclick="loginGoogle()" class="w-full flex items-center justify-center gap-3 border-2 border-slate-50 py-4 rounded-2xl hover:bg-slate-50 transition-all font-bold group">
+            <button onclick="loginGoogle()" class="w-full flex items-center justify-center gap-3 border-2 border-slate-50 py-4 rounded-2xl hover:bg-slate-50 transition-all font-bold">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
-                <span class="group-hover:text-blue-600">حساب جوجل</span>
+                <span class="text-slate-700">متابعة بواسطة جوجل</span>
             </button>
         </div>
     </div>
 
     <script>
-        // --- 1. ضع رابط السكريبت الخاص بك هنا ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUcEwraRmMRROXaBkqnhGkterrhbAQofHx3eXk5awQC9Cdy497lX_Qf5VdzE9fpxscxA/execا";
+        // --- الرابط الخاص بك الذي زودتني به ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDKcZm19snHlv4EF6oWnWPOAJMNuhH0VvmD3CDZmmxk_DkHJkMPfjrTGw30LcaYeC4Eg/exec";
 
-        // --- 2. إعدادات Firebase ---
+        // --- إعدادات Firebase ---
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
             authDomain: "likcash-auth.firebaseapp.com",
@@ -114,51 +123,52 @@
         };
         firebase.initializeApp(firebaseConfig);
 
-        let currentMode = 'login';
+        let currentAction = 'login';
 
-        function setMode(mode) {
-            currentMode = mode;
-            const fieldName = document.getElementById('field-name');
-            const tabL = document.getElementById('tabLogin');
-            const tabS = document.getElementById('tabSignup');
-            const txt = document.getElementById('txtAction');
+        function switchMode(mode) {
+            currentAction = mode;
+            const nameGroup = document.getElementById('nameGroup');
+            const btnText = document.getElementById('btnText');
+            const tabLogin = document.getElementById('tabLogin');
+            const tabSignup = document.getElementById('tabSignup');
 
             if(mode === 'signup') {
-                fieldName.classList.remove('hidden');
-                tabS.className = "text-lg font-900 text-blue-600 border-b-4 border-blue-600 pb-2";
-                tabL.className = "text-lg font-900 text-slate-300 pb-2";
-                txt.innerText = "إنشاء حساب بريميوم";
+                nameGroup.classList.remove('hidden-element');
+                tabSignup.className = "text-lg font-900 text-blue-600 border-b-4 border-blue-600 pb-2 transition-all";
+                tabLogin.className = "text-lg font-900 text-slate-300 pb-2 transition-all";
+                btnText.innerText = "إنشاء حساب جديد";
             } else {
-                fieldName.classList.add('hidden');
-                tabL.className = "text-lg font-900 text-blue-600 border-b-4 border-blue-600 pb-2";
-                tabS.className = "text-lg font-900 text-slate-300 pb-2";
-                txt.innerText = "تسجيل الدخول";
+                nameGroup.classList.add('hidden-element');
+                tabLogin.className = "text-lg font-900 text-blue-600 border-b-4 border-blue-600 pb-2 transition-all";
+                tabSignup.className = "text-lg font-900 text-slate-300 pb-2 transition-all";
+                btnText.innerText = "دخول";
             }
         }
 
-        document.getElementById('mainForm').onsubmit = async (e) => {
+        document.getElementById('authForm').onsubmit = async (e) => {
             e.preventDefault();
-            toggleLoader(true);
+            toggleLoading(true);
 
-            const email = document.getElementById('uEmail').value;
-            const pass = document.getElementById('uPass').value;
-            const name = document.getElementById('uName').value;
+            const email = document.getElementById('uEmail').value.trim();
+            const pass = document.getElementById('uPass').value.trim();
+            const name = document.getElementById('uName').value.trim();
 
             try {
-                // نرسل الـ action بناءً على الوضع الحالي (login أو signup)
-                const response = await fetch(`${SCRIPT_URL}?action=${currentMode}&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}&name=${encodeURIComponent(name)}`);
+                const response = await fetch(`${SCRIPT_URL}?action=${currentAction}&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}&name=${encodeURIComponent(name)}`);
                 const result = await response.text();
 
-                if (result === "LOGIN_SUCCESS" || result === "SIGNUP_SUCCESS") {
+                if (result.includes("SUCCESS")) {
                     sessionStorage.setItem('isAuth', 'true');
                     window.location.href = "w/check.html";
                 } else if (result === "EMAIL_ALREADY_EXISTS") {
-                    alert("هذا البريد مسجل مسبقاً، يرجى تسجيل الدخول.");
+                    alert("هذا البريد مسجل بالفعل، يرجى تسجيل الدخول.");
                 } else {
-                    alert("بيانات الدخول غير صحيحة.");
+                    alert("فشل العملية: تأكد من البيانات المدخلة.");
                 }
-            } catch (err) { alert("خطأ في الاتصال بالسيرفر."); }
-            toggleLoader(false);
+            } catch (err) {
+                alert("خطأ في الاتصال بالخادم.");
+            }
+            toggleLoading(false);
         };
 
         async function loginGoogle() {
@@ -166,17 +176,19 @@
             try {
                 const res = await firebase.auth().signInWithPopup(provider);
                 const user = res.user;
-                // عند الدخول بجوجل، نقوم دائماً بمحاولة "Signup" لتخزينه في الجدول إذا كان جديداً
+                // إرسال البيانات للجدول كعملية تسجيل
                 fetch(`${SCRIPT_URL}?action=signup&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`);
                 sessionStorage.setItem('isAuth', 'true');
                 window.location.href = "w/check.html";
-            } catch (err) { alert("فشل الدخول عبر جوجل (تأكد من سماح المتصفح بالـ Pop-up)"); }
+            } catch (err) { 
+                alert("خطأ في تسجيل جوجل: قد يكون المتصفح قد حظر النافذة المنبثقة."); 
+            }
         }
 
-        function toggleLoader(show) {
-            document.getElementById('loader').classList.toggle('hidden', !show);
-            document.getElementById('txtAction').classList.toggle('hidden', show);
-            document.getElementById('btnAction').disabled = show;
+        function toggleLoading(isLoading) {
+            document.getElementById('btnLoader').classList.toggle('hidden-element', !isLoading);
+            document.getElementById('btnText').classList.toggle('hidden-element', isLoading);
+            document.getElementById('mainBtn').disabled = isLoading;
         }
     </script>
 </body>
