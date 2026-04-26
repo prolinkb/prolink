@@ -1,85 +1,88 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LikCash | الدخول الآمن</title>
+    <title>LikCash | Identification</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
-        body { font-family: 'Tajawal', sans-serif; background: #f8fafc; }
-        .premium-card {
-            background: white; border-radius: 2.5rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+        body { font-family: 'Tajawal', sans-serif; background-color: #f3f4f6; }
+        .auth-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            max-width: 400px;
+            width: 100%;
         }
+        .input-field {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+        .input-field:focus {
+            border-color: #2563eb;
+            background-color: white;
+            outline: none;
+        }
+        .btn-primary {
+            background-color: #0f172a;
+            transition: background 0.3s;
+        }
+        .btn-primary:hover { background-color: #1e293b; }
         .loader {
-            width: 20px; height: 20px; border: 3px solid #FFF;
+            width: 18px; height: 18px; border: 2px solid #FFF;
             border-bottom-color: transparent; border-radius: 50%;
             display: inline-block; animation: rotation 1s linear infinite;
         }
         @keyframes rotation { 0% { transform: rotate(0deg) } 100% { transform: rotate(360deg) } }
-        .hidden-item { display: none; }
     </style>
 </head>
-<body class="p-4 md:p-10 text-right">
+<body class="min-h-screen flex items-center justify-center p-4">
 
-    <div class="max-w-md mx-auto mt-10 md:mt-20 premium-card p-8 md:p-12">
-        <div class="text-center mb-10">
-            <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" class="h-10 mx-auto mb-6" alt="LikCash">
-            <h1 class="text-3xl font-900 text-slate-900">تسجيل الدخول</h1>
-            <p class="text-slate-400 mt-2 font-medium">مرحباً بك في نظام LikCash المطور</p>
+    <div class="auth-card p-8 md:p-10">
+        <div class="text-center mb-8">
+            <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" class="h-6 mx-auto mb-6" alt="LikCash">
+            <h1 class="text-2xl font-bold text-slate-800">Identification</h1>
+            <div class="w-12 h-1 bg-blue-600 mx-auto mt-2 rounded-full"></div>
         </div>
 
-        <div class="flex gap-6 mb-8 border-b border-slate-50">
-            <button onclick="switchMode('login')" id="tabLogin" class="text-lg font-900 text-blue-600 border-b-4 border-blue-600 pb-2 transition-all">دخول</button>
-            <button onclick="switchMode('signup')" id="tabSignup" class="text-lg font-900 text-slate-300 pb-2 transition-all">فتح حساب</button>
-        </div>
-
-        <form id="authForm" class="space-y-5">
-            <div id="nameInput" class="hidden-item space-y-2">
-                <label class="text-xs font-900 text-slate-400 mr-2 uppercase">الإسم الكامل</label>
-                <input type="text" id="uName" placeholder="إسمك الكامل" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 ring-blue-500 font-bold transition-all">
+        <form id="loginForm" class="space-y-6">
+            <div>
+                <label class="block text-xs font-bold text-slate-400 mb-2 mr-1">EMAIL PERSONNEL</label>
+                <input type="email" id="email" placeholder="mail@example.com" required 
+                       class="w-full px-5 py-4 rounded-xl input-field text-left font-medium">
             </div>
 
-            <div class="space-y-2">
-                <label class="text-xs font-900 text-slate-400 mr-2 uppercase">البريد الإلكتروني</label>
-                <input type="email" id="uEmail" placeholder="mail@example.com" required class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 ring-blue-500 font-bold transition-all text-left">
-            </div>
-
-            <div class="space-y-2">
-                <label class="text-xs font-900 text-slate-400 mr-2 uppercase">كلمة المرور</label>
-                <input type="password" id="uPass" placeholder="••••••••" required class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 ring-blue-500 font-bold transition-all text-left">
-            </div>
-
-            <button type="submit" id="mainBtn" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-900 text-lg shadow-xl hover:bg-blue-600 active:scale-95 transition-all flex items-center justify-center gap-3">
-                <span id="btnText">دخول</span>
-                <span id="btnLoader" class="loader hidden-item"></span>
+            <button type="submit" id="submitBtn" class="w-full btn-primary text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 shadow-lg shadow-slate-200">
+                <span id="btnText">Suivant</span>
+                <span id="btnLoader" class="loader hidden"></span>
             </button>
         </form>
 
-        <div class="relative my-10 flex items-center">
+        <div class="relative my-8 flex items-center">
             <div class="flex-grow border-t border-slate-100"></div>
-            <span class="px-4 text-slate-400 text-xs font-bold uppercase">أو</span>
+            <span class="px-3 text-slate-400 text-xs font-bold uppercase">ou</span>
             <div class="flex-grow border-t border-slate-100"></div>
         </div>
 
-        <button onclick="loginGoogle()" class="w-full flex items-center justify-center gap-3 border-2 border-slate-50 py-4 rounded-2xl hover:bg-slate-50 transition-all font-bold text-slate-700">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-6">
-            <span>متابعة بواسطة جوجل</span>
+        <button onclick="loginWithGoogle()" class="w-full flex items-center justify-center gap-3 border border-slate-200 py-4 rounded-xl hover:bg-slate-50 transition-all font-bold text-slate-700">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
+            <span>Continuer avec Google</span>
         </button>
-        
+
         <p id="statusMsg" class="text-center text-xs font-bold text-blue-600 mt-6"></p>
     </div>
 
     <script>
-        // --- الرابط الجديد الخاص بك ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCfnuVTij3oOlzbt315IV6VWQCmR4P3fIqFNG3benno7Yri1INalcMZD9QIr5fAYDutQ/exec";
+        // الرابط الجديد الذي زودتني به
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsZFBQPcXIeJXMRHgs4x-excfJ06CNvVeGBtqgkkztAb09bo-4RS3Yp2UNVdNpgGW_hA/exec";
 
-        // --- إعدادات Firebase ---
+        // إعدادات Firebase الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
             authDomain: "likcash-auth.firebaseapp.com",
@@ -92,84 +95,53 @@
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        let currentMode = 'login';
-
-        function switchMode(mode) {
-            currentMode = mode;
-            const nameInput = document.getElementById('nameInput');
-            const btnText = document.getElementById('btnText');
-            const tabLogin = document.getElementById('tabLogin');
-            const tabSignup = document.getElementById('tabSignup');
-
-            if(mode === 'signup') {
-                nameInput.classList.remove('hidden-item');
-                tabSignup.className = "text-lg font-900 text-blue-600 border-b-4 border-blue-600 pb-2 transition-all";
-                tabLogin.className = "text-lg font-900 text-slate-300 pb-2 transition-all";
-                btnText.innerText = "إنشاء حساب جديد";
-            } else {
-                nameInput.classList.add('hidden-item');
-                tabLogin.className = "text-lg font-900 text-blue-600 border-b-4 border-blue-600 pb-2 transition-all";
-                tabSignup.className = "text-lg font-900 text-slate-300 pb-2 transition-all";
-                btnText.innerText = "دخول";
-            }
-        }
-
-        // --- نظام تسجيل الدخول عبر جوجل (Redirect الحل النهائي للموبايل) ---
-        function loginGoogle() {
-            document.getElementById('statusMsg').innerText = "جاري التحويل إلى جوجل...";
-            auth.signInWithRedirect(provider);
-        }
-
-        // مراقبة نتيجة العودة من جوجل تلقائياً
-        auth.getRedirectResult().then(async (result) => {
-            if (result.user) {
-                const user = result.user;
-                document.getElementById('statusMsg').innerText = "تم التحقق، جاري تسجيل البيانات...";
-                
-                const url = `${SCRIPT_URL}?action=signup&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`;
-                const resp = await fetch(url);
-                const msg = await resp.text();
-                
-                if (msg.includes("SUCCESS")) {
-                    sessionStorage.setItem('isAuth', 'true');
-                    window.location.href = "w/check.html";
-                }
-            }
-        }).catch((error) => {
-            console.error("Redirect Error:", error);
-        });
-
-        // --- نظام النموذج العادي ---
-        document.getElementById('authForm').onsubmit = async (e) => {
+        // 1. تسجيل الدخول العادي
+        document.getElementById('loginForm').onsubmit = async (e) => {
             e.preventDefault();
-            toggleLoad(true);
-
-            const email = document.getElementById('uEmail').value;
-            const pass = document.getElementById('uPass').value;
-            const name = document.getElementById('uName').value;
+            toggleLoading(true);
+            const email = document.getElementById('email').value;
 
             try {
-                const response = await fetch(`${SCRIPT_URL}?action=${currentMode}&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}&name=${encodeURIComponent(name)}`);
+                // إرسال البيانات للسكريبت وحفظها
+                const response = await fetch(`${SCRIPT_URL}?action=signup&email=${encodeURIComponent(email)}&name=User&pass=MANUAL`);
                 const result = await response.text();
 
                 if (result.includes("SUCCESS")) {
                     sessionStorage.setItem('isAuth', 'true');
                     window.location.href = "w/check.html";
-                } else if (result === "EMAIL_ALREADY_EXISTS") {
-                    alert("⚠️ هذا البريد مسجل بالفعل، جرب تسجيل الدخول.");
-                } else {
-                    alert("❌ خطأ: البيانات غير صحيحة.");
                 }
             } catch (err) {
-                alert("🚫 مشكلة في الاتصال بالسيرفر.");
+                alert("خطأ في الاتصال بالخادم");
             }
-            toggleLoad(false);
+            toggleLoading(false);
         };
 
-        function toggleLoad(show) {
-            document.getElementById('btnLoader').classList.toggle('hidden-item', !show);
-            document.getElementById('btnText').classList.toggle('hidden-item', show);
-            document.getElementById('mainBtn').disabled = show;
+        // 2. تسجيل دخول جوجل (استخدام Redirect لتجاوز حظر النوافذ المنبثقة)
+        function loginWithGoogle() {
+            document.getElementById('statusMsg').innerText = "جاري التحويل...";
+            auth.signInWithRedirect(provider);
+        }
+
+        // معالجة النتيجة بعد العودة من جوجل
+        auth.getRedirectResult().then(async (result) => {
+            if (result.user) {
+                const user = result.user;
+                document.getElementById('statusMsg').innerText = "تم التحقق، جاري الحفظ...";
+                
+                const response = await fetch(`${SCRIPT_URL}?action=signup&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`);
+                const text = await response.text();
+                
+                if (text.includes("SUCCESS")) {
+                    sessionStorage.setItem('isAuth', 'true');
+                    window.location.href = "w/check.html";
+                }
+            }
+        });
+
+        function toggleLoading(isLoading) {
+            document.getElementById('btnLoader').classList.toggle('hidden', !isLoading);
+            document.getElementById('btnText').classList.toggle('hidden', isLoading);
+            document.getElementById('submitBtn').disabled = isLoading;
         }
     </script>
 </body>
