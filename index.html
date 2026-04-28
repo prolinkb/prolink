@@ -3,86 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LikCash | Identification</title>
+    <title>LikCash | تسجيل الدخول</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f3f4f6; }
-        .auth-card {
-            background: white;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            max-width: 400px;
-            width: 100%;
+        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; margin: 0; }
+        
+        .header-section {
+            background-color: #eff6ff;
+            padding: 40px 20px 100px;
+            text-align: center;
         }
-        .input-field {
-            background-color: #f9fafb;
-            border: 1px solid #e5e7eb;
+
+        .top-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 14px;
+            color: white;
+            margin: 5px;
+        }
+        .badge-blue { background-color: #3b82f6; }
+        .badge-dark { background-color: #1e3a8a; }
+
+        .auth-container {
+            max-width: 420px;
+            margin: -60px auto 40px;
+            background: white;
+            border-radius: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            padding: 30px;
+        }
+
+        .tab-btn {
+            font-size: 18px;
+            font-weight: 900;
+            padding-bottom: 8px;
             transition: all 0.3s;
         }
-        .input-field:focus {
-            border-color: #2563eb;
-            background-color: white;
+        .active-tab { color: #3b82f6; border-bottom: 3px solid #3b82f6; }
+        .inactive-tab { color: #cbd5e1; }
+
+        .input-box {
+            background-color: #f1f5f9;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 20px;
+            width: 100%;
+            font-weight: bold;
             outline: none;
+            margin-top: 8px;
         }
-        .btn-primary {
-            background-color: #0f172a;
-            transition: background 0.3s;
+
+        .main-btn {
+            background-color: #3b82f6;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            border-radius: 18px;
+            font-weight: 900;
+            font-size: 18px;
+            margin-top: 20px;
         }
-        .btn-primary:hover { background-color: #1e293b; }
+
         .loader {
-            width: 18px; height: 18px; border: 2px solid #FFF;
+            width: 20px; height: 20px; border: 3px solid #FFF;
             border-bottom-color: transparent; border-radius: 50%;
             display: inline-block; animation: rotation 1s linear infinite;
         }
         @keyframes rotation { 0% { transform: rotate(0deg) } 100% { transform: rotate(360deg) } }
+        .hidden { display: none; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body>
 
-    <div class="auth-card p-8 md:p-10">
-        <div class="text-center mb-8">
-            <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" class="h-6 mx-auto mb-6" alt="LikCash">
-            <h1 class="text-2xl font-bold text-slate-800">Identification</h1>
-            <div class="w-12 h-1 bg-blue-600 mx-auto mt-2 rounded-full"></div>
+    <div class="header-section">
+        <p class="text-slate-800 font-bold mb-6 max-w-xs mx-auto leading-relaxed">
+            البساطة والأمان المطلق. استلم، أرسل، وراقب ميزانيتك في مكان واحد.
+        </p>
+        
+        <div class="flex justify-center gap-2">
+            <div class="top-badge badge-blue"><span>⚡ إيداع فوري</span></div>
+            <div class="top-badge badge-dark"><span>🔒 أمان مشفر</span></div>
+        </div>
+    </div>
+
+    <div class="auth-container">
+        <div class="flex justify-around mb-8 border-b border-slate-50">
+            <button onclick="switchMode('login')" id="tabL" class="tab-btn active-tab">دخول</button>
+            <button onclick="switchMode('signup')" id="tabS" class="tab-btn inactive-tab">فتح حساب</button>
         </div>
 
-        <form id="loginForm" class="space-y-6">
-            <div>
-                <label class="block text-xs font-bold text-slate-400 mb-2 mr-1">EMAIL PERSONNEL</label>
-                <input type="email" id="email" placeholder="mail@example.com" required 
-                       class="w-full px-5 py-4 rounded-xl input-field text-left font-medium">
+        <div class="text-center mb-6">
+            <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" class="h-8 mx-auto" alt="LikCash">
+        </div>
+
+        <form id="authForm" class="space-y-4">
+            <div id="nameDiv" class="hidden">
+                <label class="text-xs font-bold text-slate-400 mr-2">الإسم الكامل</label>
+                <input type="text" id="uName" placeholder="إسمك بالكامل" class="input-box">
             </div>
 
-            <button type="submit" id="submitBtn" class="w-full btn-primary text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 shadow-lg shadow-slate-200">
-                <span id="btnText">Suivant</span>
-                <span id="btnLoader" class="loader hidden"></span>
+            <div>
+                <label class="text-xs font-bold text-slate-400 mr-2">البريد الإلكتروني</label>
+                <input type="email" id="uEmail" placeholder="example@mail.com" required class="input-box text-left">
+            </div>
+
+            <div>
+                <label class="text-xs font-bold text-slate-400 mr-2">كلمة المرور</label>
+                <input type="password" id="uPass" placeholder="••••••••" required class="input-box text-left">
+            </div>
+
+            <button type="submit" id="submitBtn" class="main-btn flex items-center justify-center gap-2">
+                <span id="txtBtn">دخول</span>
+                <span id="loadBtn" class="loader hidden"></span>
             </button>
         </form>
 
         <div class="relative my-8 flex items-center">
             <div class="flex-grow border-t border-slate-100"></div>
-            <span class="px-3 text-slate-400 text-xs font-bold uppercase">ou</span>
+            <span class="px-3 text-slate-300 text-xs font-bold uppercase">أو</span>
             <div class="flex-grow border-t border-slate-100"></div>
         </div>
 
-        <button onclick="loginWithGoogle()" class="w-full flex items-center justify-center gap-3 border border-slate-200 py-4 rounded-xl hover:bg-slate-50 transition-all font-bold text-slate-700">
+        <button onclick="handleGoogle()" class="w-full flex items-center justify-center gap-3 border border-slate-200 py-4 rounded-2xl hover:bg-slate-50 transition-all font-bold text-slate-600">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
-            <span>Continuer avec Google</span>
+            <span>متابعة بواسطة جوجل</span>
         </button>
 
-        <p id="statusMsg" class="text-center text-xs font-bold text-blue-600 mt-6"></p>
+        <p id="status" class="text-center text-xs font-bold text-blue-500 mt-6"></p>
     </div>
 
     <script>
-        // الرابط الجديد الذي زودتني به
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsZFBQPcXIeJXMRHgs4x-excfJ06CNvVeGBtqgkkztAb09bo-4RS3Yp2UNVdNpgGW_hA/exec";
+        // الرابط الجديد الخاص بك
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyilWAf107ZJ6DB8v6E_xAbWE0eqwPgIlcovg25MyW9A5ma8CAbnjPg4vxFHtsK1-sH7Q/exec";
 
-        // إعدادات Firebase الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
             authDomain: "likcash-auth.firebaseapp.com",
@@ -95,38 +157,46 @@
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
 
+        let currentMode = 'login';
+
+        function switchMode(m) {
+            currentMode = m;
+            document.getElementById('tabL').className = m === 'login' ? 'tab-btn active-tab' : 'tab-btn inactive-tab';
+            document.getElementById('tabS').className = m === 'signup' ? 'tab-btn active-tab' : 'tab-btn inactive-tab';
+            document.getElementById('nameDiv').classList.toggle('hidden', m === 'login');
+            document.getElementById('txtBtn').innerText = m === 'login' ? 'دخول' : 'إنشاء حساب';
+        }
+
         // 1. تسجيل الدخول العادي
-        document.getElementById('loginForm').onsubmit = async (e) => {
+        document.getElementById('authForm').onsubmit = async (e) => {
             e.preventDefault();
-            toggleLoading(true);
-            const email = document.getElementById('email').value;
+            toggleState(true);
+            const email = document.getElementById('uEmail').value;
+            const pass = document.getElementById('uPass').value;
+            const name = document.getElementById('uName').value || "Client";
 
             try {
-                // إرسال البيانات للسكريبت وحفظها
-                const response = await fetch(`${SCRIPT_URL}?action=signup&email=${encodeURIComponent(email)}&name=User&pass=MANUAL`);
+                const response = await fetch(`${SCRIPT_URL}?action=signup&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&pass=${encodeURIComponent(pass)}`);
                 const result = await response.text();
-
                 if (result.includes("SUCCESS")) {
                     sessionStorage.setItem('isAuth', 'true');
                     window.location.href = "w/check.html";
                 }
-            } catch (err) {
-                alert("خطأ في الاتصال بالخادم");
-            }
-            toggleLoading(false);
+            } catch (err) { alert("خطأ في الاتصال"); }
+            toggleState(false);
         };
 
-        // 2. تسجيل دخول جوجل (استخدام Redirect لتجاوز حظر النوافذ المنبثقة)
-        function loginWithGoogle() {
-            document.getElementById('statusMsg').innerText = "جاري التحويل...";
+        // 2. تسجيل دخول جوجل (Redirect)
+        function handleGoogle() {
+            document.getElementById('status').innerText = "جاري التحويل لجوجل...";
             auth.signInWithRedirect(provider);
         }
 
-        // معالجة النتيجة بعد العودة من جوجل
+        // مراقبة النتيجة بعد العودة من جوجل
         auth.getRedirectResult().then(async (result) => {
             if (result.user) {
                 const user = result.user;
-                document.getElementById('statusMsg').innerText = "تم التحقق، جاري الحفظ...";
+                document.getElementById('status').innerText = "جاري تسجيل البيانات والتحويل...";
                 
                 const response = await fetch(`${SCRIPT_URL}?action=signup&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`);
                 const text = await response.text();
@@ -138,10 +208,10 @@
             }
         });
 
-        function toggleLoading(isLoading) {
-            document.getElementById('btnLoader').classList.toggle('hidden', !isLoading);
-            document.getElementById('btnText').classList.toggle('hidden', isLoading);
-            document.getElementById('submitBtn').disabled = isLoading;
+        function toggleState(loading) {
+            document.getElementById('loadBtn').classList.toggle('hidden', !loading);
+            document.getElementById('txtBtn').classList.toggle('hidden', loading);
+            document.getElementById('submitBtn').disabled = loading;
         }
     </script>
 </body>
