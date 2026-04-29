@@ -16,13 +16,64 @@
         .top-badge { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 14px; color: white; margin: 5px; }
         .badge-blue { background-color: #3b82f6; }
         .badge-dark { background-color: #1e3a8a; }
-        .auth-container { max-width: 420px; margin: -60px auto 40px; background: white; border-radius: 2.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.05); padding: 30px; }
-        .tab-btn { font-size: 18px; font-weight: 900; padding-bottom: 8px; transition: all 0.3s; border-bottom: 3px solid transparent; }
+        
+        .auth-container { 
+            max-width: 420px; 
+            margin: -60px auto 40px; 
+            background: white; 
+            border-radius: 2.5rem; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05); 
+            padding: 30px; 
+        }
+
+        .tab-btn { font-size: 18px; font-weight: 900; padding-bottom: 8px; transition: 0.3s; border-bottom: 3px solid transparent; }
         .active-tab { color: #3b82f6; border-bottom-color: #3b82f6; }
         .inactive-tab { color: #cbd5e1; }
-        .input-box { background-color: #f1f5f9; border: none; border-radius: 15px; padding: 15px 20px; width: 100%; font-weight: bold; outline: none; margin-top: 8px; }
-        .main-btn { background-color: #3b82f6; color: white; width: 100%; padding: 15px; border-radius: 18px; font-weight: 900; font-size: 18px; margin-top: 20px; }
-        .loader { width: 20px; height: 20px; border: 3px solid #FFF; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
+
+        .input-box { 
+            background-color: #f1f5f9; 
+            border: 1px solid transparent; 
+            border-radius: 15px; 
+            padding: 15px 20px; 
+            width: 100%; 
+            font-weight: bold; 
+            outline: none; 
+            margin-top: 8px; 
+            transition: 0.3s;
+        }
+        .input-box:focus { background-color: white; border-color: #3b82f6; }
+
+        .main-btn { 
+            background-color: #3b82f6; 
+            color: white; 
+            width: 100%; 
+            padding: 15px; 
+            border-radius: 18px; 
+            font-weight: 900; 
+            font-size: 18px; 
+            margin-top: 20px; 
+            transition: 0.3s;
+        }
+        .main-btn:disabled { background-color: #94a3b8; }
+
+        .error-banner { 
+            background-color: #fee2e2; 
+            color: #b91c1c; 
+            padding: 12px; 
+            border-radius: 12px; 
+            font-size: 13px; 
+            font-weight: bold; 
+            text-align: center; 
+            display: none; 
+            margin-bottom: 15px; 
+            border: 1px solid #fecaca; 
+        }
+
+        .loader { 
+            width: 20px; height: 20px; border: 3px solid #FFF; 
+            border-bottom-color: transparent; border-radius: 50%; 
+            display: inline-block; animation: rotation 1s linear infinite; 
+        }
         @keyframes rotation { 0% { transform: rotate(0deg) } 100% { transform: rotate(360deg) } }
         .hidden { display: none; }
     </style>
@@ -30,32 +81,38 @@
 <body>
 
     <div class="header-section">
-        <p class="text-slate-800 font-bold mb-6 max-w-xs mx-auto leading-relaxed">البساطة والأمان المطلق. استلم، أرسل، وراقب ميزانيتك في مكان واحد.</p>
+        <p class="text-slate-800 font-bold mb-6 max-w-xs mx-auto leading-relaxed">
+            البساطة والأمان المطلق. استلم، أرسل، وراقب ميزانيتك في مكان واحد.
+        </p>
         <div class="flex justify-center gap-2">
-            <div class="top-badge badge-blue"><span>⚡ إيداع فوري</span></div>
-            <div class="top-badge badge-dark"><span>🔒 أمان مشفر</span></div>
+            <div class="top-badge badge-blue"><span>إيداع فوري</span></div>
+            <div class="top-badge badge-dark"><span>أمان مشفر</span></div>
         </div>
     </div>
 
     <div class="auth-container">
+        <div id="errorBanner" class="error-banner"></div>
+
         <div class="flex justify-around mb-8 border-b border-slate-50">
             <button onclick="switchMode('login')" id="tabL" class="tab-btn active-tab">دخول</button>
             <button onclick="switchMode('signup')" id="tabS" class="tab-btn inactive-tab">فتح حساب</button>
         </div>
 
-        <div class="text-center mb-6"><img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" class="h-8 mx-auto"></div>
+        <div class="text-center mb-6">
+            <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" class="h-8 mx-auto" alt="LikCash">
+        </div>
 
         <form id="authForm" class="space-y-4">
             <div id="nameDiv" class="hidden">
-                <label class="text-xs font-bold text-slate-400 mr-2">الإسم الكامل</label>
-                <input type="text" id="uName" placeholder="إسمك هنا" class="input-box">
+                <label class="text-xs font-bold text-slate-400 mr-2 uppercase">الاسم الكامل</label>
+                <input type="text" id="uName" placeholder="اكتب اسمك هنا" class="input-box">
             </div>
             <div>
-                <label class="text-xs font-bold text-slate-400 mr-2">البريد الإلكتروني</label>
+                <label class="text-xs font-bold text-slate-400 mr-2 uppercase">البريد الإلكتروني</label>
                 <input type="email" id="uEmail" placeholder="mail@example.com" required class="input-box text-left">
             </div>
             <div>
-                <label class="text-xs font-bold text-slate-400 mr-2">كلمة المرور</label>
+                <label class="text-xs font-bold text-slate-400 mr-2 uppercase">كلمة المرور</label>
                 <input type="password" id="uPass" placeholder="••••••••" required class="input-box text-left">
             </div>
             <button type="submit" id="submitBtn" class="main-btn flex items-center justify-center gap-2">
@@ -74,11 +131,13 @@
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
             <span>متابعة بواسطة جوجل</span>
         </button>
+        
         <p id="status" class="text-center text-xs font-bold text-blue-500 mt-6"></p>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxweNzsdyGY09IZ-juI2tJZmBWPleGlRHKVdgKgmHryANQGhSbBVaSIpphdnHt9v9_dg/exec";
+        // الرابط الجديد الخاص بك
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPBuf7Kdi8iV0yYs9g-dBWHV5yV1zwLIHqgTvCEEvij58d1wOQT0CTH5oiSd4pxpbB7Q/exec";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
@@ -96,15 +155,28 @@
 
         function switchMode(m) {
             currentMode = m;
+            clearError();
             document.getElementById('tabL').className = m === 'login' ? 'tab-btn active-tab' : 'tab-btn inactive-tab';
             document.getElementById('tabS').className = m === 'signup' ? 'tab-btn active-tab' : 'tab-btn inactive-tab';
             document.getElementById('nameDiv').classList.toggle('hidden', m === 'login');
             document.getElementById('txtBtn').innerText = m === 'login' ? 'دخول' : 'إنشاء حساب';
         }
 
+        function showError(msg) {
+            const banner = document.getElementById('errorBanner');
+            banner.innerText = msg;
+            banner.style.display = 'block';
+        }
+
+        function clearError() {
+            document.getElementById('errorBanner').style.display = 'none';
+        }
+
         document.getElementById('authForm').onsubmit = async (e) => {
             e.preventDefault();
+            clearError();
             toggleState(true);
+            
             const email = document.getElementById('uEmail').value;
             const pass = document.getElementById('uPass').value;
             const name = document.getElementById('uName').value || "Client";
@@ -117,11 +189,15 @@
                     sessionStorage.setItem('isAuth', 'true');
                     window.location.href = "w/check.html";
                 } else if (result === "AUTH_FAILED") {
-                    alert("خطأ: البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+                    showError("فشل التحقق. البريد الإلكتروني أو كلمة المرور غير مطابقة للسجلات.");
                 } else if (result === "EMAIL_EXISTS") {
-                    alert("خطأ: هذا البريد مسجل مسبقاً، قم بتسجيل الدخول.");
+                    showError("هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول بدلا من فتح حساب جديد.");
+                } else {
+                    showError("حدث خطأ غير متوقع. حاول مرة أخرى.");
                 }
-            } catch (err) { alert("خطأ في الاتصال بالخادم."); }
+            } catch (err) {
+                showError("فشل الاتصال بالخادم. تأكد من جودة الإنترنت لديك.");
+            }
             toggleState(false);
         };
 
@@ -133,7 +209,7 @@
         auth.getRedirectResult().then(async (result) => {
             if (result.user) {
                 const user = result.user;
-                document.getElementById('status').innerText = "جاري تسجيل البيانات والتحويل...";
+                document.getElementById('status').innerText = "جاري الحفظ والتحويل...";
                 const response = await fetch(`${SCRIPT_URL}?action=signup&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`);
                 const text = await response.text();
                 if (text.includes("SUCCESS")) {
