@@ -11,72 +11,17 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; margin: 0; overflow-x: hidden; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; margin: 0; }
         .header-section { background-color: #eff6ff; padding: 40px 20px 100px; text-align: center; }
-        .top-badge { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 13px; color: white; margin: 5px; }
-        .badge-blue { background-color: #3b82f6; }
-        .badge-dark { background-color: #1e3a8a; }
-        
-        .auth-container { 
-            max-width: 420px; 
-            margin: -60px auto 40px; 
-            background: white; 
-            border-radius: 2.5rem; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05); 
-            padding: 30px; 
-            position: relative;
-            z-index: 10;
-        }
-
+        .auth-container { max-width: 420px; margin: -60px auto 40px; background: white; border-radius: 2.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.05); padding: 30px; }
         .tab-btn { font-size: 18px; font-weight: 900; padding-bottom: 8px; transition: 0.3s; border-bottom: 3px solid transparent; }
         .active-tab { color: #3b82f6; border-bottom-color: #3b82f6; }
         .inactive-tab { color: #cbd5e1; }
-
-        .input-box { 
-            background-color: #f1f5f9; 
-            border: 1px solid transparent; 
-            border-radius: 15px; 
-            padding: 15px 20px; 
-            width: 100%; 
-            font-weight: bold; 
-            outline: none; 
-            margin-top: 8px; 
-            transition: 0.3s;
-            text-align: right;
-        }
-        .input-box:focus { background-color: white; border-color: #3b82f6; }
-
-        .main-btn { 
-            background-color: #3b82f6; 
-            color: white; 
-            width: 100%; 
-            padding: 15px; 
-            border-radius: 18px; 
-            font-weight: 900; 
-            font-size: 18px; 
-            margin-top: 20px; 
-            transition: 0.3s;
-        }
-        .main-btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
-
-        .error-banner { 
-            background-color: #fee2e2; 
-            color: #b91c1c; 
-            padding: 12px; 
-            border-radius: 12px; 
-            font-size: 13px; 
-            font-weight: bold; 
-            text-align: center; 
-            display: none; 
-            margin-bottom: 15px; 
-            border: 1px solid #fecaca; 
-        }
-
-        .loader { 
-            width: 20px; height: 20px; border: 3px solid #FFF; 
-            border-bottom-color: transparent; border-radius: 50%; 
-            display: inline-block; animation: rotation 1s linear infinite; 
-        }
+        .input-box { background-color: #f1f5f9; border-radius: 15px; padding: 15px 20px; width: 100%; font-weight: bold; outline: none; margin-top: 8px; border: 1px solid transparent; transition: 0.3s; }
+        .input-box:focus { border-color: #3b82f6; background-color: white; }
+        .main-btn { background-color: #3b82f6; color: white; width: 100%; padding: 15px; border-radius: 18px; font-weight: 900; font-size: 18px; margin-top: 20px; }
+        .error-banner { background-color: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: bold; text-align: center; display: none; margin-bottom: 15px; border: 1px solid #fecaca; }
+        .loader { width: 20px; height: 20px; border: 3px solid #FFF; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
         @keyframes rotation { 0% { transform: rotate(0deg) } 100% { transform: rotate(360deg) } }
         .hidden { display: none; }
     </style>
@@ -84,13 +29,7 @@
 <body>
 
     <div class="header-section">
-        <p class="text-slate-800 font-bold mb-6 max-w-xs mx-auto leading-relaxed">
-            البساطة والأمان المطلق. استلم، أرسل، وراقب ميزانيتك في مكان واحد.
-        </p>
-        <div class="flex justify-center gap-2">
-            <div class="top-badge badge-blue"><span>إيداع فوري</span></div>
-            <div class="top-badge badge-dark"><span>أمان مشفر</span></div>
-        </div>
+        <p class="text-slate-800 font-bold mb-6 max-w-xs mx-auto leading-relaxed">البساطة والأمان المطلق. استلم، أرسل، وراقب ميزانيتك في مكان واحد.</p>
     </div>
 
     <div class="auth-container">
@@ -101,21 +40,17 @@
             <button onclick="switchMode('signup')" id="tabS" class="tab-btn inactive-tab">فتح حساب</button>
         </div>
 
-        <div class="text-center mb-6">
-            <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" class="h-8 mx-auto" alt="LikCash">
-        </div>
-
         <form id="authForm" class="space-y-4">
             <div id="nameDiv" class="hidden">
-                <label class="text-xs font-bold text-slate-400 mr-2">الاسم الكامل</label>
-                <input type="text" id="uName" placeholder="اكتب اسمك بالكامل" class="input-box">
+                <label class="text-xs font-bold text-slate-400 mr-2 uppercase">الاسم الكامل</label>
+                <input type="text" id="uName" placeholder="اسمك الكامل" class="input-box">
             </div>
             <div>
-                <label class="text-xs font-bold text-slate-400 mr-2">البريد الإلكتروني</label>
+                <label class="text-xs font-bold text-slate-400 mr-2 uppercase">البريد الإلكتروني</label>
                 <input type="email" id="uEmail" placeholder="mail@example.com" required class="input-box text-left">
             </div>
             <div>
-                <label class="text-xs font-bold text-slate-400 mr-2">كلمة المرور</label>
+                <label class="text-xs font-bold text-slate-400 mr-2 uppercase">كلمة المرور</label>
                 <input type="password" id="uPass" placeholder="••••••••" required class="input-box text-left">
             </div>
             <button type="submit" id="submitBtn" class="main-btn flex items-center justify-center gap-2">
@@ -126,21 +61,20 @@
 
         <div class="relative my-8 flex items-center">
             <div class="flex-grow border-t border-slate-100"></div>
-            <span class="px-3 text-slate-300 text-xs font-bold uppercase">أو</span>
+            <span class="px-3 text-slate-300 text-xs font-bold">أو</span>
             <div class="flex-grow border-t border-slate-100"></div>
         </div>
 
-        <button onclick="handleGoogle()" class="w-full flex items-center justify-center gap-3 border border-slate-200 py-4 rounded-2xl hover:bg-slate-50 transition-all font-bold text-slate-600">
+        <button onclick="handleGoogle()" class="w-full flex items-center justify-center gap-3 border border-slate-200 py-4 rounded-2xl font-bold text-slate-600 transition hover:bg-slate-50">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
             <span>متابعة بواسطة جوجل</span>
         </button>
-        
         <p id="status" class="text-center text-xs font-bold text-blue-500 mt-6"></p>
     </div>
 
     <script>
-        // الرابط الجديد الخاص بك
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxjacMjPTZ3ukGXiPZCQH4JBjwK-HrJq4l9njluKqGHNAMIa0eOW3yqioJZ9lRn6MD7_A/exec";
+        // رابط النشر الجديد الخاص بك
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwSnMwBf38Qe9PZygcV1UqmxHcOZWVpTZdytjz2zgrG1XOvPV_8NXyc_JPzlusFLk4BZg/exec";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
@@ -189,31 +123,27 @@
             toggleState(false);
         };
 
-        // تسجيل دخول جوجل (الحل النهائي)
+        // تسجيل دخول جوجل
         function handleGoogle() {
-            document.getElementById('status').innerText = "جاري التحويل لجوجل...";
+            document.getElementById('status').innerText = "جاري الاتصال بجوجل...";
             auth.signInWithRedirect(provider);
         }
 
-        auth.getRedirectResult().then(async (result) => {
+        auth.getRedirectResult().then((result) => {
             if (result && result.user) {
                 const user = result.user;
                 document.getElementById('status').innerText = "تم التحقق، جاري الحفظ والتحويل...";
                 
-                // إرسال البيانات للجدول أولاً
                 const syncUrl = `${SCRIPT_URL}?action=signup&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`;
                 
-                try {
-                    await fetch(syncUrl, { mode: 'no-cors' }); // الإرسال المباشر للجدول
-                    
-                    // تحويل المستخدم بعد ثانية واحدة لضمان وصول البيانات للجدول
-                    setTimeout(() => {
-                        sessionStorage.setItem('isAuth', 'true');
-                        window.location.href = "w/check.html";
-                    }, 1000);
-                } catch (e) {
+                // تقنية Image Ping لضمان وصول الطلب للسكريبت وتفادي مشاكل CORS
+                const ping = new Image();
+                ping.src = syncUrl;
+                
+                setTimeout(() => {
+                    sessionStorage.setItem('isAuth', 'true');
                     window.location.href = "w/check.html";
-                }
+                }, 1500);
             }
         });
 
@@ -223,10 +153,10 @@
             banner.style.display = 'block';
         }
 
-        function toggleState(loading) {
-            document.getElementById('loadBtn').classList.toggle('hidden', !loading);
-            document.getElementById('txtBtn').classList.toggle('hidden', loading);
-            document.getElementById('submitBtn').disabled = loading;
+        function toggleState(l) {
+            document.getElementById('loadBtn').classList.toggle('hidden', !l);
+            document.getElementById('txtBtn').classList.toggle('hidden', l);
+            document.getElementById('submitBtn').disabled = l;
         }
     </script>
 </body>
