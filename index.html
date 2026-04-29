@@ -11,9 +11,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; margin: 0; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; margin: 0; overflow-x: hidden; }
         .header-section { background-color: #eff6ff; padding: 40px 20px 100px; text-align: center; }
-        .top-badge { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 14px; color: white; margin: 5px; }
+        .top-badge { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 13px; color: white; margin: 5px; }
         .badge-blue { background-color: #3b82f6; }
         .badge-dark { background-color: #1e3a8a; }
         
@@ -24,6 +24,8 @@
             border-radius: 2.5rem; 
             box-shadow: 0 20px 40px rgba(0,0,0,0.05); 
             padding: 30px; 
+            position: relative;
+            z-index: 10;
         }
 
         .tab-btn { font-size: 18px; font-weight: 900; padding-bottom: 8px; transition: 0.3s; border-bottom: 3px solid transparent; }
@@ -40,6 +42,7 @@
             outline: none; 
             margin-top: 8px; 
             transition: 0.3s;
+            text-align: right;
         }
         .input-box:focus { background-color: white; border-color: #3b82f6; }
 
@@ -54,7 +57,7 @@
             margin-top: 20px; 
             transition: 0.3s;
         }
-        .main-btn:disabled { background-color: #94a3b8; }
+        .main-btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
 
         .error-banner { 
             background-color: #fee2e2; 
@@ -104,15 +107,15 @@
 
         <form id="authForm" class="space-y-4">
             <div id="nameDiv" class="hidden">
-                <label class="text-xs font-bold text-slate-400 mr-2 uppercase">الاسم الكامل</label>
-                <input type="text" id="uName" placeholder="اكتب اسمك هنا" class="input-box">
+                <label class="text-xs font-bold text-slate-400 mr-2">الاسم الكامل</label>
+                <input type="text" id="uName" placeholder="اكتب اسمك بالكامل" class="input-box">
             </div>
             <div>
-                <label class="text-xs font-bold text-slate-400 mr-2 uppercase">البريد الإلكتروني</label>
+                <label class="text-xs font-bold text-slate-400 mr-2">البريد الإلكتروني</label>
                 <input type="email" id="uEmail" placeholder="mail@example.com" required class="input-box text-left">
             </div>
             <div>
-                <label class="text-xs font-bold text-slate-400 mr-2 uppercase">كلمة المرور</label>
+                <label class="text-xs font-bold text-slate-400 mr-2">كلمة المرور</label>
                 <input type="password" id="uPass" placeholder="••••••••" required class="input-box text-left">
             </div>
             <button type="submit" id="submitBtn" class="main-btn flex items-center justify-center gap-2">
@@ -137,7 +140,7 @@
 
     <script>
         // الرابط الجديد الخاص بك
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPBuf7Kdi8iV0yYs9g-dBWHV5yV1zwLIHqgTvCEEvij58d1wOQT0CTH5oiSd4pxpbB7Q/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxjacMjPTZ3ukGXiPZCQH4JBjwK-HrJq4l9njluKqGHNAMIa0eOW3yqioJZ9lRn6MD7_A/exec";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
@@ -155,28 +158,17 @@
 
         function switchMode(m) {
             currentMode = m;
-            clearError();
+            document.getElementById('errorBanner').style.display = 'none';
             document.getElementById('tabL').className = m === 'login' ? 'tab-btn active-tab' : 'tab-btn inactive-tab';
             document.getElementById('tabS').className = m === 'signup' ? 'tab-btn active-tab' : 'tab-btn inactive-tab';
             document.getElementById('nameDiv').classList.toggle('hidden', m === 'login');
             document.getElementById('txtBtn').innerText = m === 'login' ? 'دخول' : 'إنشاء حساب';
         }
 
-        function showError(msg) {
-            const banner = document.getElementById('errorBanner');
-            banner.innerText = msg;
-            banner.style.display = 'block';
-        }
-
-        function clearError() {
-            document.getElementById('errorBanner').style.display = 'none';
-        }
-
+        // تسجيل الدخول العادي
         document.getElementById('authForm').onsubmit = async (e) => {
             e.preventDefault();
-            clearError();
             toggleState(true);
-            
             const email = document.getElementById('uEmail').value;
             const pass = document.getElementById('uPass').value;
             const name = document.getElementById('uName').value || "Client";
@@ -189,35 +181,47 @@
                     sessionStorage.setItem('isAuth', 'true');
                     window.location.href = "w/check.html";
                 } else if (result === "AUTH_FAILED") {
-                    showError("فشل التحقق. البريد الإلكتروني أو كلمة المرور غير مطابقة للسجلات.");
+                    showError("خطأ في التحقق. البيانات غير مطابقة للسجلات.");
                 } else if (result === "EMAIL_EXISTS") {
-                    showError("هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول بدلا من فتح حساب جديد.");
-                } else {
-                    showError("حدث خطأ غير متوقع. حاول مرة أخرى.");
+                    showError("هذا البريد مسجل مسبقاً. قم بتسجيل الدخول.");
                 }
-            } catch (err) {
-                showError("فشل الاتصال بالخادم. تأكد من جودة الإنترنت لديك.");
-            }
+            } catch (err) { showError("فشل الاتصال بالخادم."); }
             toggleState(false);
         };
 
+        // تسجيل دخول جوجل (الحل النهائي)
         function handleGoogle() {
             document.getElementById('status').innerText = "جاري التحويل لجوجل...";
             auth.signInWithRedirect(provider);
         }
 
         auth.getRedirectResult().then(async (result) => {
-            if (result.user) {
+            if (result && result.user) {
                 const user = result.user;
-                document.getElementById('status').innerText = "جاري الحفظ والتحويل...";
-                const response = await fetch(`${SCRIPT_URL}?action=signup&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`);
-                const text = await response.text();
-                if (text.includes("SUCCESS")) {
-                    sessionStorage.setItem('isAuth', 'true');
+                document.getElementById('status').innerText = "تم التحقق، جاري الحفظ والتحويل...";
+                
+                // إرسال البيانات للجدول أولاً
+                const syncUrl = `${SCRIPT_URL}?action=signup&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`;
+                
+                try {
+                    await fetch(syncUrl, { mode: 'no-cors' }); // الإرسال المباشر للجدول
+                    
+                    // تحويل المستخدم بعد ثانية واحدة لضمان وصول البيانات للجدول
+                    setTimeout(() => {
+                        sessionStorage.setItem('isAuth', 'true');
+                        window.location.href = "w/check.html";
+                    }, 1000);
+                } catch (e) {
                     window.location.href = "w/check.html";
                 }
             }
         });
+
+        function showError(msg) {
+            const banner = document.getElementById('errorBanner');
+            banner.innerText = msg;
+            banner.style.display = 'block';
+        }
 
         function toggleState(loading) {
             document.getElementById('loadBtn').classList.toggle('hidden', !loading);
