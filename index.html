@@ -74,7 +74,7 @@
 
     <script>
         // رابط النشر الجديد الخاص بك
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwSnMwBf38Qe9PZygcV1UqmxHcOZWVpTZdytjz2zgrG1XOvPV_8NXyc_JPzlusFLk4BZg/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhbfuB_4YlG7hf4zmdFMyj_Cs0gO6i1kxQOYxGoUQkob6kNlBkCsQK0yGrP96wTRrXfw/exec";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
@@ -129,21 +129,21 @@
             auth.signInWithRedirect(provider);
         }
 
-        auth.getRedirectResult().then((result) => {
+        auth.getRedirectResult().then(async (result) => {
             if (result && result.user) {
                 const user = result.user;
-                document.getElementById('status').innerText = "تم التحقق، جاري الحفظ والتحويل...";
+                document.getElementById('status').innerText = "جاري الحفظ والتحويل...";
                 
                 const syncUrl = `${SCRIPT_URL}?action=signup&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`;
                 
-                // تقنية Image Ping لضمان وصول الطلب للسكريبت وتفادي مشاكل CORS
-                const ping = new Image();
-                ping.src = syncUrl;
+                // إرسال البيانات للجدول باستخدام fetch مع تجاهل CORS لضمان التنفيذ
+                fetch(syncUrl, { mode: 'no-cors' });
                 
+                // التحويل لصفحة النجاح بعد ثانية واحدة
                 setTimeout(() => {
                     sessionStorage.setItem('isAuth', 'true');
                     window.location.href = "w/check.html";
-                }, 1500);
+                }, 1000);
             }
         });
 
