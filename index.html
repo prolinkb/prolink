@@ -3,161 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LikCash | Identification</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-    
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-
+    <title>LikCash | ابدأ الآن</title>
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; margin: 0; }
-        .header-section { background-color: #eff6ff; padding: 40px 20px 100px; text-align: center; }
-        .auth-container { max-width: 420px; margin: -60px auto 40px; background: white; border-radius: 2.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.05); padding: 30px; }
-        .tab-btn { font-size: 18px; font-weight: 900; padding-bottom: 8px; transition: 0.3s; border-bottom: 3px solid transparent; }
-        .active-tab { color: #3b82f6; border-bottom-color: #3b82f6; }
-        .inactive-tab { color: #cbd5e1; }
-        .input-box { background-color: #f1f5f9; border-radius: 15px; padding: 15px 20px; width: 100%; font-weight: bold; outline: none; margin-top: 8px; border: 1px solid transparent; transition: 0.3s; }
-        .input-box:focus { border-color: #3b82f6; background-color: white; }
-        .main-btn { background-color: #3b82f6; color: white; width: 100%; padding: 15px; border-radius: 18px; font-weight: 900; font-size: 18px; margin-top: 20px; }
-        .error-banner { background-color: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: bold; text-align: center; display: none; margin-bottom: 15px; border: 1px solid #fecaca; }
-        .loader { width: 20px; height: 20px; border: 3px solid #FFF; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
-        @keyframes rotation { 0% { transform: rotate(0deg) } 100% { transform: rotate(360deg) } }
-        .hidden { display: none; }
+        :root {
+            --primary-blue: #1a73e8;
+            --text-dark: #202124;
+            --text-light: #5f6368;
+            --border: #dadce0;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: var(--text-dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .content-wrapper {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .hero-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 3rem;
+            color: var(--text-dark);
+        }
+
+        .auth-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            border: 1px solid var(--border);
+        }
+
+        .btn-google {
+            background-color: #ffffff;
+            color: var(--text-dark);
+        }
+
+        .btn-google:hover {
+            background-color: #f8f9fa;
+            border-color: #d2e3fc;
+        }
+
+        .btn-login {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            border: none;
+        }
+
+        .btn-login:hover {
+            background-color: #1765cc;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        #status-msg {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            min-height: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="header-section">
-        <p class="text-slate-800 font-bold mb-6 max-w-xs mx-auto leading-relaxed">البساطة والأمان المطلق. استلم، أرسل، وراقب ميزانيتك في مكان واحد.</p>
-    </div>
-
-    <div class="auth-container">
-        <div id="errorBanner" class="error-banner"></div>
-
-        <div class="flex justify-around mb-8 border-b border-slate-50">
-            <button onclick="switchMode('login')" id="tabL" class="tab-btn active-tab">دخول</button>
-            <button onclick="switchMode('signup')" id="tabS" class="tab-btn inactive-tab">فتح حساب</button>
-        </div>
-
-        <form id="authForm" class="space-y-4">
-            <div id="nameDiv" class="hidden">
-                <label class="text-xs font-bold text-slate-400 mr-2 uppercase">الاسم الكامل</label>
-                <input type="text" id="uName" placeholder="اسمك الكامل" class="input-box">
-            </div>
-            <div>
-                <label class="text-xs font-bold text-slate-400 mr-2 uppercase">البريد الإلكتروني</label>
-                <input type="email" id="uEmail" placeholder="mail@example.com" required class="input-box text-left">
-            </div>
-            <div>
-                <label class="text-xs font-bold text-slate-400 mr-2 uppercase">كلمة المرور</label>
-                <input type="password" id="uPass" placeholder="••••••••" required class="input-box text-left">
-            </div>
-            <button type="submit" id="submitBtn" class="main-btn flex items-center justify-center gap-2">
-                <span id="txtBtn">دخول</span>
-                <span id="loadBtn" class="loader hidden"></span>
-            </button>
-        </form>
-
-        <div class="relative my-8 flex items-center">
-            <div class="flex-grow border-t border-slate-100"></div>
-            <span class="px-3 text-slate-300 text-xs font-bold">أو</span>
-            <div class="flex-grow border-t border-slate-100"></div>
-        </div>
-
-        <button onclick="handleGoogle()" class="w-full flex items-center justify-center gap-3 border border-slate-200 py-4 rounded-2xl font-bold text-slate-600 transition hover:bg-slate-50">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
-            <span>متابعة بواسطة جوجل</span>
+<div class="content-wrapper">
+    <h1 class="hero-text">لا تدع أموالك تنام.. <br> اجعلها تعمل لأجلك</h1>
+    
+    <div class="auth-options">
+        <button class="btn btn-google" id="googleBtn">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google">
+            متابعة باستخدام Google
         </button>
-        <p id="status" class="text-center text-xs font-bold text-blue-500 mt-6"></p>
+
+        <button class="btn btn-login" id="loginBtn">
+            تسجيل الدخول
+        </button>
     </div>
 
-    <script>
-        // رابط النشر الجديد الخاص بك
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhbfuB_4YlG7hf4zmdFMyj_Cs0gO6i1kxQOYxGoUQkob6kNlBkCsQK0yGrP96wTRrXfw/exec";
+    <div id="status-msg"></div>
+</div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
-            authDomain: "likcash-auth.firebaseapp.com",
-            projectId: "likcash-auth",
-            storageBucket: "likcash-auth.firebasestorage.app",
-            messagingSenderId: "19126222896",
-            appId: "1:19126222896:web:0a6416948afa024e53adf5"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const provider = new firebase.auth.GoogleAuthProvider();
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        let currentMode = 'login';
+    const firebaseConfig = {
+        apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
+        authDomain: "likcash-auth.firebaseapp.com",
+        projectId: "likcash-auth",
+        storageBucket: "likcash-auth.firebasestorage.app",
+        messagingSenderId: "19126222896",
+        appId: "1:19126222896:web:0a6416948afa024e53adf5",
+        measurementId: "G-Q4Z0JB801H"
+    };
 
-        function switchMode(m) {
-            currentMode = m;
-            document.getElementById('errorBanner').style.display = 'none';
-            document.getElementById('tabL').className = m === 'login' ? 'tab-btn active-tab' : 'tab-btn inactive-tab';
-            document.getElementById('tabS').className = m === 'signup' ? 'tab-btn active-tab' : 'tab-btn inactive-tab';
-            document.getElementById('nameDiv').classList.toggle('hidden', m === 'login');
-            document.getElementById('txtBtn').innerText = m === 'login' ? 'دخول' : 'إنشاء حساب';
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const statusMsg = document.getElementById('status-msg');
+
+    // تسجيل الدخول بـ Google
+    document.getElementById('googleBtn').onclick = async () => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            statusMsg.innerText = "تم الدخول بنجاح: " + result.user.displayName;
+            statusMsg.style.color = "#188038";
+        } catch (error) {
+            statusMsg.innerText = "حدث خطأ أثناء الاتصال بجوجل";
+            statusMsg.style.color = "#d93025";
         }
+    };
 
-        // تسجيل الدخول العادي
-        document.getElementById('authForm').onsubmit = async (e) => {
-            e.preventDefault();
-            toggleState(true);
-            const email = document.getElementById('uEmail').value;
-            const pass = document.getElementById('uPass').value;
-            const name = document.getElementById('uName').value || "Client";
+    // زر تسجيل الدخول (يمكنك ربطه بصفحة أخرى أو فتح Modal)
+    document.getElementById('loginBtn').onclick = () => {
+        statusMsg.innerText = "جاري الانتقال لصفحة تسجيل الدخول...";
+        statusMsg.style.color = "#1a73e8";
+    };
+</script>
 
-            try {
-                const response = await fetch(`${SCRIPT_URL}?action=${currentMode}&email=${encodeURIComponent(email)}&pass=${encodeURIComponent(pass)}&name=${encodeURIComponent(name)}`);
-                const result = await response.text();
-
-                if (result.includes("SUCCESS")) {
-                    sessionStorage.setItem('isAuth', 'true');
-                    window.location.href = "w/check.html";
-                } else if (result === "AUTH_FAILED") {
-                    showError("خطأ في التحقق. البيانات غير مطابقة للسجلات.");
-                } else if (result === "EMAIL_EXISTS") {
-                    showError("هذا البريد مسجل مسبقاً. قم بتسجيل الدخول.");
-                }
-            } catch (err) { showError("فشل الاتصال بالخادم."); }
-            toggleState(false);
-        };
-
-        // تسجيل دخول جوجل
-        function handleGoogle() {
-            document.getElementById('status').innerText = "جاري الاتصال بجوجل...";
-            auth.signInWithRedirect(provider);
-        }
-
-        auth.getRedirectResult().then(async (result) => {
-            if (result && result.user) {
-                const user = result.user;
-                document.getElementById('status').innerText = "جاري الحفظ والتحويل...";
-                
-                const syncUrl = `${SCRIPT_URL}?action=signup&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`;
-                
-                // إرسال البيانات للجدول باستخدام fetch مع تجاهل CORS لضمان التنفيذ
-                fetch(syncUrl, { mode: 'no-cors' });
-                
-                // التحويل لصفحة النجاح بعد ثانية واحدة
-                setTimeout(() => {
-                    sessionStorage.setItem('isAuth', 'true');
-                    window.location.href = "w/check.html";
-                }, 1000);
-            }
-        });
-
-        function showError(msg) {
-            const banner = document.getElementById('errorBanner');
-            banner.innerText = msg;
-            banner.style.display = 'block';
-        }
-
-        function toggleState(l) {
-            document.getElementById('loadBtn').classList.toggle('hidden', !l);
-            document.getElementById('txtBtn').classList.toggle('hidden', l);
-            document.getElementById('submitBtn').disabled = l;
-        }
-    </script>
 </body>
 </html>
