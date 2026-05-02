@@ -12,7 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; margin: 0; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; margin: 0; overflow-x: hidden; }
         .header-section { background-color: #eff6ff; padding: 40px 20px 100px; text-align: center; }
         .auth-container { max-width: 420px; margin: -60px auto 40px; background: white; border-radius: 2.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.05); padding: 30px; position: relative; z-index: 10; }
         .tab-btn { font-size: 18px; font-weight: 900; padding-bottom: 8px; transition: 0.3s; border-bottom: 3px solid transparent; }
@@ -21,8 +21,7 @@
         .input-box { background-color: #f1f5f9; border-radius: 15px; padding: 15px 20px; width: 100%; font-weight: bold; outline: none; margin-top: 8px; border: 1px solid transparent; transition: 0.3s; text-align: right; }
         .input-box:focus { border-color: #3b82f6; background-color: white; }
         .main-btn { background-color: #3b82f6; color: white; width: 100%; padding: 15px; border-radius: 18px; font-weight: 900; font-size: 18px; margin-top: 20px; transition: 0.3s; }
-        .main-btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
-        .error-banner { background-color: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: bold; text-align: center; display: none; margin-bottom: 15px; border: 1px solid #fecaca; }
+        .error-banner { background-color: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: bold; text-align: center; display: none; margin-bottom: 15px; }
         .loader { width: 20px; height: 20px; border: 3px solid #FFF; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
         @keyframes rotation { 0% { transform: rotate(0deg) } 100% { transform: rotate(360deg) } }
         .hidden { display: none; }
@@ -35,16 +34,11 @@
     </div>
 
     <div class="auth-container">
-        <!-- رسالة الخطأ -->
         <div id="errorBanner" class="error-banner"></div>
 
         <div class="flex justify-around mb-8 border-b border-slate-50">
             <button onclick="switchMode('login')" id="tabL" class="tab-btn active-tab">دخول</button>
             <button onclick="switchMode('signup')" id="tabS" class="tab-btn inactive-tab">فتح حساب</button>
-        </div>
-
-        <div class="text-center mb-6">
-            <img src="https://i.postimg.cc/zffZkRtk/31998-removebg-preview.png" class="h-8 mx-auto" alt="LikCash">
         </div>
 
         <form id="authForm" class="space-y-4">
@@ -73,7 +67,7 @@
         </div>
 
         <button onclick="handleGoogle()" class="w-full flex items-center justify-center gap-3 border border-slate-200 py-4 rounded-2xl font-bold text-slate-600 transition hover:bg-slate-50">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5" alt="Google">
             <span>متابعة بواسطة جوجل</span>
         </button>
         
@@ -81,9 +75,10 @@
     </div>
 
     <script>
-        // رابط النشر الجديد الخاص بك
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJ3V8Ymx-TegNGaqZgJ91gEJSZh4ZDLdA-Zfmu_RAuCFnlweupc9JXSWsxGFKZ5kFhFg/exec";
+        // رابط النشر الخاص بك
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYuHZqE6txfiZJnw4aLWQhrLa0AyfM4TmyMZOIZJ3k-Z_lipCG_L3xHaCfflO2nX_tpQ/exec";
 
+        // إعدادات Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
             authDomain: "likcash-auth.firebaseapp.com",
@@ -107,7 +102,7 @@
             document.getElementById('txtBtn').innerText = m === 'login' ? 'دخول' : 'إنشاء حساب';
         }
 
-        // تسجيل الدخول / إنشاء حساب يدوي
+        // تسجيل الدخول / التسجيل اليدوي
         document.getElementById('authForm').onsubmit = async (e) => {
             e.preventDefault();
             toggleState(true);
@@ -123,37 +118,43 @@
                     sessionStorage.setItem('isAuth', 'true');
                     window.location.href = "w/check.html";
                 } else if (result === "AUTH_FAILED") {
-                    showError("فشل التحقق. البيانات غير مطابقة للسجلات.");
+                    showError("فشل التحقق من البيانات.");
                 } else if (result === "EMAIL_EXISTS") {
-                    showError("هذا البريد مسجل مسبقاً. قم بتسجيل الدخول.");
+                    showError("هذا البريد مسجل بالفعل.");
                 }
             } catch (err) { showError("فشل الاتصال بالخادم."); }
             toggleState(false);
         };
 
-        // تسجيل دخول جوجل (التقييد لمرة واحدة والتحويل)
+        // تسجيل دخول جوجل
         function handleGoogle() {
-            document.getElementById('status').innerText = "جاري الاتصال بجوجل...";
+            document.getElementById('status').innerText = "جاري فتح نافذة جوجل...";
             auth.signInWithRedirect(provider);
         }
 
+        // التعامل مع نتيجة العودة من جوجل
         auth.getRedirectResult().then((result) => {
             if (result && result.user) {
                 const user = result.user;
-                document.getElementById('status').innerText = "تم التحقق، جاري التحويل...";
-                
+                document.getElementById('status').innerText = "تم التحقق! جاري التحويل...";
+
+                // 1. حفظ الحالة محلياً فوراً
+                sessionStorage.setItem('isAuth', 'true');
+
+                // 2. إرسال البيانات للسكريبت في الخلفية (يتعامل مع التكرار تلقائياً)
                 const syncUrl = `${SCRIPT_URL}?action=signup&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.displayName)}&pass=GOOGLE_AUTH`;
                 
-                // استخدام تقنية Image Ping لضمان وصول الطلب للسكريبت (يتجاهل CORS)
-                const ping = new Image();
-                ping.src = syncUrl;
-                
-                // التحويل لصفحة النجاح بعد ثانية واحدة (السكريبت سيتكفل بمنع التكرار في الجدول)
+                // استخدام fetch مع no-cors لضمان الإرسال دون تعليق المتصفح
+                fetch(syncUrl, { mode: 'no-cors' });
+
+                // 3. التوجيه الفوري لصفحة check.html
                 setTimeout(() => {
-                    sessionStorage.setItem('isAuth', 'true');
-                    window.location.href = "w/check.html";
-                }, 1200);
+                    window.location.replace("w/check.html");
+                }, 800);
             }
+        }).catch((error) => {
+            console.error(error);
+            document.getElementById('status').innerText = "فشل تسجيل الدخول بجوجل.";
         });
 
         function showError(msg) {
