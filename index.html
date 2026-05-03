@@ -10,71 +10,48 @@
             --hover-blue: #1765cc;
             --text-dark: #202124;
             --border: #dadce0;
-            --nav-height: 65px;
+            --bg-gray: #f8f9fa;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Google Sans', Arial, sans-serif; }
 
         body {
             background-color: #ffffff;
-            color: var(--text-dark);
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
-        }
-
-        /* Navbar */
-        .toolbar {
-            height: var(--nav-height);
-            width: 100%;
-            display: flex;
             align-items: center;
-            padding: 0 5%;
-            background: #fff;
-            border-bottom: 1px solid var(--border);
-            position: fixed;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .logo-section { display: flex; align-items: center; gap: 10px; }
-        .logo-section svg { height: 35px; fill: var(--primary-blue); }
-        .brand-name { font-size: 1.4rem; font-weight: 800; color: var(--text-dark); }
-
-        /* Main Container */
-        .main-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
             justify-content: center;
-            align-items: center;
-            padding-top: var(--nav-height);
-            text-align: center;
-            padding: 40px 20px;
+            min-height: 100vh;
         }
 
-        .hero-text {
-            font-size: 2.2rem;
-            font-weight: 800;
-            line-height: 1.3;
-            margin-bottom: 2rem;
+        .auth-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .brand-logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .hero-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: var(--text-dark);
             direction: rtl;
         }
 
-        .auth-card {
-            width: 100%;
-            max-width: 380px;
-            background: #fff;
-            padding: 30px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        /* Tabs System */
+        /* Tabs */
         .tabs {
             display: flex;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             border-bottom: 1px solid var(--border);
         }
 
@@ -82,133 +59,111 @@
             flex: 1;
             padding: 12px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 500;
             color: #5f6368;
             transition: 0.3s;
         }
 
         .tab.active {
             color: var(--primary-blue);
-            border-bottom: 3px solid var(--primary-blue);
+            border-bottom: 2px solid var(--primary-blue);
         }
 
-        /* Form Layout */
-        .form-group {
-            display: none;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .form-group.active {
-            display: flex;
-        }
+        /* Forms */
+        .form-section { display: none; flex-direction: column; gap: 15px; }
+        .form-section.active { display: flex; }
 
         input {
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 4px;
             font-size: 1rem;
-            outline: none;
         }
 
-        input:focus { border-color: var(--primary-blue); }
+        input:focus { border-color: var(--primary-blue); outline: none; }
 
-        .btn-blue {
+        .btn-main {
             background: var(--primary-blue);
             color: white;
             border: none;
-            padding: 14px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 4px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            transition: 0.2s;
+            transition: background 0.2s;
         }
 
-        .btn-blue:hover { background: var(--hover-blue); }
+        .btn-main:hover { background: var(--hover-blue); }
 
         .divider {
             margin: 20px 0;
             display: flex;
             align-items: center;
             color: #70757a;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
-        .divider::before, .divider::after {
-            content: ""; flex: 1; height: 1px; background: var(--border); margin: 0 10px;
-        }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); margin: 0 10px; }
 
         .btn-google {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background: white;
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             cursor: pointer;
-            font-weight: 600;
-            transition: 0.2s;
+            font-weight: 500;
         }
 
-        .btn-google:hover { background: #f8f9fa; }
-
-        #status-msg { margin-top: 20px; font-weight: bold; font-size: 0.9rem; min-height: 20px; }
+        #msg { margin-top: 15px; font-size: 0.9rem; min-height: 20px; }
     </style>
 </head>
 <body>
 
-    <nav class="toolbar">
-        <div class="logo-section">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"></path><path d="M4 19h16v2H4z"></path><path d="M20 7l-2.8 2.8-3.4-3.4-6.2 6.2 1.4 1.4 4.8-4.8 3.4 3.4L22.8 9z"></path></svg>
-            <span class="brand-name">LikCash</span>
+    <div class="auth-container">
+        <span class="brand-logo">LikCash</span>
+        <h1 class="hero-title">مرحباً بك في مستقبل استثماراتك</h1>
+
+        <div class="tabs">
+            <div class="tab active" id="t-login" onclick="toggleMode('login')">Connexion</div>
+            <div class="tab" id="t-signup" onclick="toggleMode('signup')">S'inscrire</div>
         </div>
-    </nav>
 
-    <main class="main-container">
-        <h1 class="hero-text">لا تدع أموالك تنام..<br>اجعلها تعمل لأجلك</h1>
-        
-        <div class="auth-card">
-            <div class="tabs">
-                <div class="tab active" id="tab-login" onclick="switchTab('login')">Connexion</div>
-                <div class="tab" id="tab-signup" onclick="switchTab('signup')">S'inscrire</div>
-            </div>
-
-            <!-- Formulaire Connexion -->
-            <div id="login-form" class="form-group active">
-                <input type="email" id="l-email" placeholder="Adresse e-mail" required>
-                <input type="password" id="l-pass" placeholder="Mot de passe" required>
-                <button class="btn-blue" onclick="handleAuth('Manual-Login')">Se connecter</button>
-            </div>
-
-            <!-- Formulaire Inscription -->
-            <div id="signup-form" class="form-group">
-                <input type="text" id="s-name" placeholder="Nom complet" required>
-                <input type="email" id="s-email" placeholder="Adresse e-mail" required>
-                <input type="password" id="s-pass" placeholder="Mot de passe" required>
-                <button class="btn-blue" onclick="handleAuth('Manual-Signup')">Créer un compte</button>
-            </div>
-
-            <div class="divider">OU</div>
-
-            <button class="btn-google" id="googleBtn">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
-                Continuer avec Google
-            </button>
-
-            <div id="status-msg"></div>
+        <!-- Login Form -->
+        <div id="f-login" class="form-section active">
+            <input type="email" id="email-login" placeholder="Email">
+            <input type="password" id="pass-login" placeholder="Mot de passe">
+            <button class="btn-main" onclick="submitAuth('Manual-Login')">Se connecter</button>
         </div>
-    </main>
+
+        <!-- Signup Form -->
+        <div id="f-signup" class="form-section">
+            <input type="text" id="name-signup" placeholder="Nom complet">
+            <input type="email" id="email-signup" placeholder="Email">
+            <input type="password" id="pass-signup" placeholder="Mot de passe">
+            <button class="btn-main" onclick="submitAuth('Manual-Signup')">Créer un compte</button>
+        </div>
+
+        <div class="divider">OU</div>
+
+        <button class="btn-google" id="google-btn">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
+            Continuer مع Google
+        </button>
+
+        <div id="msg"></div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
             authDomain: "likcash-auth.firebaseapp.com",
@@ -221,59 +176,70 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
-        
-        // رابط الـ Apps Script الجديد الخاص بك
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwolsflhdQSuJprZYm9uhPj7L-3u1LF2176epox9wjOo1iuUVt_fYXdGzK_mHwdZslKXQ/exec';
 
-        const status = document.getElementById('status-msg');
+        // الرابط الجديد الخاص بك
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbw_oWrv5aHaVZp3yiG4HL2WlJGEln0L1CLEvYxx7SJ8RtPoqt7-sKNcbM7_r9kr3u-rmA/exec';
 
-        // التبديل بين التبويبات
-        window.switchTab = (mode) => {
-            document.getElementById('login-form').classList.toggle('active', mode === 'login');
-            document.getElementById('signup-form').classList.toggle('active', mode === 'signup');
-            document.getElementById('tab-login').classList.toggle('active', mode === 'login');
-            document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
-            status.innerText = "";
+        const msgDiv = document.getElementById('msg');
+
+        // تبديل الواجهة
+        window.toggleMode = (mode) => {
+            document.getElementById('f-login').classList.toggle('active', mode === 'login');
+            document.getElementById('f-signup').classList.toggle('active', mode === 'signup');
+            document.getElementById('t-login').classList.toggle('active', mode === 'login');
+            document.getElementById('t-signup').classList.toggle('active', mode === 'signup');
+            msgDiv.innerText = "";
         };
 
-        // معالجة البيانات والإرسال
-        window.handleAuth = async (method) => {
-            const email = (method === 'Manual-Login') ? document.getElementById('l-email').value : document.getElementById('s-email').value;
-            const name = (method === 'Manual-Signup') ? document.getElementById('s-name').value : "Utilisateur";
+        // إرسال البيانات
+        window.submitAuth = async (method) => {
+            const isLogin = method === 'Manual-Login';
+            const email = isLogin ? document.getElementById('email-login').value : document.getElementById('email-signup').value;
+            const name = isLogin ? "Utilisateur" : document.getElementById('name-signup').value;
 
-            if (!email) { status.innerText = "Email requis !"; status.style.color = "red"; return; }
+            if (!email) { msgDiv.innerText = "Email مطلوب"; return; }
 
-            status.innerText = "Traitement en cours...";
-            status.style.color = "var(--primary-blue)";
+            msgDiv.innerText = "جاري الحفظ في الجدول...";
+            msgDiv.style.color = "blue";
 
             const payload = {
                 email: email,
                 name: name,
-                userId: "ID-" + Math.floor(Math.random() * 9000 + 1000),
+                userId: "ID-" + Math.floor(Math.random() * 10000),
                 method: method
             };
 
             try {
-                // إرسال البيانات إلى Google Sheets
+                // إرسال البيانات للجدول
                 await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
                 
-                status.innerText = "Succès ! Redirection...";
-                status.style.color = "#188038";
-                setTimeout(() => { window.location.href = "w/check.html"; }, 1200);
+                msgDiv.innerText = "تم بنجاح! جاري التوجيه...";
+                msgDiv.style.color = "green";
+                setTimeout(() => { window.location.href = "w/check.html"; }, 1500);
             } catch (e) {
-                status.innerText = "Erreur de connexion.";
-                status.style.color = "red";
+                msgDiv.innerText = "خطأ في الاتصال";
+                msgDiv.style.color = "red";
             }
         };
 
-        // تسجيل الدخول بجوجل
-        document.getElementById('googleBtn').onclick = async () => {
+        // تسجيل جوجل
+        document.getElementById('google-btn').onclick = async () => {
             try {
-                const result = await signInWithPopup(auth, provider);
-                await handleAuth("Google"); 
+                const res = await signInWithPopup(auth, provider);
+                const user = res.user;
+                
+                // إرسال بيانات جوجل للجدول
+                const payload = {
+                    email: user.email,
+                    name: user.displayName,
+                    userId: user.uid,
+                    method: "Google"
+                };
+
+                await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                window.location.href = "w/check.html";
             } catch (e) {
-                status.innerText = "Erreur Google Auth.";
-                status.style.color = "red";
+                msgDiv.innerText = "فشل تسجيل جوجل";
             }
         };
     </script>
