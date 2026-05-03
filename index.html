@@ -7,6 +7,7 @@
     <style>
         :root {
             --primary-blue: #1a73e8;
+            --hover-blue: #1765cc;
             --text-dark: #202124;
             --border: #dadce0;
             --nav-height: 65px;
@@ -18,7 +19,7 @@
             background-color: #ffffff;
             color: var(--text-dark);
             font-family: 'Segoe UI', Tahoma, sans-serif;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
@@ -48,25 +49,26 @@
             align-items: center;
             padding-top: var(--nav-height);
             text-align: center;
-            padding: 0 20px;
+            padding: 40px 20px;
         }
 
         .hero-text {
             font-size: 2.2rem;
             font-weight: 800;
             line-height: 1.3;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             direction: rtl;
         }
 
-        .auth-options {
+        .auth-card {
+            width: 100%;
+            max-width: 350px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            width: 100%;
-            max-width: 320px;
+            gap: 15px;
         }
 
+        /* تنسيق الأزرار */
         .btn {
             display: flex;
             align-items: center;
@@ -80,11 +82,38 @@
             transition: 0.2s;
             border: 1px solid var(--border);
             width: 100%;
+            text-decoration: none;
         }
 
         .btn-google { background: white; color: var(--text-dark); }
         .btn-google:hover { background: #f8f9fa; }
-        .btn-login { background: var(--primary-blue); color: white; border: none; }
+
+        .btn-blue { background: var(--primary-blue); color: white; border: none; }
+        .btn-blue:hover { background: var(--hover-blue); }
+
+        /* حقول الإدخال المخفية حتى يتم الضغط على الأزرار */
+        .input-group {
+            display: none; /* تظهر فقط عند الحاجة */
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        input {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .divider {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            color: #70757a;
+            font-size: 0.8rem;
+        }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); margin: 0 10px; }
 
         #status-msg { margin-top: 20px; font-weight: bold; font-size: 0.9rem; min-height: 20px; }
     </style>
@@ -101,12 +130,26 @@
     <main class="main-container">
         <h1 class="hero-text">لا تدع أموالك تنام..<br>اجعلها تعمل لأجلك</h1>
         
-        <div class="auth-options">
+        <div class="auth-card">
+            <!-- خيار جوجل دائماً في الأعلى -->
             <button class="btn btn-google" id="googleBtn">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
                 Continuer avec Google
             </button>
-            <button class="btn btn-login">Se connecter</button>
+
+            <div class="divider">OU</div>
+
+            <!-- أزرار التبديل -->
+            <button class="btn btn-blue" id="showLogin">Connexion</button>
+            <button class="btn btn-blue" id="showSignup">S'inscrire</button>
+
+            <!-- فورم الدخول/التسجيل الموحد (يظهر عند الضغط) -->
+            <div id="extraFields" class="input-group">
+                <input type="text" id="userName" placeholder="Nom complet (pour l'inscription)" style="display:none;">
+                <input type="email" id="userEmail" placeholder="Adresse e-mail">
+                <input type="password" id="userPass" placeholder="Mot de passe">
+                <button class="btn btn-blue" id="submitBtn">Continuer</button>
+            </div>
         </div>
 
         <div id="status-msg"></div>
@@ -128,46 +171,57 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
-        
-        // رابط الديبلاي الجديد الخاص بك
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxEm2tv_dKpOeIlMIfe0L2lbJ0atxE-cOKW4UHDjKm96sJVoGSIgbNrDUF8QTy74c3oWQ/exec';
 
+        const status = document.getElementById('status-msg');
+        let currentMode = ""; // لتحديد هل المستخدم يريد Login أم Signup
+
+        // إظهار حقول الإدخال
+        document.getElementById('showLogin').onclick = () => {
+            currentMode = "Email-Login";
+            document.getElementById('extraFields').style.display = 'flex';
+            document.getElementById('userName').style.display = 'none';
+        };
+
+        document.getElementById('showSignup').onclick = () => {
+            currentMode = "Email-Signup";
+            document.getElementById('extraFields').style.display = 'flex';
+            document.getElementById('userName').style.display = 'block';
+        };
+
+        // وظيفة الإرسال المشتركة
+        async function sendData(email, name, method) {
+            status.innerText = "Enregistrement en cours...";
+            status.style.color = "var(--primary-blue)";
+            
+            const payload = {
+                email: email,
+                name: name,
+                userId: "ID-" + Math.floor(Math.random() * 9000 + 1000),
+                method: method
+            };
+
+            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+            
+            status.innerText = "Succès ! Redirection...";
+            status.style.color = "#188038";
+            setTimeout(() => { window.location.href = "w/check.html"; }, 1000);
+        }
+
+        // تسجيل الدخول بجوجل
         document.getElementById('googleBtn').onclick = async () => {
-            const status = document.getElementById('status-msg');
             try {
                 const result = await signInWithPopup(auth, provider);
-                const user = result.user;
+                await sendData(result.user.email, result.user.displayName, "Google");
+            } catch (e) { status.innerText = "Erreur Google."; }
+        };
 
-                // إرسال 5 معلومات للجدول (بما فيها طريقة الدخول)
-                const payload = {
-                    email: user.email,
-                    name: user.displayName,
-                    userId: "ID-" + Math.floor(Math.random() * 9000 + 1000),
-                    method: "Google" // المصدر
-                };
-
-                status.innerText = "Enregistrement sur Google Sheets...";
-                status.style.color = "#1a73e8";
-
-                // إرسال البيانات
-                await fetch(scriptURL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify(payload)
-                });
-
-                status.innerText = "Succès ! Redirection vers l'étape suivante...";
-                status.style.color = "#188038";
-
-                // التوجيه
-                setTimeout(() => {
-                    window.location.href = "w/check.html";
-                }, 1000);
-
-            } catch (error) {
-                status.innerText = "Erreur : " + error.message;
-                status.style.color = "#d93025";
-            }
+        // التسجيل اليدوي
+        document.getElementById('submitBtn').onclick = async () => {
+            const email = document.getElementById('userEmail').value;
+            const name = document.getElementById('userName').value || "Utilisateur";
+            if(!email) return alert("Email requis");
+            await sendData(email, name, currentMode);
         };
     </script>
 </body>
