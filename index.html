@@ -13,17 +13,17 @@
             --nav-height: 65px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
 
         body {
             background-color: #ffffff;
             color: var(--text-dark);
-            font-family: 'Segoe UI', Tahoma, sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
+        /* Navbar */
         .toolbar {
             height: var(--nav-height);
             width: 100%;
@@ -41,6 +41,7 @@
         .logo-section svg { height: 35px; fill: var(--primary-blue); }
         .brand-name { font-size: 1.4rem; font-weight: 800; color: var(--text-dark); }
 
+        /* Main Container */
         .main-container {
             flex: 1;
             display: flex;
@@ -62,58 +63,99 @@
 
         .auth-card {
             width: 100%;
-            max-width: 350px;
+            max-width: 380px;
+            background: #fff;
+            padding: 30px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Tabs System */
+        .tabs {
             display: flex;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #5f6368;
+            transition: 0.3s;
+        }
+
+        .tab.active {
+            color: var(--primary-blue);
+            border-bottom: 3px solid var(--primary-blue);
+        }
+
+        /* Form Layout */
+        .form-group {
+            display: none;
             flex-direction: column;
             gap: 15px;
         }
 
-        /* تنسيق الأزرار */
-        .btn {
+        .form-group.active {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--primary-blue); }
+
+        .btn-blue {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
             padding: 14px;
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
-            border: 1px solid var(--border);
-            width: 100%;
-            text-decoration: none;
         }
 
-        .btn-google { background: white; color: var(--text-dark); }
-        .btn-google:hover { background: #f8f9fa; }
-
-        .btn-blue { background: var(--primary-blue); color: white; border: none; }
         .btn-blue:hover { background: var(--hover-blue); }
 
-        /* حقول الإدخال المخفية حتى يتم الضغط على الأزرار */
-        .input-group {
-            display: none; /* تظهر فقط عند الحاجة */
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        input {
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-
         .divider {
-            margin: 10px 0;
+            margin: 20px 0;
             display: flex;
             align-items: center;
             color: #70757a;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
         }
-        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); margin: 0 10px; }
+
+        .divider::before, .divider::after {
+            content: ""; flex: 1; height: 1px; background: var(--border); margin: 0 10px;
+        }
+
+        .btn-google {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn-google:hover { background: #f8f9fa; }
 
         #status-msg { margin-top: 20px; font-weight: bold; font-size: 0.9rem; min-height: 20px; }
     </style>
@@ -131,34 +173,42 @@
         <h1 class="hero-text">لا تدع أموالك تنام..<br>اجعلها تعمل لأجلك</h1>
         
         <div class="auth-card">
-            <!-- خيار جوجل دائماً في الأعلى -->
-            <button class="btn btn-google" id="googleBtn">
+            <div class="tabs">
+                <div class="tab active" id="tab-login" onclick="switchTab('login')">Connexion</div>
+                <div class="tab" id="tab-signup" onclick="switchTab('signup')">S'inscrire</div>
+            </div>
+
+            <!-- Formulaire Connexion -->
+            <div id="login-form" class="form-group active">
+                <input type="email" id="l-email" placeholder="Adresse e-mail" required>
+                <input type="password" id="l-pass" placeholder="Mot de passe" required>
+                <button class="btn-blue" onclick="handleAuth('Manual-Login')">Se connecter</button>
+            </div>
+
+            <!-- Formulaire Inscription -->
+            <div id="signup-form" class="form-group">
+                <input type="text" id="s-name" placeholder="Nom complet" required>
+                <input type="email" id="s-email" placeholder="Adresse e-mail" required>
+                <input type="password" id="s-pass" placeholder="Mot de passe" required>
+                <button class="btn-blue" onclick="handleAuth('Manual-Signup')">Créer un compte</button>
+            </div>
+
+            <div class="divider">OU</div>
+
+            <button class="btn-google" id="googleBtn">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
                 Continuer avec Google
             </button>
 
-            <div class="divider">OU</div>
-
-            <!-- أزرار التبديل -->
-            <button class="btn btn-blue" id="showLogin">Connexion</button>
-            <button class="btn btn-blue" id="showSignup">S'inscrire</button>
-
-            <!-- فورم الدخول/التسجيل الموحد (يظهر عند الضغط) -->
-            <div id="extraFields" class="input-group">
-                <input type="text" id="userName" placeholder="Nom complet (pour l'inscription)" style="display:none;">
-                <input type="email" id="userEmail" placeholder="Adresse e-mail">
-                <input type="password" id="userPass" placeholder="Mot de passe">
-                <button class="btn btn-blue" id="submitBtn">Continuer</button>
-            </div>
+            <div id="status-msg"></div>
         </div>
-
-        <div id="status-msg"></div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
             authDomain: "likcash-auth.firebaseapp.com",
@@ -171,29 +221,31 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxEm2tv_dKpOeIlMIfe0L2lbJ0atxE-cOKW4UHDjKm96sJVoGSIgbNrDUF8QTy74c3oWQ/exec';
+        
+        // رابط الـ Apps Script الجديد الخاص بك
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwolsflhdQSuJprZYm9uhPj7L-3u1LF2176epox9wjOo1iuUVt_fYXdGzK_mHwdZslKXQ/exec';
 
         const status = document.getElementById('status-msg');
-        let currentMode = ""; // لتحديد هل المستخدم يريد Login أم Signup
 
-        // إظهار حقول الإدخال
-        document.getElementById('showLogin').onclick = () => {
-            currentMode = "Email-Login";
-            document.getElementById('extraFields').style.display = 'flex';
-            document.getElementById('userName').style.display = 'none';
+        // التبديل بين التبويبات
+        window.switchTab = (mode) => {
+            document.getElementById('login-form').classList.toggle('active', mode === 'login');
+            document.getElementById('signup-form').classList.toggle('active', mode === 'signup');
+            document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+            document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
+            status.innerText = "";
         };
 
-        document.getElementById('showSignup').onclick = () => {
-            currentMode = "Email-Signup";
-            document.getElementById('extraFields').style.display = 'flex';
-            document.getElementById('userName').style.display = 'block';
-        };
+        // معالجة البيانات والإرسال
+        window.handleAuth = async (method) => {
+            const email = (method === 'Manual-Login') ? document.getElementById('l-email').value : document.getElementById('s-email').value;
+            const name = (method === 'Manual-Signup') ? document.getElementById('s-name').value : "Utilisateur";
 
-        // وظيفة الإرسال المشتركة
-        async function sendData(email, name, method) {
-            status.innerText = "Enregistrement en cours...";
+            if (!email) { status.innerText = "Email requis !"; status.style.color = "red"; return; }
+
+            status.innerText = "Traitement en cours...";
             status.style.color = "var(--primary-blue)";
-            
+
             const payload = {
                 email: email,
                 name: name,
@@ -201,27 +253,28 @@
                 method: method
             };
 
-            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            
-            status.innerText = "Succès ! Redirection...";
-            status.style.color = "#188038";
-            setTimeout(() => { window.location.href = "w/check.html"; }, 1000);
-        }
+            try {
+                // إرسال البيانات إلى Google Sheets
+                await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                
+                status.innerText = "Succès ! Redirection...";
+                status.style.color = "#188038";
+                setTimeout(() => { window.location.href = "w/check.html"; }, 1200);
+            } catch (e) {
+                status.innerText = "Erreur de connexion.";
+                status.style.color = "red";
+            }
+        };
 
         // تسجيل الدخول بجوجل
         document.getElementById('googleBtn').onclick = async () => {
             try {
                 const result = await signInWithPopup(auth, provider);
-                await sendData(result.user.email, result.user.displayName, "Google");
-            } catch (e) { status.innerText = "Erreur Google."; }
-        };
-
-        // التسجيل اليدوي
-        document.getElementById('submitBtn').onclick = async () => {
-            const email = document.getElementById('userEmail').value;
-            const name = document.getElementById('userName').value || "Utilisateur";
-            if(!email) return alert("Email requis");
-            await sendData(email, name, currentMode);
+                await handleAuth("Google"); 
+            } catch (e) {
+                status.innerText = "Erreur Google Auth.";
+                status.style.color = "red";
+            }
         };
     </script>
 </body>
