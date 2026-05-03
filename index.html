@@ -5,37 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LikCash | Authentification</title>
     <style>
-        :root { --primary: #1a73e8; --error: #d93025; --success: #1e8e3e; --border: #dadce0; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        .auth-card { width: 100%; max-width: 400px; background: white; padding: 40px 30px; border: 1px solid var(--border); border-radius: 8px; text-align: center; }
+        :root {
+            --primary: #1a73e8;
+            --error: #d93025;
+            --success: #1e8e3e;
+            --border: #dadce0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Google Sans', Roboto, Arial, sans-serif; }
+
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            padding: 40px 30px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
         .brand { font-size: 2.2rem; font-weight: bold; color: var(--primary); margin-bottom: 30px; display: block; }
+
         .tabs { display: flex; margin-bottom: 25px; border-bottom: 1px solid var(--border); }
-        .tab { flex: 1; padding: 12px; cursor: pointer; font-weight: 500; color: #5f6368; }
+        .tab { flex: 1; padding: 12px; cursor: pointer; font-weight: 500; color: #5f6368; transition: 0.3s; }
         .tab.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
+
         .form-section { display: none; flex-direction: column; gap: 15px; }
         .form-section.active { display: flex; }
-        input { width: 100%; padding: 13px; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem; outline: none; }
-        .btn-submit { background: var(--primary); color: white; border: none; padding: 13px; border-radius: 4px; font-size: 1rem; cursor: pointer; }
-        #status-msg { margin-top: 20px; font-size: 0.9rem; font-weight: bold; min-height: 20px; }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--primary); }
+
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 13px;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover { background: #1765cc; }
+
+        #status-msg { 
+            margin-top: 20px; 
+            font-size: 0.9rem; 
+            font-weight: bold; 
+            min-height: 20px; 
+            direction: rtl;
+        }
     </style>
 </head>
 <body>
 
     <div class="auth-card">
         <span class="brand">LikCash</span>
-        
+
         <div class="tabs">
-            <div class="tab active" onclick="switchMode('login', this)">Connexion</div>
-            <div class="tab" onclick="switchMode('signup', this)">S'inscrire</div>
+            <div class="tab active" id="tab-login" onclick="switchMode('login')">Connexion</div>
+            <div class="tab" id="tab-signup" onclick="switchMode('signup')">S'inscrire</div>
         </div>
 
+        <!-- فورم تسجيل الدخول -->
         <div id="form-login" class="form-section active">
             <input type="email" id="l-email" placeholder="Email">
             <input type="password" id="l-pass" placeholder="Mot de passe">
             <button class="btn-submit" onclick="handleAuth('Manual-Login')">Se connecter</button>
         </div>
 
+        <!-- فورم إنشاء حساب -->
         <div id="form-signup" class="form-section">
             <input type="text" id="s-name" placeholder="Nom complet">
             <input type="email" id="s-email" placeholder="Email">
@@ -47,15 +106,16 @@
     </div>
 
     <script>
-        // ضع هنا رابط السكريبت الجديد (الذي يحتوي على doGet)
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzp-Ao9ZhPvFtVdL8mfgxqNbgEzbAHXYdcKeINJX25--PUs_5jqxahz37vBTt_De9RAMg/exec';
+        // الرابط الجديد الذي أرسلته
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzz4JXcvtzzWkvwp_kxwhGJtLYoBu4YKZHlcEa4uGO_Sia0a4zIu9VfqsBuo4UTEELl3A/exec';
+        
         const status = document.getElementById('status-msg');
 
-        function switchMode(mode, el) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
+        function switchMode(mode) {
             document.getElementById('form-login').classList.toggle('active', mode === 'login');
             document.getElementById('form-signup').classList.toggle('active', mode === 'signup');
+            document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+            document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
             status.innerText = "";
         }
 
@@ -66,15 +126,15 @@
             const name = isLogin ? "" : document.getElementById('s-name').value;
 
             if (!email || !pass) {
-                status.innerText = "يرجى إدخال جميع المعلومات";
-                status.style.color = "red";
+                status.innerText = "يرجى ملء كافة الخانات";
+                status.style.color = "var(--error)";
                 return;
             }
 
             status.innerText = "جاري التحقق من البيانات...";
-            status.style.color = "blue";
+            status.style.color = "var(--primary)";
 
-            // تقنية JSONP للتحقق الحقيقي
+            // تقنية JSONP للتحقق الحقيقي من جوجل شيت
             const callbackName = 'authCallback';
             const finalURL = `${scriptURL}?callback=${callbackName}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(pass)}&name=${encodeURIComponent(name)}&method=${method}`;
 
@@ -82,24 +142,23 @@
                 const res = response.result;
 
                 if (res === "SIGNUP_SUCCESS" || res === "LOGIN_SUCCESS") {
-                    status.innerText = "تم القبول! جاري التوجيه...";
-                    status.style.color = "green";
-                    setTimeout(() => { window.location.href = "w/check.html"; }, 1000);
+                    status.innerText = "تم القبول بنجاح! جاري التوجيه...";
+                    status.style.color = var(--success);
+                    setTimeout(() => { window.location.href = "w/check.html"; }, 1200);
                 } 
                 else if (res === "EMAIL_EXISTS") {
-                    status.innerText = "هذا البريد مسجل مسبقاً!";
-                    status.style.color = "red";
+                    status.innerText = "هذا البريد مسجل مسبقاً! جرب تسجيل الدخول.";
+                    status.style.color = "var(--error)";
                 }
                 else if (res === "USER_NOT_FOUND") {
-                    status.innerText = "هذا الحساب غير موجود، يرجى التسجيل أولاً";
-                    status.style.color = "red";
+                    status.innerText = "هذا الحساب غير موجود، يرجى إنشاء حساب أولاً.";
+                    status.style.color = "var(--error)";
                 }
                 else if (res === "WRONG_PASSWORD") {
-                    status.innerText = "كلمة السر خاطئة!";
-                    status.style.color = "red";
+                    status.innerText = "كلمة السر غير صحيحة!";
+                    status.style.color = "var(--error)";
                 }
 
-                // تنظيف السكريبت بعد الرد
                 document.body.removeChild(scriptTag);
                 delete window[callbackName];
             };
