@@ -6,24 +6,22 @@
     <title>LikCash | Authentification</title>
     <style>
         :root { --primary: #1a73e8; --error: #d93025; --success: #1e8e3e; --border: #dadce0; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { background-color: #ffffff; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-        .auth-card { width: 100%; max-width: 400px; padding: 35px; border: 1px solid var(--border); border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .brand { font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 25px; display: block; letter-spacing: -1px; }
+        .auth-card { width: 100%; max-width: 400px; padding: 35px; border: 1px solid var(--border); border-radius: 12px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .brand { font-size: 2.3rem; font-weight: 800; color: var(--primary); margin-bottom: 25px; display: block; }
         .tabs { display: flex; margin-bottom: 25px; border-bottom: 1px solid var(--border); }
-        .tab { flex: 1; padding: 12px; cursor: pointer; font-weight: 600; color: #5f6368; transition: 0.3s; }
+        .tab { flex: 1; padding: 12px; cursor: pointer; font-weight: 600; color: #5f6368; }
         .tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
         .form-section { display: none; flex-direction: column; gap: 15px; }
         .form-section.active { display: flex; }
-        input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; outline: none; transition: 0.2s; }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,115,232,0.1); }
+        input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; outline: none; }
+        input:focus { border-color: var(--primary); }
         .btn-submit { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 10px; }
-        .btn-submit:hover { background: #1765cc; }
-        .divider { margin: 25px 0; display: flex; align-items: center; color: #70757a; font-size: 0.85rem; }
+        .divider { margin: 25px 0; display: flex; align-items: center; color: #70757a; font-size: 0.8rem; }
         .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); margin: 0 10px; }
-        .btn-google { width: 100%; padding: 12px; background: white; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; font-weight: 600; transition: 0.2s; }
-        .btn-google:hover { background: #f8f9fa; }
-        #status { margin-top: 20px; font-size: 0.95rem; font-weight: 600; direction: rtl; min-height: 24px; }
+        .btn-google { width: 100%; padding: 12px; background: white; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; font-weight: 600; }
+        #status { margin-top: 20px; font-size: 0.9rem; font-weight: bold; direction: rtl; min-height: 20px; }
     </style>
 </head>
 <body>
@@ -36,22 +34,24 @@
             <div class="tab" id="tab-s" onclick="switchTab('signup')">S'inscrire</div>
         </div>
 
+        <!-- Connexion -->
         <div id="form-login" class="form-section active">
             <input type="email" id="l-email" placeholder="البريد الإلكتروني">
             <input type="password" id="l-pass" placeholder="كلمة المرور">
-            <button class="btn-submit" onclick="executeAuth('Manual-Login')">تسجيل الدخول</button>
+            <button class="btn-submit" onclick="runAuth('Manual-Login')">تسجيل الدخول</button>
         </div>
 
+        <!-- S'inscrire -->
         <div id="form-signup" class="form-section">
             <input type="text" id="s-name" placeholder="الاسم الكامل">
             <input type="email" id="s-email" placeholder="البريد الإلكتروني">
             <input type="password" id="s-pass" placeholder="كلمة المرور">
-            <button class="btn-submit" onclick="executeAuth('Manual-Signup')">إنشاء حساب</button>
+            <button class="btn-submit" onclick="runAuth('Manual-Signup')">إنشاء حساب</button>
         </div>
 
         <div class="divider">أو</div>
 
-        <button class="btn-google" id="google-signin">
+        <button class="btn-google" id="google-btn">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
             متابعة باستخدام Google
         </button>
@@ -76,87 +76,98 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // رابط النشر الجديد الخاص بك
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxG_x8yKULZltXBcOvW_tEuLYIPFFd5v6_BcNMysTrHlbdiUCpqKDc_Lh4u3XZzkrzDDQ/exec';
-        const statusBox = document.getElementById('status');
+        // الرابط الجديد الخاص بك
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwTP-j_Ub7DIm5nrA7FscdhZtsBKucEV2KftQumuGsPQ6U8uuZgrwDxx1YA9PnhCRaLXw/exec';
+        const st = document.getElementById('status');
 
-        window.switchTab = (mode) => {
-            document.getElementById('form-login').classList.toggle('active', mode === 'login');
-            document.getElementById('form-signup').classList.toggle('active', mode === 'signup');
-            document.getElementById('tab-l').classList.toggle('active', mode === 'login');
-            document.getElementById('tab-s').classList.toggle('active', mode === 'signup');
-            statusBox.innerText = "";
+        window.switchTab = (m) => {
+            document.getElementById('form-login').classList.toggle('active', m==='login');
+            document.getElementById('form-signup').classList.toggle('active', m==='signup');
+            document.getElementById('tab-l').classList.toggle('active', m==='login');
+            document.getElementById('tab-s').classList.toggle('active', m==='signup');
+            st.innerText = "";
         };
 
-        // وظيفة الإرسال للشيت والانتظار (Promise)
-        function talkToSheet(params) {
-            return new Promise((resolve) => {
-                const callbackName = 'jsonp_' + Date.now();
-                window[callbackName] = (data) => {
-                    document.body.removeChild(script);
-                    delete window[callbackName];
-                    resolve(data.result);
-                };
+        // دالة التواصل الذكي مع الشيت
+        async function fetchSheet(data) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'cb_' + Math.floor(Math.random() * 1000000);
                 const script = document.createElement('script');
-                const queryString = Object.keys(params).map(key => `${key}=${encodeURIComponent(params[key])}`).join('&');
-                script.src = `${scriptURL}?callback=${callbackName}&${queryString}`;
+                
+                const timeout = setTimeout(() => {
+                    cleanup();
+                    reject("TIMEOUT");
+                }, 15000);
+
+                const cleanup = () => {
+                    clearTimeout(timeout);
+                    if (script.parentNode) document.body.removeChild(script);
+                    delete window[callbackName];
+                };
+
+                window[callbackName] = (response) => {
+                    cleanup();
+                    resolve(response.result);
+                };
+
+                const params = new URLSearchParams({
+                    callback: callbackName,
+                    email: data.email,
+                    password: data.pass,
+                    name: data.name,
+                    method: data.method
+                });
+
+                script.src = `${scriptURL}?${params.toString()}`;
                 document.body.appendChild(script);
             });
         }
 
-        window.executeAuth = async (method) => {
-            const isLogin = method === 'Manual-Login';
-            const email = isLogin ? document.getElementById('l-email').value : document.getElementById('s-email').value;
-            const pass = isLogin ? document.getElementById('l-pass').value : document.getElementById('s-pass').value;
-            const name = isLogin ? "" : document.getElementById('s-name').value;
+        window.runAuth = async (method) => {
+            const isL = method === 'Manual-Login';
+            const email = isL ? document.getElementById('l-email').value : document.getElementById('s-email').value;
+            const pass = isL ? document.getElementById('l-pass').value : document.getElementById('s-pass').value;
+            const name = isL ? "" : document.getElementById('s-name').value;
 
-            if (!email || !pass) { 
-                statusBox.innerText = "يرجى ملء جميع الخانات"; 
-                statusBox.style.color = "var(--error)"; 
-                return; 
-            }
+            if(!email || !pass) { st.innerText="عمر الخانات عفاك"; st.style.color="red"; return; }
+            
+            st.innerText="جاري التحقق..."; st.style.color="blue";
 
-            statusBox.innerText = "جاري التحقق..."; 
-            statusBox.style.color = "var(--primary)";
-
-            const result = await talkToSheet({ email, password: pass, name, method });
-
-            if (result === "SUCCESS") {
-                statusBox.innerText = "تم بنجاح! جاري التوجيه...";
-                statusBox.style.color = "var(--success)";
-                setTimeout(() => { window.location.href = "w/check.html"; }, 1000);
-            } else {
-                const messages = {
-                    "EMAIL_EXISTS": "هذا البريد مسجل مسبقاً!",
-                    "USER_NOT_FOUND": "الحساب غير موجود، يرجى التسجيل أولاً",
-                    "WRONG_PASSWORD": "كلمة المرور غير صحيحة!"
-                };
-                statusBox.innerText = messages[result] || "حدث خطأ ما، حاول لاحقاً";
-                statusBox.style.color = "var(--error)";
+            try {
+                const res = await fetchSheet({email, pass, name, method});
+                if(res === "OK") {
+                    st.innerText="تم بنجاح! جاري التوجيه..."; st.style.color="green";
+                    window.location.href = "w/check.html";
+                } else {
+                    const msg = { EXISTS: "الإيميل مسجل ديجا!", NOT_FOUND: "الحساب ما كاينش!", WRONG_PASS: "الباسورد غلط!" };
+                    st.innerText = msg[res] || "خطأ في التحقق";
+                    st.style.color = "red";
+                }
+            } catch (e) {
+                st.innerText="مشكلة في الاتصال، حاول مرة أخرى";
+                st.style.color = "orange";
             }
         };
 
-        document.getElementById('google-signin').onclick = async () => {
+        document.getElementById('google-btn').onclick = async () => {
             try {
-                statusBox.innerText = "جاري الاتصال بـ Google...";
-                statusBox.style.color = "var(--primary)";
-                const authResult = await signInWithPopup(auth, provider);
-                const user = authResult.user;
+                st.innerText="جاري الاتصال بـ Google...";
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
 
-                // تسجيل بيانات جوجل في الشيت قبل التحويل
-                const sheetRes = await talkToSheet({
+                const res = await fetchSheet({
                     email: user.email,
-                    password: "GOOGLE_USER",
+                    pass: "GOOGLE_USER",
                     name: user.displayName,
                     method: "Google-Auth"
                 });
 
-                if (sheetRes === "SUCCESS") {
+                if(res === "OK") {
                     window.location.href = "w/check.html";
                 }
-            } catch (error) {
-                statusBox.innerText = "فشل تسجيل الدخول باستخدام Google";
-                statusBox.style.color = "var(--error)";
+            } catch (e) {
+                st.innerText="فشل الدخول عبر Google";
+                st.style.color="red";
             }
         };
     </script>
