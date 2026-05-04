@@ -11,28 +11,15 @@
         
         .auth-card { width: 100%; max-width: 400px; padding: 35px; border: 1px solid var(--border); border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         
-        /* تعديل مكان اللوغو ليكون مرتفعاً قليلاً */
         .brand { 
             font-size: 2.5rem; 
             font-weight: 800; 
             color: var(--primary); 
-            margin-top: -10px; /* سحب للأعلى */
-            margin-bottom: 12px; /* مسافة تحت اللوغو */
+            margin-top: -10px; 
+            margin-bottom: 30px; 
             display: block; 
             letter-spacing: -1px; 
             text-align: center; 
-        }
-        
-        .slogan { 
-            font-size: 1.1rem; 
-            font-weight: 700; 
-            color: #4a4a4a; 
-            margin-bottom: 30px; 
-            display: block; 
-            text-align: right; 
-            direction: rtl; 
-            padding: 0 5px; 
-            line-height: 1.4;
         }
 
         .tabs { display: flex; margin-bottom: 25px; border-bottom: 1px solid var(--border); }
@@ -75,9 +62,7 @@
 <body>
 
     <div class="auth-card">
-        <!-- اللوغو مرتفع الآن -->
         <span class="brand">LikCash</span>
-        <span class="slogan">لا تدع أموالك تنام.. اجعلها تعمل لأجلك! 📈</span>
 
         <div class="tabs">
             <div class="tab active" id="tab-l" onclick="switchTab('login')">Connexion</div>
