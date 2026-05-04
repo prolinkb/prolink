@@ -4,71 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LikCash | النظام المتكامل</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #1a73e8; --success: #28a745; --gold: #f9ab00; --bg: #f0f2f5; }
+        :root { --primary: #1a73e8; --success: #28a745; --gold: #f9ab00; --bg: #f4f6f8; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         
-        body { background-color: var(--bg); color: #333; padding-bottom: 70px; }
+        body { background-color: var(--bg); color: #333; padding-bottom: 80px; min-height: 100vh; }
 
-        /* الهيدر */
         header { 
-            background: #fff; padding: 15px 5%; display: flex; 
+            background: #fff; padding: 15px 20px; display: flex; 
             justify-content: space-between; align-items: center; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 1000;
         }
-        .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); }
+        .logo { font-size: 1.5rem; font-weight: 900; color: var(--primary); }
 
         .container { max-width: 500px; margin: 20px auto; padding: 0 15px; }
 
-        /* الكروت والتصميم العام */
-        .card { 
-            background: #fff; border-radius: 15px; padding: 20px; 
-            margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
-            text-align: center; border: 1px solid #eef;
-        }
-
-        .price-tag { font-size: 2.2rem; font-weight: 800; color: var(--primary); margin: 10px 0; }
-        .price-tag span { font-size: 1rem; color: #777; }
-
-        .btn { 
-            width: 100%; padding: 12px; border: none; border-radius: 10px; 
-            font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1rem;
-        }
-        .btn-primary { background: var(--primary); color: #fff; }
-        .btn-success { background: var(--success); color: #fff; }
-
-        /* الأقسام (مخفية افتراضياً) */
-        .section { display: none; animation: fadeIn 0.4s ease; }
+        /* الأقسام */
+        .section { display: none; animation: fadeIn 0.3s ease-in-out; }
         .section.active { display: block; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* الكروت */
+        .card { 
+            background: #fff; border-radius: 20px; padding: 25px; 
+            margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.03); 
+            text-align: center; border: 1px solid #eee;
+        }
+
+        .price-tag { font-size: 2.5rem; font-weight: 900; color: var(--primary); margin: 10px 0; }
+        .price-tag span { font-size: 1.2rem; color: #888; }
+
+        .btn { 
+            width: 100%; padding: 14px; border: none; border-radius: 12px; 
+            font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem;
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn:active { transform: scale(0.97); }
+
         /* شريط التنقل السفلي */
         .bottom-nav { 
             position: fixed; bottom: 0; left: 0; right: 0; background: #fff; 
-            display: flex; justify-content: space-around; padding: 12px 0; 
-            box-shadow: 0 -2px 15px rgba(0,0,0,0.1); border-top-left-radius: 20px; border-top-right-radius: 20px;
+            display: flex; justify-content: space-around; padding: 10px 0; 
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.05); border-top: 1px solid #eee;
         }
         .nav-item { 
-            border: none; background: none; color: #888; cursor: pointer; 
-            display: flex; flex-direction: column; align-items: center; font-size: 0.8rem;
+            border: none; background: none; color: #aaa; cursor: pointer; 
+            display: flex; flex-direction: column; align-items: center; flex: 1;
         }
-        .nav-item.active { color: var(--primary); font-weight: bold; }
-        .nav-icon { font-size: 1.2rem; margin-bottom: 2px; }
+        .nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 1.4rem; }
+        .nav-text { font-size: 0.75rem; font-weight: bold; }
 
-        /* واجهة الرصيد */
-        .balance-box { background: linear-gradient(135deg, #1a73e8, #1557b0); color: #fff; padding: 25px; border-radius: 15px; margin-bottom: 20px; }
-        
-        /* الحقول */
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+        /* الرصيد */
+        .balance-box { 
+            background: linear-gradient(135deg, #1a73e8, #0d47a1); 
+            color: #fff; padding: 30px 20px; border-radius: 20px; margin-bottom: 25px; text-align: center;
+        }
 
-        #loading-screen { position: fixed; inset: 0; background: #fff; display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        input, select { 
+            width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ddd; 
+            border-radius: 10px; font-size: 1rem; background: #f9f9f9;
+        }
+
+        #loading-screen { 
+            position: fixed; inset: 0; background: #fff; 
+            display: flex; flex-direction: column; justify-content: center; 
+            align-items: center; z-index: 2000; 
+        }
     </style>
 </head>
 <body>
 
-    <div id="loading-screen"><b>جاري التحميل...</b></div>
+    <div id="loading-screen">
+        <div style="font-size: 1.5rem; color: var(--primary); font-weight: bold;">LikCash</div>
+        <p>جاري التحميل...</p>
+    </div>
 
     <header>
         <div class="logo">LikCash</div>
@@ -77,63 +90,69 @@
 
     <div class="container">
         
-        <!-- 1. قسم المتجر (Shop) -->
+        <!-- القسم 1: المتجر -->
         <div id="shop" class="section active">
-            <h2 style="margin-bottom: 15px;">استثمر الآن 🚀</h2>
+            <h2 style="margin-bottom: 20px;">استثمر الآن 🚀</h2>
             <div class="card">
-                <div style="color: var(--gold); font-size: 0.9rem; font-weight: bold;">الباقة الأكثر مبيعاً</div>
+                <div style="color: var(--gold); font-weight: bold;">أفضل عرض</div>
                 <h3>الباقة الذهبية</h3>
                 <div class="price-tag">100 <span>DH</span></div>
-                <p style="color: #666; margin-bottom: 20px;">اربح 10 DH يومياً بعد التفعيل</p>
-                <button class="btn btn-primary" onclick="buyPackage()">شراء وتفعيل الآن</button>
+                <p style="color: #666; margin-bottom: 25px;">أرباح يومية تصل إلى 10 درهم بعد تفعيل المهمة.</p>
+                <button class="btn btn-primary" onclick="buyPackage()">شراء الباقة الآن</button>
             </div>
         </div>
 
-        <!-- 2. قسم لوحة التحكم (Dashboard) -->
+        <!-- القسم 2: الداشبورد -->
         <div id="dashboard" class="section">
             <div class="balance-box">
-                <p>إجمالي الأرباح</p>
+                <p style="opacity: 0.8;">رصيدك الحالي</p>
                 <h1 id="user-balance">0.00 DH</h1>
             </div>
             <div class="card">
-                <div style="text-align: right; margin-bottom: 15px;">
-                    <b>حالة الباقة:</b> <span id="pkg-status" style="color: red;">غير مفعلة</span>
+                <div style="text-align: right; display: flex; justify-content: space-between; align-items: center;">
+                    <b>حالة الباقة:</b>
+                    <span id="pkg-status" style="color: #d93025; font-weight: bold;">غير نشطة</span>
                 </div>
-                <div id="mission-area">
-                    <p style="font-size: 0.9rem; color: #555;">أكمل المهمة لتفعيل الأرباح:</p>
-                    <div style="background: #eee; height: 10px; border-radius: 5px; margin: 10px 0;">
-                        <div id="progress" style="background: var(--gold); width: 0%; height: 100%; border-radius: 5px; transition: 0.5s;"></div>
+                <hr style="margin: 15px 0; opacity: 0.1;">
+                <div id="mission-ui">
+                    <p style="font-size: 0.9rem; text-align: right;">المهمة: دعوة 3 أصدقاء للتفعيل</p>
+                    <div style="background: #eee; height: 12px; border-radius: 10px; margin: 10px 0; overflow: hidden;">
+                        <div id="progress-bar" style="background: var(--gold); width: 0%; height: 100%; transition: 0.5s;"></div>
                     </div>
-                    <small id="ref-count">0 / 3 أصدقاء</small>
+                    <small id="ref-status">0 / 3 أصدقاء سجلوا عبر رابطك</small>
                 </div>
             </div>
         </div>
 
-        <!-- 3. قسم السحب (Withdraw) -->
+        <!-- القسم 3: السحب -->
         <div id="withdraw" class="section">
-            <h2>سحب الأموال 💰</h2>
+            <h2>سحب الأرباح 💰</h2>
             <div class="card">
-                <p>الرصيد القابل للسحب</p>
-                <h2 style="color: var(--success);" id="withdraw-balance">0.00 DH</h2>
-                <hr style="margin: 20px 0; opacity: 0.1;">
-                <input type="number" id="amount" placeholder="المبلغ بالدرهم">
-                <select id="method">
-                    <option value="">اختر البنك أو وسيلة الاستلام</option>
+                <p>متاح للسحب</p>
+                <h2 id="withdraw-val" style="color: var(--success); margin-bottom: 20px;">0.00 DH</h2>
+                <input type="number" id="withdraw-amount" placeholder="أدخل المبلغ (درهم)">
+                <select id="withdraw-method">
+                    <option value="">اختر البنك أو طريقة الاستلام</option>
                     <option value="cih">CIH Bank</option>
-                    <option value="bmce">BMCE</option>
-                    <option value="wafacash">Wafacash</option>
+                    <option value="attijari">Attijariwafa Bank</option>
+                    <option value="cashplus">Cash Plus</option>
                 </select>
-                <button class="btn btn-success" onclick="requestWithdraw()">تأكيد طلب السحب</button>
+                <button class="btn btn-success" onclick="requestWithdraw()">إرسال طلب السحب</button>
             </div>
         </div>
 
     </div>
 
-    <!-- شريط التنقل السفلي -->
     <nav class="bottom-nav">
-        <button class="nav-item active" onclick="nav('shop')"><span class="nav-icon">🛒</span>المتجر</button>
-        <button class="nav-item" onclick="nav('dashboard')"><span class="nav-icon">📊</span>باقتي</button>
-        <button class="nav-item" onclick="nav('withdraw')"><span class="nav-icon">💰</span>السحب</button>
+        <button class="nav-item active" onclick="nav('shop', this)">
+            <span class="nav-icon">🛒</span><span class="nav-text">المتجر</span>
+        </button>
+        <button class="nav-item" onclick="nav('dashboard', this)">
+            <span class="nav-icon">📊</span><span class="nav-text">باقتي</span>
+        </button>
+        <button class="nav-item" onclick="nav('withdraw', this)">
+            <span class="nav-icon">💰</span><span class="nav-text">السحب</span>
+        </button>
     </nav>
 
     <script type="module">
@@ -154,69 +173,65 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let currentUser = null;
+        let userUID = null;
 
-        // 1. مراقبة حالة المستخدم وجلب بياناته من Firestore
+        // --- وظيفة التنقل (أهم جزء) ---
+        window.nav = (sectionId, btnElement) => {
+            // إخفاء كل الأقسام
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            // إظهار القسم المطلوب
+            document.getElementById(sectionId).classList.add('active');
+            
+            // تحديث شكل الأزرار
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            btnElement.classList.add('active');
+        };
+
+        // مراقبة تسجيل الدخول
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                currentUser = user;
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                
-                if (!userDoc.exists()) {
-                    // إذا كان مستخدم جديد، ننشئ له بروفايل
-                    await setDoc(doc(db, "users", user.uid), {
-                        balance: 0,
-                        hasPackage: false,
-                        refCount: 0
-                    });
+                userUID = user.uid;
+                const userRef = doc(db, "users", user.uid);
+                const snap = await getDoc(userRef);
+
+                if (!snap.exists()) {
+                    const initialData = { balance: 0, hasPackage: false, refCount: 0 };
+                    await setDoc(userRef, initialData);
+                    renderUI(initialData);
                 } else {
-                    const data = userDoc.data();
-                    updateUI(data);
+                    renderUI(snap.data());
                 }
                 document.getElementById('loading-screen').style.display = 'none';
             } else {
-                window.location.href = "login.html"; 
+                window.location.href = "../index.html"; 
             }
         });
 
-        // تحديث الواجهة بالبيانات الحقيقية
-        function updateUI(data) {
-            document.getElementById('user-balance').innerText = `${data.balance.toFixed(2)} DH`;
-            document.getElementById('withdraw-balance').innerText = `${data.balance.toFixed(2)} DH`;
+        function renderUI(data) {
+            document.getElementById('user-balance').innerText = data.balance.toFixed(2) + " DH";
+            document.getElementById('withdraw-val').innerText = data.balance.toFixed(2) + " DH";
             
-            if(data.hasPackage) {
+            if (data.hasPackage) {
                 document.getElementById('pkg-status').innerText = "نشطة ✅";
-                document.getElementById('pkg-status').style.color = "green";
-                document.getElementById('progress').style.width = "100%";
-                document.getElementById('ref-count').innerText = "تم التفعيل بنجاح";
+                document.getElementById('pkg-status').style.color = "var(--success)";
+                document.getElementById('progress-bar').style.width = "100%";
+                document.getElementById('ref-status').innerText = "تم التفعيل بنجاح!";
             }
         }
 
-        // 2. شراء الباقة
         window.buyPackage = async () => {
-            if(!currentUser) return;
+            if (!userUID) return;
             try {
-                await updateDoc(doc(db, "users", currentUser.uid), {
-                    hasPackage: true // في الحقيقة، يتم هذا بعد التأكد من الدفع
-                });
-                alert("تم شراء الباقة بنجاح! انتقل للوحة التحكم");
+                await updateDoc(doc(db, "users", userUID), { hasPackage: true });
+                alert("تم شراء الباقة! توجه إلى لوحة التحكم");
                 location.reload();
-            } catch (e) { alert("خطأ في العملية"); }
+            } catch (e) { alert("حدث خطأ، حاول مرة أخرى"); }
         };
 
-        // 3. السحب
         window.requestWithdraw = () => {
-            const amt = document.getElementById('amount').value;
-            if(amt < 100) return alert("الحد الأدنى للسحب هو 100 درهم");
-            alert("تم إرسال طلب السحب للمراجعة. سيصلك المبلغ خلال 24 ساعة.");
-        };
-
-        // التنقل
-        window.nav = (id) => {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            const amount = document.getElementById('withdraw-amount').value;
+            if (amount < 100) return alert("الحد الأدنى للسحب هو 100 درهم");
+            alert("تم إرسال الطلب بنجاح. سيتم التحقق من حسابك.");
         };
 
         window.logout = () => signOut(auth);
