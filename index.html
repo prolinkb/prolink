@@ -36,12 +36,14 @@
             <div class="tab" id="tab-s" onclick="switchTab('signup')">S'inscrire</div>
         </div>
 
+        <!-- قسم تسجيل الدخول -->
         <div id="form-login" class="form-section active">
             <input type="email" id="l-email" placeholder="البريد الإلكتروني">
             <input type="password" id="l-pass" placeholder="كلمة المرور">
             <button class="btn-submit" onclick="executeAuth('Manual-Login')">تسجيل الدخول</button>
         </div>
 
+        <!-- قسم إنشاء حساب جديد -->
         <div id="form-signup" class="form-section">
             <input type="text" id="s-name" placeholder="الاسم الكامل">
             <input type="email" id="s-email" placeholder="البريد الإلكتروني">
@@ -77,7 +79,7 @@
         const provider = new GoogleAuthProvider();
 
         // رابط النشر الجديد الخاص بك
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9s0pYvTL5TvkHCPR8mF5gnVdm4Ek5A7AJRIr7797CkDmfpMbdqkNx6zPqqQu0oCWKw/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxf89GX0Uct9WujppeQKEIPdxiEHgJpCXpQfsL1i0uBlu79yYz46kG8ELiXTOdhaQ5Jmg/exec';
         const statusBox = document.getElementById('status');
 
         window.switchTab = (mode) => {
@@ -88,7 +90,7 @@
             statusBox.innerText = "";
         };
 
-        async function saveData(params) {
+        async function apiCall(params) {
             return new Promise((resolve) => {
                 const cb = 'cb_' + Math.floor(Math.random() * 1000000);
                 const script = document.createElement('script');
@@ -103,15 +105,14 @@
             });
         }
 
-        // تسجيل الدخول اليدوي (يتم إرساله للجدول)
         window.executeAuth = async (method) => {
             const isLogin = method === 'Manual-Login';
             const email = isLogin ? document.getElementById('l-email').value : document.getElementById('s-email').value;
             const pass = isLogin ? document.getElementById('l-pass').value : document.getElementById('s-pass').value;
-            const name = isLogin ? "Utilisateur" : document.getElementById('s-name').value;
+            const name = isLogin ? "" : document.getElementById('s-name').value;
 
             if (!email || !pass) { 
-                statusBox.innerText = "يرجى ملء كافة الخانات"; 
+                statusBox.innerText = "يرجى ملء كافة البيانات"; 
                 statusBox.style.color = "var(--error)"; 
                 return; 
             }
@@ -119,23 +120,33 @@
             statusBox.innerText = "جاري التحقق..."; 
             statusBox.style.color = "var(--primary)";
 
-            // حفظ البيانات في Google Sheets
-            const result = await saveData({ email, password: pass, name, method });
+            const response = await apiCall({ email, password: pass, name, method });
 
-            if (result === "OK") {
-                window.location.href = "w/check.html";
+            // التعامل مع الردود الذكية للسكريبت
+            if (response === "SUCCESS") {
+                statusBox.innerText = "تم بنجاح! جاري التوجيه...";
+                statusBox.style.color = "var(--success)";
+                setTimeout(() => { window.location.href = "w/check.html"; }, 800);
+            } else if (response === "ALREADY_EXISTS") {
+                statusBox.innerText = "هذا البريد مسجل مسبقاً!";
+                statusBox.style.color = "var(--error)";
+            } else if (response === "WRONG_PASS") {
+                statusBox.innerText = "كلمة المرور غير صحيحة!";
+                statusBox.style.color = "var(--error)";
+            } else if (response === "NOT_FOUND") {
+                statusBox.innerText = "الحساب غير موجود، يرجى التسجيل.";
+                statusBox.style.color = "orange";
             } else {
-                statusBox.innerText = "خطأ في الاتصال، حاول مرة أخرى";
+                statusBox.innerText = "حدث خطأ، حاول مرة أخرى.";
                 statusBox.style.color = "var(--error)";
             }
         };
 
-        // تسجيل الدخول بجوجل (نقل مباشر لضمان السرعة)
         document.getElementById('google-signin').onclick = async () => {
             try {
-                statusBox.innerText = "جاري الاتصال...";
+                statusBox.innerText = "جاري الاتصال بـ Google...";
                 await signInWithPopup(auth, provider);
-                // التوجيه المباشر فور نجاح الدخول
+                // توجيه مباشر وسريع لمستخدمي Google
                 window.location.href = "w/check.html"; 
             } catch (error) {
                 statusBox.innerText = "فشل تسجيل الدخول بـ Google";
