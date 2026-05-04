@@ -3,100 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LikCash | Dashboard</title>
+    <title>LikCash | شراء وتفعيل الباقة</title>
     <style>
-        :root { --primary: #1a73e8; --success: #1e8e3e; --bg: #f8f9fa; --gold: #f9ab00; }
+        :root { --primary: #1a73e8; --gold: #f9ab00; --bg: #f1f3f4; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: var(--bg); color: #333; }
+
+        header { background: #fff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--primary); }
+
+        .container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+
+        /* قسم الباقات */
+        .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
+        .price-tag { font-size: 2rem; font-weight: 800; color: #202124; margin: 10px 0; }
+        .buy-btn { background: var(--primary); color: #fff; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+        .buy-btn:hover { background: #1557b0; }
+
+        /* قسم المهمة (مخفي في الأول) */
+        #referral-section { display: none; border-top: 5px solid var(--gold); }
+        .status-badge { background: #fff4e5; color: #b06000; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; display: inline-block; margin-bottom: 10px; }
         
-        body { background-color: var(--bg); color: #333; min-height: 100vh; }
+        .progress-container { background: #eee; height: 15px; border-radius: 10px; margin: 20px 0; overflow: hidden; }
+        .progress-bar { background: var(--gold); width: 0%; height: 100%; transition: 0.5s; }
 
-        header { 
-            background: white; padding: 15px 5%; 
-            display: flex; justify-content: space-between; align-items: center; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
-        }
-        .logo { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
+        .ref-box { background: #f8f9fa; border: 1px dashed #ccc; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .copy-btn { background: #333; color: #fff; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
 
-        .content { padding: 30px 5%; max-width: 900px; margin: 0 auto; display: none; }
-
-        /* صندوق المهمة */
-        .task-card { 
-            background: white; padding: 25px; border-radius: 15px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px;
-            border-right: 6px solid var(--gold);
-        }
-        .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .progress-container { background: #eee; height: 12px; border-radius: 10px; overflow: hidden; margin: 15px 0; }
-        .progress-bar { background: var(--gold); width: 0%; height: 100%; transition: 0.8s ease-in-out; }
-
-        .ref-link-box { 
-            background: #f1f3f4; padding: 15px; border-radius: 8px; 
-            display: flex; justify-content: space-between; align-items: center; margin-top: 20px;
-            flex-wrap: wrap; gap: 10px;
-        }
-        .copy-btn { background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-
-        /* الباقات المقفولة */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
-        .package-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid #eee; position: relative; text-align: center; }
-        .lock-overlay { 
-            background: rgba(255,255,255,0.85); position: absolute; top:0; left:0; width:100%; height:100%; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border-radius: 12px; z-index: 5;
-        }
-
-        /* شاشة التحميل */
-        #loading { height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #loading { text-align: center; margin-top: 50px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo">LikCash</div>
-        <button id="logoutBtn" style="border:none; background:none; color:#d93025; font-weight:bold; cursor:pointer;">خروج</button>
+        <button onclick="logout()" style="color:red; cursor:pointer; background:none; border:none;">خروج</button>
     </header>
 
-    <div id="loading">
-        <div class="spinner"></div>
-        <p>جاري التحقق من الحساب...</p>
-    </div>
+    <div id="loading">جاري التحميل...</div>
 
-    <div class="content" id="main-content">
-        <div class="task-card">
-            <div class="task-header">
-                <h3>المهمة: دعوة 3 أصدقاء 👥</h3>
-                <span id="counter" style="font-weight: bold; color: var(--primary);">0 / 3 مكتملة</span>
+    <div class="container" id="main-ui" style="display: none;">
+        
+        <!-- قسم اختيار الباقة -->
+        <div id="shop-section">
+            <h2 style="margin-bottom: 20px;">1. اختر باقة الاستثمار</h2>
+            <div class="card">
+                <h3>الباقة الذهبية</h3>
+                <p>فعل الباقة وابدأ بجني الأرباح بعد إكمال المهمة</p>
+                <div class="price-tag">100 DH</div>
+                <button class="buy-btn" onclick="buyPackage()">شراء الباقة الآن</button>
             </div>
-            <p style="font-size: 0.9rem; color: #666;">يجب عليك دعوة 3 أشخاص لتفعيل نظام السحب وفتح الباقات الاستثمارية.</p>
+        </div>
+
+        <!-- قسم المهمة بعد الشراء -->
+        <div id="referral-section" class="card">
+            <div class="status-badge">بانتظار التفعيل ⏳</div>
+            <h2>2. تفعيل الباقة (دعوة 3 أصدقاء)</h2>
+            <p style="color: #666; margin-top: 10px;">لقد اشتريت الباقة بنجاح! الآن قم بدعوة 3 أشخاص لتفعيل أرباحك.</p>
             
             <div class="progress-container">
                 <div class="progress-bar" id="bar"></div>
             </div>
+            <div id="counter">0 / 3 أصدقاء</div>
 
-            <div class="ref-link-box">
-                <span id="ref-text" style="font-size: 0.85rem; color: #555; word-break: break-all;">جاري إنشاء الرابط...</span>
-                <button class="copy-btn" id="copyBtn">نسخ الرابط</button>
+            <div class="ref-box">
+                <span id="ref-link" style="font-size: 0.8rem;">https://likcash.com/ref...</span>
+                <button class="copy-btn" onclick="copyLink()">نسخ</button>
             </div>
         </div>
 
-        <h3>الباقات المتوفرة</h3>
-        <div class="grid">
-            <div class="package-card">
-                <div class="lock-overlay"><span>🔒</span><p>أكمل المهمة للفتح</p></div>
-                <h3>الباقة الذهبية</h3>
-                <div style="font-size: 1.5rem; font-weight: bold; margin: 10px 0; color: var(--gold);">500 DH</div>
-            </div>
-            <div class="package-card">
-                <div class="lock-overlay"><span>🔒</span><p>أكمل المهمة للفتح</p></div>
-                <h3>باقة VIP</h3>
-                <div style="font-size: 1.5rem; font-weight: bold; margin: 10px 0; color: var(--primary);">1500 DH</div>
-            </div>
-        </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -113,41 +90,30 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // مراقبة حالة الدخول
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
-                // تعديل الرابط ليكون صالحاً (فـ CodePen غيكون رابط افتراضي)
-                document.getElementById('ref-text').innerText = `https://likcash.com/index.html?ref=${user.uid}`;
-                
-                // تحديث العداد (تجريبي)
-                updateProgress(0); 
+                document.getElementById('main-ui').style.display = 'block';
+                document.getElementById('ref-link').innerText = `https://likcash.com/index.html?ref=${user.uid}`;
             } else {
-                // إذا لم يكن مسجلاً، فـ CodePen سيقوم بإظهار تنبيه أو توجيه افتراضي
-                alert("يرجى تسجيل الدخول أولاً من الصفحة الرئيسية");
-                window.location.href = "https://codepen.io/"; // أو رابط صفحتك الأولى
+                window.location.href = "../index.html";
             }
         });
 
-        function updateProgress(count) {
-            const bar = document.getElementById('bar');
-            const counter = document.getElementById('counter');
-            let percentage = (count / 3) * 100;
-            bar.style.width = percentage + "%";
-            counter.innerText = `${count} / 3 مكتملة`;
-        }
-
-        // الأزرار
-        document.getElementById('copyBtn').onclick = () => {
-            const text = document.getElementById('ref-text').innerText;
-            navigator.clipboard.writeText(text);
-            alert("تم النسخ!");
+        // محاكاة عملية الشراء
+        window.buyPackage = () => {
+            alert("تم تسجيل طلب الشراء! الآن يجب عليك إكمال المهمة لتفعيل الباقة.");
+            document.getElementById('shop-section').style.display = 'none';
+            document.getElementById('referral-section').style.display = 'block';
         };
 
-        document.getElementById('logoutBtn').onclick = () => {
-            signOut(auth).then(() => { location.reload(); });
+        window.copyLink = () => {
+            const link = document.getElementById('ref-link').innerText;
+            navigator.clipboard.writeText(link);
+            alert("تم نسخ رابط الإحالة!");
         };
+
+        window.logout = () => signOut(auth).then(() => location.reload());
     </script>
 </body>
 </html>
