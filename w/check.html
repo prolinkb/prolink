@@ -3,137 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LikCash | الرئيسية</title>
+    <title>LikCash | المنصة الرسمية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #1a73e8; --success: #28a745; --gold: #f9ab00; --bg: #f8f9fa; }
+        :root { --primary: #1a73e8; --success: #28a745; --danger: #d93025; --bg: #ffffff; --card-bg: #f8f9fa; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         
-        body { background-color: var(--bg); color: #333; padding-bottom: 80px; min-height: 100vh; }
+        body { background-color: var(--bg); color: #333; padding-bottom: 90px; }
 
         header { 
             background: #fff; padding: 15px 20px; display: flex; 
             justify-content: space-between; align-items: center; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 1000;
+            border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000;
         }
         .logo { font-size: 1.5rem; font-weight: 900; color: var(--primary); }
 
-        .container { max-width: 500px; margin: 20px auto; padding: 0 15px; }
+        .container { max-width: 500px; margin: 10px auto; padding: 0 15px; }
 
-        /* الأقسام */
         .section { display: none; }
         .section.active { display: block; animation: fadeIn 0.3s ease; }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* الكروت */
         .card { 
-            background: #fff; border-radius: 20px; padding: 25px; 
-            margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.02); 
-            text-align: center; border: 1px solid #eee;
+            background: var(--card-bg); border-radius: 20px; padding: 25px; 
+            margin-bottom: 20px; text-align: center; border: 1px solid #f0f0f0;
         }
 
-        .price-tag { font-size: 2.5rem; font-weight: 900; color: var(--primary); margin: 10px 0; }
-        .price-tag span { font-size: 1.2rem; color: #888; }
+        .status-tag { 
+            display: inline-block; padding: 5px 15px; border-radius: 50px; 
+            font-size: 0.8rem; font-weight: bold; margin-bottom: 10px;
+        }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-active { background: #d4edda; color: #155724; }
+
+        .price-tag { font-size: 2.8rem; font-weight: 900; color: #202124; margin: 5px 0; }
+        .price-tag span { font-size: 1rem; color: #777; }
 
         .btn { 
-            width: 100%; padding: 14px; border: none; border-radius: 12px; 
+            width: 100%; padding: 15px; border: none; border-radius: 15px; 
             font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem;
         }
         .btn-primary { background: var(--primary); color: #fff; }
         .btn-success { background: var(--success); color: #fff; }
 
-        /* شريط التنقل */
+        .progress-container { background: #e0e0e0; height: 12px; border-radius: 10px; margin: 20px 0; overflow: hidden; }
+        .progress-bar { background: #f9ab00; width: 0%; height: 100%; transition: 0.8s ease; }
+
+        .ref-box { 
+            background: #fff; border: 1px dashed #ccc; padding: 10px; 
+            border-radius: 10px; font-size: 0.8rem; margin-top: 10px; word-break: break-all;
+        }
+
+        /* ستايل سجل المعاملات */
+        .transaction-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 0; border-bottom: 1px solid #eee; text-align: right;
+        }
+        .trans-info { display: flex; flex-direction: column; }
+        .trans-title { font-weight: bold; font-size: 0.9rem; }
+        .trans-date { font-size: 0.75rem; color: #888; }
+        .trans-amount { font-weight: bold; font-size: 1rem; direction: ltr; }
+        .amount-plus { color: var(--success); }
+        .amount-minus { color: var(--danger); }
+
         .bottom-nav { 
             position: fixed; bottom: 0; left: 0; right: 0; background: #fff; 
-            display: flex; justify-content: space-around; padding: 10px 0; 
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.05); z-index: 1000;
+            display: flex; justify-content: space-around; padding: 15px 0; 
+            border-top: 1px solid #eee; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
-        .nav-item { 
-            border: none; background: none; color: #aaa; cursor: pointer; 
-            display: flex; flex-direction: column; align-items: center; flex: 1;
-        }
+        .nav-item { border: none; background: none; color: #999; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
         .nav-item.active { color: var(--primary); }
 
-        /* الرصيد */
-        .balance-box { 
-            background: linear-gradient(135deg, #1a73e8, #0d47a1); 
-            color: #fff; padding: 30px; border-radius: 20px; margin-bottom: 20px; text-align: center;
-        }
-
-        /* شاشة التحميل */
-        #loading-screen { 
-            position: fixed; inset: 0; background: #fff; 
-            display: flex; flex-direction: column; justify-content: center; 
-            align-items: center; z-index: 9999; 
-        }
-
-        input, select { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; }
+        #loading-screen { position: fixed; inset: 0; background: #fff; display: flex; justify-content: center; align-items: center; z-index: 9999; }
     </style>
 </head>
 <body>
 
-    <!-- شاشة التحميل -->
-    <div id="loading-screen">
-        <div style="font-size: 1.5rem; color: var(--primary); font-weight: bold; margin-bottom: 10px;">LikCash</div>
-        <div id="loading-text">جاري التحميل...</div>
-    </div>
+    <div id="loading-screen"><b>LikCash</b></div>
 
     <header>
         <div class="logo">LikCash</div>
-        <button onclick="window.logout()" style="color:#d93025; background:none; border:none; cursor:pointer; font-weight:bold;">خروج</button>
+        <button onclick="window.logout()" style="color:#666; background:none; border:none; cursor:pointer; font-weight:bold;">تسجيل الخروج</button>
     </header>
 
-    <div class="container" id="main-content">
+    <div class="container">
         
-        <!-- القسم 1: المتجر -->
+        <!-- 1. المتجر -->
         <div id="shop" class="section active">
-            <h2 style="margin-bottom: 20px;">استثمر الآن 🚀</h2>
+            <h3 style="margin-bottom: 15px;">باقات الاستثمار</h3>
             <div class="card">
                 <h3>الباقة الذهبية</h3>
                 <div class="price-tag">100 <span>DH</span></div>
-                <p style="color: #666; margin-bottom: 25px;">فعل الباقة وابدأ بجني الأرباح اليومية.</p>
-                <button class="btn btn-primary" onclick="window.buyPackage()">شراء الباقة الآن</button>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">ربح يومي ثابت بعد إتمام مهمة الإحالة</p>
+                <button class="btn btn-primary" onclick="window.buyPackage()">شراء الآن</button>
             </div>
         </div>
 
-        <!-- القسم 2: الداشبورد -->
+        <!-- 2. المهمة -->
         <div id="dashboard" class="section">
-            <div class="balance-box">
-                <p style="opacity: 0.8;">إجمالي الرصيد</p>
-                <h1 id="user-balance">0.00 DH</h1>
-            </div>
+            <h3 style="margin-bottom: 15px;">تقدم المهمة</h3>
             <div class="card">
-                <div style="display: flex; justify-content: space-between;">
-                    <b>حالة الباقة:</b>
-                    <span id="pkg-status" style="color: #d93025; font-weight: bold;">غير نشطة</span>
+                <div id="status-badge" class="status-tag status-pending">في انتظار التفعيل</div>
+                <h4 id="pkg-name">نظام دعوة الأصدقاء</h4>
+                <div class="progress-container">
+                    <div id="bar" class="progress-bar"></div>
+                </div>
+                <p id="ref-count" style="font-weight: bold;">0 / 3 أصدقاء</p>
+                <div class="ref-box" id="my-link">جاري تحميل الرابط...</div>
+                <button class="btn btn-primary" style="margin-top: 10px; padding: 10px;" onclick="window.copyLink()">نسخ رابط الإحالة</button>
+            </div>
+        </div>
+
+        <!-- 3. سجل المعاملات -->
+        <div id="history" class="section">
+            <h3 style="margin-bottom: 15px;">سجل المعاملات</h3>
+            <div class="card" style="text-align: right;">
+                <div id="transactions-list">
+                    <p style="text-align:center; color:#999; padding:20px;">لا توجد سجلات حالياً</p>
                 </div>
             </div>
         </div>
 
-        <!-- القسم 3: السحب -->
+        <!-- 4. السحب -->
         <div id="withdraw" class="section">
-            <h2>سحب الأرباح 💰</h2>
+            <h3 style="margin-bottom: 15px;">طلب سحب</h3>
             <div class="card">
-                <p>متاح للسحب</p>
-                <h2 id="withdraw-val" style="color: var(--success); margin-bottom: 20px;">0.00 DH</h2>
-                <input type="number" id="withdraw-amount" placeholder="أدخل المبلغ">
-                <select id="withdraw-method">
-                    <option value="">اختر وسيلة الاستلام</option>
-                    <option value="cih">CIH Bank</option>
-                    <option value="cashplus">Cash Plus</option>
-                </select>
-                <button class="btn btn-success" onclick="window.requestWithdraw()">تأكيد السحب</button>
+                <p>الرصيد المتاح حالياً</p>
+                <h2 id="w-balance" style="color: var(--success); margin: 15px 0;">0.00 DH</h2>
+                <input type="number" id="amt" placeholder="أدخل المبلغ المطلوب" style="width:100%; padding:14px; margin-bottom:15px; border:1px solid #ddd; border-radius:12px; text-align:center;">
+                <button class="btn btn-success" onclick="window.requestWithdraw()">تأكيد طلب السحب</button>
             </div>
         </div>
 
     </div>
 
-    <!-- المنيو السفلي -->
     <nav class="bottom-nav">
-        <button class="nav-item active" onclick="window.nav('shop', this)">🛒 <span>المتجر</span></button>
-        <button class="nav-item" onclick="window.nav('dashboard', this)">📊 <span>باقتي</span></button>
-        <button class="nav-item" onclick="window.nav('withdraw', this)">💰 <span>السحب</span></button>
+        <button class="nav-item active" onclick="window.nav('shop', this)">المتجر</button>
+        <button class="nav-item" onclick="window.nav('dashboard', this)">المهمة</button>
+        <button class="nav-item" onclick="window.nav('history', this)">السجل</button>
+        <button class="nav-item" onclick="window.nav('withdraw', this)">السحب</button>
     </nav>
 
     <script type="module">
@@ -154,69 +162,78 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let userUID = null;
+        let uID = null;
 
-        // --- نظام الحماية ضد التعليق ---
-        const hideLoading = () => {
-            const loader = document.getElementById('loading-screen');
-            if(loader) loader.style.display = 'none';
-        };
-
-        // إذا استغرق التحميل أكثر من 7 ثواني، أظهر الصفحة على أي حال
-        setTimeout(hideLoading, 7000);
-
-        // وظائف التنقل
         window.nav = (id, btn) => {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             btn.classList.add('active');
+            if(id === 'history') loadMockTransactions();
         };
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                userUID = user.uid;
-                try {
-                    const userRef = doc(db, "users", user.uid);
-                    const snap = await getDoc(userRef);
-                    
-                    if (!snap.exists()) {
-                        const newUser = { balance: 0, hasPackage: false };
-                        await setDoc(userRef, newUser);
-                        updateUI(newUser);
-                    } else {
-                        updateUI(snap.data());
-                    }
-                } catch (err) {
-                    console.error("Firestore Error:", err);
+                uID = user.uid;
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if (snap.exists()) {
+                    updateUI(snap.data());
+                } else {
+                    const d = { balance: 0, hasPackage: false, referrals: 0 };
+                    await setDoc(doc(db, "users", user.uid), d);
+                    updateUI(d);
                 }
-                hideLoading();
-            } else {
-                window.location.href = "../index.html";
-            }
+                document.getElementById('loading-screen').style.display = 'none';
+                document.getElementById('my-link').innerText = `https://likcash.com/join?ref=${user.uid}`;
+            } else { window.location.href = "../index.html"; }
         });
 
         function updateUI(data) {
-            document.getElementById('user-balance').innerText = (data.balance || 0).toFixed(2) + " DH";
-            document.getElementById('withdraw-val').innerText = (data.balance || 0).toFixed(2) + " DH";
-            if(data.hasPackage) {
-                document.getElementById('pkg-status').innerText = "نشطة ✅";
-                document.getElementById('pkg-status').style.color = "var(--success)";
+            document.getElementById('w-balance').innerText = (data.balance || 0).toFixed(2) + " DH";
+            const refs = data.referrals || 0;
+            document.getElementById('ref-count').innerText = `${refs} / 3 أصدقاء`;
+            document.getElementById('bar').style.width = (Math.min(refs, 3) / 3 * 100) + "%";
+
+            if (refs >= 3) {
+                const b = document.getElementById('status-badge');
+                b.innerText = "الحساب نشط";
+                b.className = "status-tag status-active";
             }
         }
 
+        function loadMockTransactions() {
+            const list = document.getElementById('transactions-list');
+            const logs = [
+                { title: "سحب رصيد بنكي", date: "2026-05-01", amount: "-100.00", type: "minus" },
+                { title: "أرباح يومية", date: "2026-04-30", amount: "+10.00", type: "plus" }
+            ];
+            list.innerHTML = logs.map(log => `
+                <div class="transaction-item">
+                    <div class="trans-info">
+                        <span class="trans-title">${log.title}</span>
+                        <span class="trans-date">${log.date}</span>
+                    </div>
+                    <div class="trans-amount ${log.type === 'plus' ? 'amount-plus' : 'amount-minus'}">
+                        ${log.amount} DH
+                    </div>
+                </div>
+            `).join('');
+        }
+
         window.buyPackage = async () => {
-            if(!userUID) return;
             try {
-                await updateDoc(doc(db, "users", userUID), { hasPackage: true });
-                alert("تم الشراء بنجاح!");
-                location.reload();
-            } catch(e) { alert("حدث خطأ في الاتصال"); }
+                await updateDoc(doc(db, "users", uID), { hasPackage: true });
+                alert("تم شراء الباقة. يرجى إتمام المهمة للتفعيل.");
+            } catch(e) { alert("حدث خطأ"); }
         };
 
-        window.requestWithdraw = () => alert("سيتم مراجعة طلبك.");
-        window.logout = () => signOut(auth);
+        window.copyLink = () => {
+            navigator.clipboard.writeText(document.getElementById('my-link').innerText);
+            alert("تم نسخ الرابط.");
+        };
 
+        window.logout = () => signOut(auth);
+        window.requestWithdraw = () => alert("طلبك قيد المعالجة.");
     </script>
 </body>
 </html>
