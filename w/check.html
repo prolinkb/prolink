@@ -3,80 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LikCash | شراء وتفعيل الباقة</title>
+    <title>LikCash | النظام المتكامل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #1a73e8; --gold: #f9ab00; --bg: #f1f3f4; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background-color: var(--bg); color: #333; }
-
-        header { background: #fff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .logo { font-size: 1.5rem; font-weight: bold; color: var(--primary); }
-
-        .container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
-
-        /* قسم الباقات */
-        .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
-        .price-tag { font-size: 2rem; font-weight: 800; color: #202124; margin: 10px 0; }
-        .buy-btn { background: var(--primary); color: #fff; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
-        .buy-btn:hover { background: #1557b0; }
-
-        /* قسم المهمة (مخفي في الأول) */
-        #referral-section { display: none; border-top: 5px solid var(--gold); }
-        .status-badge { background: #fff4e5; color: #b06000; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; display: inline-block; margin-bottom: 10px; }
+        :root { --primary: #1a73e8; --success: #28a745; --gold: #f9ab00; --bg: #f0f2f5; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         
-        .progress-container { background: #eee; height: 15px; border-radius: 10px; margin: 20px 0; overflow: hidden; }
-        .progress-bar { background: var(--gold); width: 0%; height: 100%; transition: 0.5s; }
+        body { background-color: var(--bg); color: #333; padding-bottom: 70px; }
 
-        .ref-box { background: #f8f9fa; border: 1px dashed #ccc; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-        .copy-btn { background: #333; color: #fff; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        /* الهيدر */
+        header { 
+            background: #fff; padding: 15px 5%; display: flex; 
+            justify-content: space-between; align-items: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); }
 
-        #loading { text-align: center; margin-top: 50px; font-weight: bold; }
+        .container { max-width: 500px; margin: 20px auto; padding: 0 15px; }
+
+        /* الكروت والتصميم العام */
+        .card { 
+            background: #fff; border-radius: 15px; padding: 20px; 
+            margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+            text-align: center; border: 1px solid #eef;
+        }
+
+        .price-tag { font-size: 2.2rem; font-weight: 800; color: var(--primary); margin: 10px 0; }
+        .price-tag span { font-size: 1rem; color: #777; }
+
+        .btn { 
+            width: 100%; padding: 12px; border: none; border-radius: 10px; 
+            font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1rem;
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+
+        /* الأقسام (مخفية افتراضياً) */
+        .section { display: none; animation: fadeIn 0.4s ease; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* شريط التنقل السفلي */
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; right: 0; background: #fff; 
+            display: flex; justify-content: space-around; padding: 12px 0; 
+            box-shadow: 0 -2px 15px rgba(0,0,0,0.1); border-top-left-radius: 20px; border-top-right-radius: 20px;
+        }
+        .nav-item { 
+            border: none; background: none; color: #888; cursor: pointer; 
+            display: flex; flex-direction: column; align-items: center; font-size: 0.8rem;
+        }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-icon { font-size: 1.2rem; margin-bottom: 2px; }
+
+        /* واجهة الرصيد */
+        .balance-box { background: linear-gradient(135deg, #1a73e8, #1557b0); color: #fff; padding: 25px; border-radius: 15px; margin-bottom: 20px; }
+        
+        /* الحقول */
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+
+        #loading-screen { position: fixed; inset: 0; background: #fff; display: flex; justify-content: center; align-items: center; z-index: 1000; }
     </style>
 </head>
 <body>
 
+    <div id="loading-screen"><b>جاري التحميل...</b></div>
+
     <header>
         <div class="logo">LikCash</div>
-        <button onclick="logout()" style="color:red; cursor:pointer; background:none; border:none;">خروج</button>
+        <button onclick="logout()" style="color:#d93025; background:none; border:none; cursor:pointer; font-weight:bold;">خروج</button>
     </header>
 
-    <div id="loading">جاري التحميل...</div>
-
-    <div class="container" id="main-ui" style="display: none;">
+    <div class="container">
         
-        <!-- قسم اختيار الباقة -->
-        <div id="shop-section">
-            <h2 style="margin-bottom: 20px;">1. اختر باقة الاستثمار</h2>
+        <!-- 1. قسم المتجر (Shop) -->
+        <div id="shop" class="section active">
+            <h2 style="margin-bottom: 15px;">استثمر الآن 🚀</h2>
             <div class="card">
+                <div style="color: var(--gold); font-size: 0.9rem; font-weight: bold;">الباقة الأكثر مبيعاً</div>
                 <h3>الباقة الذهبية</h3>
-                <p>فعل الباقة وابدأ بجني الأرباح بعد إكمال المهمة</p>
-                <div class="price-tag">100 DH</div>
-                <button class="buy-btn" onclick="buyPackage()">شراء الباقة الآن</button>
+                <div class="price-tag">100 <span>DH</span></div>
+                <p style="color: #666; margin-bottom: 20px;">اربح 10 DH يومياً بعد التفعيل</p>
+                <button class="btn btn-primary" onclick="buyPackage()">شراء وتفعيل الآن</button>
             </div>
         </div>
 
-        <!-- قسم المهمة بعد الشراء -->
-        <div id="referral-section" class="card">
-            <div class="status-badge">بانتظار التفعيل ⏳</div>
-            <h2>2. تفعيل الباقة (دعوة 3 أصدقاء)</h2>
-            <p style="color: #666; margin-top: 10px;">لقد اشتريت الباقة بنجاح! الآن قم بدعوة 3 أشخاص لتفعيل أرباحك.</p>
-            
-            <div class="progress-container">
-                <div class="progress-bar" id="bar"></div>
+        <!-- 2. قسم لوحة التحكم (Dashboard) -->
+        <div id="dashboard" class="section">
+            <div class="balance-box">
+                <p>إجمالي الأرباح</p>
+                <h1 id="user-balance">0.00 DH</h1>
             </div>
-            <div id="counter">0 / 3 أصدقاء</div>
+            <div class="card">
+                <div style="text-align: right; margin-bottom: 15px;">
+                    <b>حالة الباقة:</b> <span id="pkg-status" style="color: red;">غير مفعلة</span>
+                </div>
+                <div id="mission-area">
+                    <p style="font-size: 0.9rem; color: #555;">أكمل المهمة لتفعيل الأرباح:</p>
+                    <div style="background: #eee; height: 10px; border-radius: 5px; margin: 10px 0;">
+                        <div id="progress" style="background: var(--gold); width: 0%; height: 100%; border-radius: 5px; transition: 0.5s;"></div>
+                    </div>
+                    <small id="ref-count">0 / 3 أصدقاء</small>
+                </div>
+            </div>
+        </div>
 
-            <div class="ref-box">
-                <span id="ref-link" style="font-size: 0.8rem;">https://likcash.com/ref...</span>
-                <button class="copy-btn" onclick="copyLink()">نسخ</button>
+        <!-- 3. قسم السحب (Withdraw) -->
+        <div id="withdraw" class="section">
+            <h2>سحب الأموال 💰</h2>
+            <div class="card">
+                <p>الرصيد القابل للسحب</p>
+                <h2 style="color: var(--success);" id="withdraw-balance">0.00 DH</h2>
+                <hr style="margin: 20px 0; opacity: 0.1;">
+                <input type="number" id="amount" placeholder="المبلغ بالدرهم">
+                <select id="method">
+                    <option value="">اختر البنك أو وسيلة الاستلام</option>
+                    <option value="cih">CIH Bank</option>
+                    <option value="bmce">BMCE</option>
+                    <option value="wafacash">Wafacash</option>
+                </select>
+                <button class="btn btn-success" onclick="requestWithdraw()">تأكيد طلب السحب</button>
             </div>
         </div>
 
     </div>
 
+    <!-- شريط التنقل السفلي -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="nav('shop')"><span class="nav-icon">🛒</span>المتجر</button>
+        <button class="nav-item" onclick="nav('dashboard')"><span class="nav-icon">📊</span>باقتي</button>
+        <button class="nav-item" onclick="nav('withdraw')"><span class="nav-icon">💰</span>السحب</button>
+    </nav>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
@@ -89,31 +152,75 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        onAuthStateChanged(auth, (user) => {
+        let currentUser = null;
+
+        // 1. مراقبة حالة المستخدم وجلب بياناته من Firestore
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('main-ui').style.display = 'block';
-                document.getElementById('ref-link').innerText = `https://likcash.com/index.html?ref=${user.uid}`;
+                currentUser = user;
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                
+                if (!userDoc.exists()) {
+                    // إذا كان مستخدم جديد، ننشئ له بروفايل
+                    await setDoc(doc(db, "users", user.uid), {
+                        balance: 0,
+                        hasPackage: false,
+                        refCount: 0
+                    });
+                } else {
+                    const data = userDoc.data();
+                    updateUI(data);
+                }
+                document.getElementById('loading-screen').style.display = 'none';
             } else {
-                window.location.href = "../index.html";
+                window.location.href = "login.html"; 
             }
         });
 
-        // محاكاة عملية الشراء
-        window.buyPackage = () => {
-            alert("تم تسجيل طلب الشراء! الآن يجب عليك إكمال المهمة لتفعيل الباقة.");
-            document.getElementById('shop-section').style.display = 'none';
-            document.getElementById('referral-section').style.display = 'block';
+        // تحديث الواجهة بالبيانات الحقيقية
+        function updateUI(data) {
+            document.getElementById('user-balance').innerText = `${data.balance.toFixed(2)} DH`;
+            document.getElementById('withdraw-balance').innerText = `${data.balance.toFixed(2)} DH`;
+            
+            if(data.hasPackage) {
+                document.getElementById('pkg-status').innerText = "نشطة ✅";
+                document.getElementById('pkg-status').style.color = "green";
+                document.getElementById('progress').style.width = "100%";
+                document.getElementById('ref-count').innerText = "تم التفعيل بنجاح";
+            }
+        }
+
+        // 2. شراء الباقة
+        window.buyPackage = async () => {
+            if(!currentUser) return;
+            try {
+                await updateDoc(doc(db, "users", currentUser.uid), {
+                    hasPackage: true // في الحقيقة، يتم هذا بعد التأكد من الدفع
+                });
+                alert("تم شراء الباقة بنجاح! انتقل للوحة التحكم");
+                location.reload();
+            } catch (e) { alert("خطأ في العملية"); }
         };
 
-        window.copyLink = () => {
-            const link = document.getElementById('ref-link').innerText;
-            navigator.clipboard.writeText(link);
-            alert("تم نسخ رابط الإحالة!");
+        // 3. السحب
+        window.requestWithdraw = () => {
+            const amt = document.getElementById('amount').value;
+            if(amt < 100) return alert("الحد الأدنى للسحب هو 100 درهم");
+            alert("تم إرسال طلب السحب للمراجعة. سيصلك المبلغ خلال 24 ساعة.");
         };
 
-        window.logout = () => signOut(auth).then(() => location.reload());
+        // التنقل
+        window.nav = (id) => {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        };
+
+        window.logout = () => signOut(auth);
+
     </script>
 </body>
 </html>
