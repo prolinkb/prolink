@@ -13,7 +13,6 @@
             --success: #1e8e3e;
             --border: #e5e7eb; 
             --bg-body: #f9fafb;
-            --logo-gold: #c5a059; 
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -31,13 +30,13 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.03); 
         }
 
-        .logo-text {
-            font-size: 36px;
-            font-weight: 700;
-            color: var(--logo-gold);
-            margin-bottom: 10px;
-            font-family: "Georgia", serif;
-            letter-spacing: -1px;
+        .brand-logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .header-section { margin-bottom: 30px; }
@@ -47,21 +46,31 @@
         .form-section { display: none; flex-direction: column; gap: 18px; text-align: left; }
         .form-section.active { display: flex; }
 
-        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        .input-group { display: flex; flex-direction: column; gap: 6px; position: relative; }
         .input-group label { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-left: 2px; }
         
         input { 
             width: 100%; 
-            padding: 14px 16px; 
+            padding: 14px 45px 14px 16px; /* زيادة التباعد من اليمين للأيقونة */
             border: 1px solid var(--border); 
             border-radius: 10px; 
             font-size: 15px; 
             outline: none; 
             transition: 0.2s; 
             background: #fff;
-            text-align: left; /* الحقول كتبقى يسار باش تناسب الايميل */
         }
         input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
+
+        /* أيقونة العين */
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 38px; /* ضبط التموضع حسب طول الليبل */
+            cursor: pointer;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
         
         .btn-submit { 
             background: var(--primary); 
@@ -107,9 +116,8 @@
 <body>
 
     <div class="auth-card">
-        <div class="logo-text">LikCash</div>
+        <img src="https://i.postimg.cc/fyxKhN6c/7FD9749B-FE8C-460E-A5F7-F2BF692D7C59.png" alt="Logo" class="brand-logo">
 
-        <!-- هاد العناوين كتبدل على حسب واش تسجيل دخول أو إنشاء حساب -->
         <div id="header-login" class="header-section">
             <h1>Sign in to your account</h1>
             <p>Welcome back! Please enter your details.</p>
@@ -120,7 +128,7 @@
             <p>Get started by creating your account.</p>
         </div>
 
-        <!-- فورم تسجيل الدخول -->
+        <!-- Login Form -->
         <div id="form-login" class="form-section active">
             <div class="input-group">
                 <label>Email</label>
@@ -129,11 +137,14 @@
             <div class="input-group">
                 <label>Password</label>
                 <input type="password" id="l-pass" placeholder="••••••••">
+                <span class="toggle-password" onclick="togglePass('l-pass')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </span>
             </div>
             <button class="btn-submit" onclick="executeAuth('Manual-Login')">Sign In</button>
         </div>
 
-        <!-- فورم إنشاء حساب -->
+        <!-- Signup Form -->
         <div id="form-signup" class="form-section">
             <div class="input-group">
                 <label>Full Name</label>
@@ -146,6 +157,9 @@
             <div class="input-group">
                 <label>Password</label>
                 <input type="password" id="s-pass" placeholder="••••••••">
+                <span class="toggle-password" onclick="togglePass('s-pass')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </span>
             </div>
             <button class="btn-submit" onclick="executeAuth('Manual-Signup')">Sign Up</button>
         </div>
@@ -168,7 +182,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // معلومات Firebase ديالك بقات محفوضة
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
             authDomain: "likcash-auth.firebaseapp.com",
@@ -184,6 +197,12 @@
 
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxf89GX0Uct9WujppeQKEIPdxiEHgJpCXpQfsL1i0uBlu79yYz46kG8ELiXTOdhaQ5Jmg/exec';
         const statusBox = document.getElementById('status');
+
+        // وظيفة إظهار وإخفاء كلمة المرور
+        window.togglePass = (id) => {
+            const el = document.getElementById(id);
+            el.type = el.type === 'password' ? 'text' : 'password';
+        };
 
         window.switchTab = (mode) => {
             const isLogin = mode === 'login';
