@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LikCash | Authentification</title>
     <style>
-        /* المتغيرات اللونية بناءً على الصور */
         :root { 
             --primary: #000000; 
             --text-main: #1a1a1b;
@@ -32,12 +31,11 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.03); 
         }
 
-        /* الشعار النصي الذهبي */
         .logo-text {
             font-size: 36px;
             font-weight: 700;
             color: var(--logo-gold);
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             font-family: "Georgia", serif;
             letter-spacing: -1px;
         }
@@ -61,6 +59,7 @@
             outline: none; 
             transition: 0.2s; 
             background: #fff;
+            text-align: left; /* الحقول كتبقى يسار باش تناسب الايميل */
         }
         input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
         
@@ -110,6 +109,7 @@
     <div class="auth-card">
         <div class="logo-text">LikCash</div>
 
+        <!-- هاد العناوين كتبدل على حسب واش تسجيل دخول أو إنشاء حساب -->
         <div id="header-login" class="header-section">
             <h1>Sign in to your account</h1>
             <p>Welcome back! Please enter your details.</p>
@@ -120,7 +120,7 @@
             <p>Get started by creating your account.</p>
         </div>
 
-        <!-- Login Form -->
+        <!-- فورم تسجيل الدخول -->
         <div id="form-login" class="form-section active">
             <div class="input-group">
                 <label>Email</label>
@@ -133,18 +133,18 @@
             <button class="btn-submit" onclick="executeAuth('Manual-Login')">Sign In</button>
         </div>
 
-        <!-- Signup Form -->
+        <!-- فورم إنشاء حساب -->
         <div id="form-signup" class="form-section">
             <div class="input-group">
-                <label>الاسم الكامل</label>
+                <label>Full Name</label>
                 <input type="text" id="s-name" placeholder="John Doe">
             </div>
             <div class="input-group">
-                <label>البريد الإلكتروني</label>
+                <label>Email Address</label>
                 <input type="email" id="s-email" placeholder="johndoe@mail.com">
             </div>
             <div class="input-group">
-                <label>كلمة المرور</label>
+                <label>Password</label>
                 <input type="password" id="s-pass" placeholder="••••••••">
             </div>
             <button class="btn-submit" onclick="executeAuth('Manual-Signup')">Sign Up</button>
@@ -168,6 +168,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // معلومات Firebase ديالك بقات محفوضة
         const firebaseConfig = {
             apiKey: "AIzaSyBP77A_0dc3Z1H6jrUmhtapLF1w0Gbe4B8",
             authDomain: "likcash-auth.firebaseapp.com",
