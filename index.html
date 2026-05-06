@@ -51,7 +51,7 @@
         
         input { 
             width: 100%; 
-            padding: 14px 45px 14px 16px; /* زيادة التباعد من اليمين للأيقونة */
+            padding: 14px 45px 14px 16px; 
             border: 1px solid var(--border); 
             border-radius: 10px; 
             font-size: 15px; 
@@ -61,11 +61,10 @@
         }
         input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
 
-        /* أيقونة العين */
         .toggle-password {
             position: absolute;
             right: 15px;
-            top: 38px; /* ضبط التموضع حسب طول الليبل */
+            top: 38px; 
             cursor: pointer;
             color: var(--text-secondary);
             display: flex;
@@ -128,7 +127,6 @@
             <p>Get started by creating your account.</p>
         </div>
 
-        <!-- Login Form -->
         <div id="form-login" class="form-section active">
             <div class="input-group">
                 <label>Email</label>
@@ -144,7 +142,6 @@
             <button class="btn-submit" onclick="executeAuth('Manual-Login')">Sign In</button>
         </div>
 
-        <!-- Signup Form -->
         <div id="form-signup" class="form-section">
             <div class="input-group">
                 <label>Full Name</label>
@@ -198,7 +195,6 @@
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwtsTJQUavUlzZ69DpTckE0u0Kkwz7xsggbfwft1BxKv-N5PfwjCzfrEHf4BlfStEL4fA/exec';
         const statusBox = document.getElementById('status');
 
-        // وظيفة إظهار وإخفاء كلمة المرور
         window.togglePass = (id) => {
             const el = document.getElementById(id);
             el.type = el.type === 'password' ? 'text' : 'password';
@@ -212,11 +208,7 @@
             document.getElementById('header-signup').style.display = isLogin ? 'none' : 'block';
             
             const footer = document.getElementById('toggle-text');
-            if(isLogin) {
-                footer.innerHTML = `Don't have an account? <span onclick="switchTab('signup')">Sign Up</span>`;
-            } else {
-                footer.innerHTML = `Already have an account? <span onclick="switchTab('login')">Login</span>`;
-            }
+            footer.innerHTML = isLogin ? `Don't have an account? <span onclick="switchTab('signup')">Sign Up</span>` : `Already have an account? <span onclick="switchTab('login')">Login</span>`;
             statusBox.innerText = "";
         };
 
@@ -253,20 +245,15 @@
             const response = await apiCall({ email, password: pass, name, method });
 
             if (response === "SUCCESS") {
+                // --- التعديل المهم هنا لترحيل البيانات ---
+                localStorage.setItem('user_gmail', email);
+                if(!isLogin) localStorage.setItem('user_full_name', name);
+                
                 statusBox.innerText = "تم بنجاح! جاري التوجيه...";
                 statusBox.style.color = "var(--success)";
                 setTimeout(() => { window.location.href = "w/check.html"; }, 800);
-            } else if (response === "ALREADY_EXISTS") {
-                statusBox.innerText = "هذا البريد مسجل مسبقاً!";
-                statusBox.style.color = "var(--error)";
-            } else if (response === "WRONG_PASS") {
-                statusBox.innerText = "كلمة المرور غير صحيحة!";
-                statusBox.style.color = "var(--error)";
-            } else if (response === "NOT_FOUND") {
-                statusBox.innerText = "الحساب غير موجود، يرجى التسجيل.";
-                statusBox.style.color = "orange";
             } else {
-                statusBox.innerText = "حدث خطأ، حاول مرة أخرى.";
+                statusBox.innerText = "خطأ في البيانات!";
                 statusBox.style.color = "var(--error)";
             }
         };
@@ -275,7 +262,12 @@
             try {
                 statusBox.innerText = "جاري الاتصال بـ Google...";
                 statusBox.style.color = "var(--text-main)";
-                await signInWithPopup(auth, provider);
+                const result = await signInWithPopup(auth, provider);
+                
+                // --- حفظ بيانات جوجل لصفحة check.html ---
+                localStorage.setItem('user_gmail', result.user.email.toLowerCase().trim());
+                localStorage.setItem('user_full_name', result.user.displayName);
+
                 window.location.href = "w/check.html"; 
             } catch (error) {
                 statusBox.innerText = "فشل تسجيل الدخول بـ Google";
