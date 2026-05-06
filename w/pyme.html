@@ -2,116 +2,153 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LikCash | إتمام الدفع</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LikCash - إتمام الدفع</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #000; --bg: #f9fafb; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; }
-        .pyme-card { background: #fff; max-width: 400px; margin: 0 auto; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        input, select { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
-        .btn-send { background: var(--primary); color: #fff; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        #status { margin-top: 15px; font-size: 14px; }
-        .preview-img { width: 100%; max-height: 200px; object-fit: contain; margin: 10px 0; display: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
+        body { background-color: #f8f9fa; padding: 20px; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        
+        .pyme-card { background: #fff; width: 100%; max-width: 420px; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
+        
+        .header-pyme { margin-bottom: 25px; }
+        .header-pyme h2 { font-size: 22px; font-weight: 800; color: #000; }
+        .header-pyme p { font-size: 14px; color: #666; margin-top: 5px; }
+
+        .info-box { background: #fdfdfd; border: 1px dashed #ddd; padding: 15px; border-radius: 15px; margin-bottom: 20px; }
+        .selected-plan { font-size: 20px; font-weight: 900; color: #000; }
+
+        .input-group { text-align: right; margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 13px; font-weight: 700; color: #444; margin-bottom: 8px; margin-right: 5px; }
+        
+        input, select { 
+            width: 100%; padding: 14px; border: 1.5px solid #eee; border-radius: 12px; 
+            font-size: 15px; outline: none; transition: 0.3s; background: #fafafa;
+        }
+        input:focus { border-color: #000; background: #fff; }
+
+        .upload-area { 
+            border: 2px dashed #eee; padding: 20px; border-radius: 15px; cursor: pointer; 
+            margin-bottom: 20px; transition: 0.3s;
+        }
+        .upload-area:hover { border-color: #000; background: #f9f9f9; }
+        #imgPreview { width: 100%; max-height: 150px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px; }
+
+        .btn-confirm { 
+            background: #000; color: #fff; border: none; padding: 16px; width: 100%; 
+            border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s;
+        }
+        .btn-confirm:disabled { background: #ccc; cursor: not-allowed; }
+
+        #statusMsg { margin-top: 15px; font-size: 13px; font-weight: 600; min-height: 20px; }
     </style>
 </head>
 <body>
 
     <div class="pyme-card">
-        <h2>إتمام الطلب</h2>
-        <p style="color: #666; font-size: 14px;">يرجى رفع صورة الوصل وتأكيد المعلومات</p>
-        
-        <input type="text" id="userName" placeholder="الاسم الكامل">
-        
-        <select id="planSelect">
-            <option value="50 DH">باقة 50 درهم</option>
-            <option value="100 DH">باقة 100 درهم</option>
-            <option value="200 DH">باقة 200 درهم</option>
-        </select>
+        <div class="header-pyme">
+            <h2>تأكيد الطلب</h2>
+            <p>يرجى رفع وصل التحويل لإتمام العملية</p>
+        </div>
 
-        <input type="file" id="receiptImg" accept="image/*" onchange="previewImage(event)">
-        <img id="imgPreview" class="preview-img">
+        <div class="info-box">
+            <p style="font-size: 12px; color: #888;">الباقة المختارة:</p>
+            <div class="selected-plan" id="planDisplay">---</div>
+        </div>
 
-        <button class="btn-send" id="submitBtn" onclick="uploadAndSend()">إرسال الطلب الآن</button>
-        <div id="status"></div>
+        <div class="input-group">
+            <label>اسمك الكامل (كما في الحساب)</label>
+            <input type="text" id="custName" placeholder="مثال: محمد العلوي">
+        </div>
+
+        <div class="input-group">
+            <label>وصل التحويل (صورة)</label>
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-cloud-upload-alt" style="font-size: 24px; color: #aaa;"></i>
+                <p style="font-size: 12px; color: #aaa; margin-top: 5px;">اضغط هنا لرفع الصورة</p>
+                <input type="file" id="fileInput" hidden accept="image/*" onchange="handleFile(this)">
+                <img id="imgPreview">
+            </div>
+        </div>
+
+        <button class="btn-confirm" id="sendBtn" onclick="submitToSheet()">إرسال الطلب الآن</button>
+        <div id="statusMsg"></div>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxTK9DCO--kObWjqKuW54o0MXcmFCwngFHRCyd3Q4oP4eQRpCAVx4LDh7vfYRnpx4YgWQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxTK9DCO--kObWjqKuW54o0MXcmFCwngFHRCyd3Q4oP4eQRpCAVx4LDh7vfYRnpx4YgWQ/exec";
         
-        // 1. جلب الجيميل المحفوظ من الصفحة الأولى
+        // جلب البيانات من الذاكرة
         const userEmail = localStorage.getItem('user_gmail');
+        const selectedPrice = localStorage.getItem('selected_plan_price') || "غير محدد";
 
-        if (!userEmail) {
-            window.location.href = "index.html";
-        }
+        if (!userEmail) { window.location.href = "index.html"; }
 
-        function previewImage(event) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                const img = document.getElementById('imgPreview');
-                img.src = reader.result;
-                img.style.display = "block";
+        // عرض الثمن المختار
+        document.getElementById('planDisplay').innerText = selectedPrice;
+
+        let base64Img = "";
+
+        function handleFile(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    base64Img = e.target.result;
+                    document.getElementById('imgPreview').src = base64Img;
+                    document.getElementById('imgPreview').style.display = "block";
+                };
+                reader.readAsDataURL(file);
             }
-            reader.readAsDataURL(event.target.files[0]);
         }
 
-        async function uploadAndSend() {
-            const name = document.getElementById('userName').value;
-            const plan = document.getElementById('planSelect').value;
-            const fileInput = document.getElementById('receiptImg');
-            const btn = document.getElementById('submitBtn');
-            const status = document.getElementById('status');
+        async function submitToSheet() {
+            const name = document.getElementById('custName').value.trim();
+            const btn = document.getElementById('sendBtn');
+            const status = document.getElementById('statusMsg');
 
-            if (!name || !fileInput.files[0]) {
-                alert("يرجى ملء الاسم ورفع صورة الوصل");
+            if (!name || !base64Img) {
+                alert("يرجى إدخال اسمك ورفع صورة الوصل");
                 return;
             }
 
             btn.disabled = true;
             btn.innerText = "جاري الإرسال...";
-            status.innerText = "يتم الآن رفع الصورة ومعالجة الطلب...";
+            status.style.color = "#666";
+            status.innerText = "يتم الآن معالجة طلبك...";
 
-            // تحويل الصورة لـ Base64 ليرسلها لـ Apps Script
-            const reader = new FileReader();
-            reader.readAsDataURL(fileInput.files[0]);
-            reader.onload = async () => {
-                const base64Image = reader.result;
-                
-                // توليد كود مرجع عشوائي
-                const refCode = "REF-" + Math.floor(Math.random() * 1000000);
-
-                const payload = {
-                    name: name,
-                    email: userEmail, // الجيميل كيدوز أوتوماتيكياً هنا
-                    plan: plan,
-                    refCode: refCode,
-                    receipt: base64Image // الصورة غاتمشي ككود لـ Apps Script
-                };
-
-                try {
-                    const response = await fetch(SCRIPT_URL, {
-                        method: "POST",
-                        body: JSON.stringify(payload)
-                    });
-                    
-                    const result = await response.json();
-
-                    if (result.result === "SUCCESS") {
-                        status.style.color = "green";
-                        status.innerText = "تم إرسال طلبك بنجاح!";
-                        setTimeout(() => {
-                            window.location.href = "w/check.html"; // الرجوع للداشبورد
-                        }, 1500);
-                    } else {
-                        throw new Error();
-                    }
-                } catch (err) {
-                    btn.disabled = false;
-                    btn.innerText = "إرسال الطلب الآن";
-                    status.style.color = "red";
-                    status.innerText = "حدث خطأ في الإرسال، حاول مرة أخرى.";
-                }
+            const payload = {
+                method: "POST", // للتأكد من استقبالها في Apps Script
+                name: name,
+                email: userEmail,
+                plan: selectedPrice,
+                receipt: base64Img,
+                refCode: "LC" + Math.floor(10000 + Math.random() * 90000)
             };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                });
+                
+                const resData = await response.json();
+
+                if (resData.result === "SUCCESS") {
+                    status.style.color = "green";
+                    status.innerText = "تم إرسال الطلب! جاري التوجيه للداشبورد...";
+                    setTimeout(() => {
+                        window.location.href = "w/check.html";
+                    }, 2000);
+                } else {
+                    throw new Error();
+                }
+            } catch (err) {
+                btn.disabled = false;
+                btn.innerText = "إرسال الطلب الآن";
+                status.style.color = "red";
+                status.innerText = "حدث خطأ. تأكد من إعدادات Apps Script.";
+            }
         }
     </script>
 </body>
