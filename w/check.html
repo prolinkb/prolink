@@ -2,182 +2,120 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LikCash PRO - الداشبورد</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LikCash | الداشبورد</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f8f9fa; color: #1a1a1a; }
+        :root {
+            --primary: #000;
+            --bg: #f4f7f6;
+            --card-bg: #fff;
+            --text: #333;
+            --success: #1e8e3e;
+            --pending: #f2994a;
+        }
 
-        /* Header */
-        .header { background: #fff; padding: 15px 20px; display: flex; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000; }
-        .logo { flex-grow: 1; text-align: center; font-weight: 900; font-size: 20px; letter-spacing: -1px; }
-        .menu-btn { font-size: 20px; cursor: pointer; width: 30px; }
-
-        /* Sidebar */
-        .sidebar { position: fixed; right: -100%; top: 0; width: 80%; max-width: 300px; height: 100%; background: #fff; z-index: 2000; transition: 0.3s; padding: 40px 20px; box-shadow: -10px 0 30px rgba(0,0,0,0.05); }
-        .sidebar.active { right: 0; }
-        .nav-link { padding: 16px; border-radius: 12px; cursor: pointer; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; font-weight: 600; color: #555; transition: 0.2s; }
-        .nav-link.active { background: #000; color: #fff; }
-
-        /* Content Area */
-        .main-container { padding: 20px; max-width: 450px; margin: auto; min-height: 85vh; }
-        .view-section { display: none; }
-        .view-section.active { display: block; animation: fadeInUp 0.4s ease; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Cards & Buttons */
-        .plan-card { background: #fff; border: 1px solid #eee; border-radius: 25px; padding: 25px; margin-bottom: 20px; text-align: center; }
-        .price-tag { font-size: 32px; font-weight: 900; margin: 10px 0; display: block; }
-        .btn-buy { background: #000; color: #fff; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; }
-
-        /* سجل الطلبات */
-        .order-box { background: #fff; border: 2px solid #eee; border-radius: 22px; padding: 20px; margin-bottom: 15px; position: relative; overflow: hidden; }
-        .status-pill { font-size: 10px; padding: 5px 12px; border-radius: 20px; font-weight: 800; float: left; }
-        .pill-wait { background: #fff3cd; color: #856404; }
-        .pill-ok { background: #d4edda; color: #155724; border: 1px solid #155724; }
-
-        .promo-box { background: #fdfdfd; padding: 15px; border-radius: 15px; margin-top: 15px; text-align: center; border: 1px dashed #ddd; }
-        .code-display { font-family: monospace; font-size: 22px; font-weight: 900; color: #000; letter-spacing: 2px; }
-        .blurred { filter: blur(6px); user-select: none; }
-
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1500; backdrop-filter: blur(4px); }
-        .overlay.active { display: block; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .user-info { font-size: 14px; color: #666; }
         
-        .loading-text { text-align: center; padding: 50px; color: #999; font-size: 14px; }
+        .orders-container { display: grid; gap: 15px; max-width: 600px; margin: 0 auto; }
+        .order-card { 
+            background: var(--card-bg); 
+            padding: 20px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-right: 5px solid var(--primary);
+        }
+
+        .status { font-weight: bold; padding: 5px 10px; border-radius: 5px; font-size: 12px; }
+        .status-pending { background: #fff4e5; color: var(--pending); }
+        .status-success { background: #e6f4ea; color: var(--success); }
+
+        .btn-buy { 
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: #fff; border: none; padding: 15px 40px;
+            border-radius: 30px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
         
-        /* تعريف المستخدم (للتجربة) */
-        .user-badge { background: #f0f0f0; padding: 5px 15px; border-radius: 10px; font-size: 12px; margin-bottom: 10px; display: inline-block; }
+        #loader { text-align: center; margin-top: 50px; display: none; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="menu-btn" onclick="toggleNav()"><i class="fas fa-bars"></i></div>
-        <div class="logo">LikCash PRO</div>
+        <h2>باقاتي</h2>
+        <div class="user-info" id="userDisplay">...</div>
     </div>
 
-    <div class="overlay" id="overlay" onclick="toggleNav()"></div>
+    <div id="loader">جاري تحميل باقاتك...</div>
+    <div id="ordersList" class="orders-container"></div>
 
-    <div class="sidebar" id="sidebar">
-        <div class="nav-link active" id="tab-shop" onclick="showTab('shop')"><i class="fas fa-shopping-cart"></i> المتجر</div>
-        <div class="nav-link" id="tab-history" onclick="showTab('history')"><i class="fas fa-history"></i> باقاتي النشطة</div>
-        <div style="border-top: 1px solid #eee; margin: 20px 0;"></div>
-        <div class="nav-link" style="color:#ff3b30" onclick="clearData()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</div>
-    </div>
-
-    <div class="main-container">
-        
-        <div id="shop" class="view-section active">
-            <div id="user-display" class="user-badge"></div>
-            <h2 style="margin-bottom: 20px;">اختر باقة للبدء</h2>
-            <div class="plan-card">
-                <p style="color:#888;">الباقة الأساسية</p>
-                <span class="price-tag">300 DH</span>
-                <button class="btn-buy" onclick="startOrder('300 DH')">اقتناء الآن</button>
-            </div>
-            <div class="plan-card">
-                <p style="color:#888;">الباقة المتقدمة</p>
-                <span class="price-tag">600 DH</span>
-                <button class="btn-buy" onclick="startOrder('600 DH')">اقتناء الآن</button>
-            </div>
-        </div>
-
-        <div id="history" class="view-section">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-                <h2>سجل باقاتي</h2>
-                <button onclick="loadUserOrders()" style="border:none; background:none; color:#007aff; font-weight:bold;"><i class="fas fa-sync-alt"></i> تحديث</button>
-            </div>
-            <div id="orders-container"></div>
-        </div>
-
-    </div>
+    <button class="btn-buy" onclick="window.location.href='../pyme.html'">+ شراء باقة جديدة</button>
 
     <script>
-        // رابط الـ Script الخاص بك
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwEAFy5HdC-umchAC7XJCxPEIi0bu29FZDbAgYppkeOd4kkoluMT6D8dEQVky0Q3eyJBw/exec";
-
-        // إعداد اسم المستخدم (تأكد من تغييره للاسم الذي تستخدمه في الشيت، مثل "adam")
-        if (!localStorage.getItem('user_full_name')) {
-            let name = prompt("يرجى إدخال اسمك المسجل (مثلاً: adam):");
-            if (name) localStorage.setItem('user_full_name', name.trim().toLowerCase());
-        }
-        document.getElementById('user-display').innerText = "المستخدم: " + localStorage.getItem('user_full_name');
-
-        function toggleNav() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxTK9DCO--kObWjqKuW54o0MXcmFCwngFHRCyd3Q4oP4eQRpCAVx4LDh7vfYRnpx4YgWQ/exec";
+        
+        // 1. التحقق من الهوية (الإيميل اللي تسجل في الصفحة الأولى)
+        const userEmail = localStorage.getItem('user_gmail');
+        
+        if (!userEmail) {
+            // إيلا ملقاش الجيميل، كيرجعو لصفحة التسجيل
+            window.location.href = "../index.html"; 
+        } else {
+            document.getElementById('userDisplay').innerText = userEmail;
+            loadMyOrders();
         }
 
-        function showTab(tabId) {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            document.getElementById('tab-' + tabId).classList.add('active');
-            if(tabId === 'history') loadUserOrders();
-            if(document.getElementById('sidebar').classList.contains('active')) toggleNav();
-        }
-
-        function startOrder(price) {
-            const code = 'LC-' + Math.random().toString(36).substr(2, 5).toUpperCase();
-            localStorage.setItem('pending_order', JSON.stringify({ planPrice: price, newCode: code }));
-            window.location.href = 'pyme.html';
-        }
-
-        async function loadUserOrders() {
-            const container = document.getElementById('orders-container');
-            const currentUser = localStorage.getItem('user_full_name') || "";
+        // 2. دالة جلب الباقات الخاصة بالمستخدم فقط
+        async function loadMyOrders() {
+            const list = document.getElementById('ordersList');
+            const loader = document.getElementById('loader');
             
-            container.innerHTML = '<div class="loading-text">جاري فحص السيرفر...</div>';
+            loader.style.display = "block";
+            list.innerHTML = "";
 
             try {
-                const response = await fetch(WEB_APP_URL);
-                const data = await response.json();
-                
-                // تصفية الطلبات (مطابقة الاسم وتجاهل المحذوفة)
-                const myRows = data.filter(item => 
-                    item.name.toString().toLowerCase().trim() === currentUser.toLowerCase() && 
-                    item.statusLabel !== "Ferme"
+                const res = await fetch(SCRIPT_URL);
+                const data = await res.json();
+
+                // فلترة البيانات: كنجيبو غير اللي عندهم نفس الجيميل
+                const myData = data.filter(item => 
+                    item.email && item.email.toLowerCase().trim() === userEmail.toLowerCase().trim()
                 );
 
-                if(myRows.length === 0) {
-                    container.innerHTML = '<p style="text-align:center; color:#ccc; margin-top:80px;">لا توجد باقات لهذا الاسم حالياً.</p>';
+                loader.style.display = "none";
+
+                if (myData.length === 0) {
+                    list.innerHTML = "<p style='text-align:center;'>ليس لديك أي طلبات حالياً.</p>";
                     return;
                 }
 
-                container.innerHTML = myRows.map(row => {
-                    const isActive = (row.statusLabel === "Verefie");
-                    return `
-                        <div class="order-box" style="border-color: ${isActive ? '#28a745' : '#eee'}">
-                            <span class="status-pill ${isActive ? 'pill-ok' : 'pill-wait'}">
-                                ${isActive ? 'مفعّلة ✅' : 'قيد المراجعة ⏳'}
-                            </span>
-                            <p style="font-weight:800; font-size:16px;">باقة ${row.plan}</p>
-                            
-                            <div class="promo-box">
-                                <p style="font-size:11px; color:#888; margin-bottom:5px;">كود الربح الخاص بك:</p>
-                                <div class="code-display ${isActive ? '' : 'blurred'}">
-                                    ${isActive ? row.refCode : 'XXXXX'}
+                // عرض الباقات
+                myData.forEach(order => {
+                    const statusClass = order.statusLabel === "En attente" ? "status-pending" : "status-success";
+                    const card = `
+                        <div class="order-card">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <div>
+                                    <strong style="font-size:18px;">باقة: ${order.plan}</strong><br>
+                                    <small style="color:#888;">كود المرجع: ${order.refCode}</small>
                                 </div>
-                                ${!isActive ? '<p style="font-size:9px; color:#dc3545; margin-top:10px;">يتم تفعيل الكود بعد مراجعة الوصل</p>' : ''}
+                                <span class="status ${statusClass}">${order.statusLabel}</span>
+                            </div>
+                            <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+                            <div style="font-size:13px; color:#666;">
+                                تاريخ الطلب: ${new Date(order.date).toLocaleDateString('ar-MA')}
                             </div>
                         </div>
                     `;
-                }).join('');
+                    list.innerHTML += card;
+                });
 
-            } catch (error) {
-                container.innerHTML = '<p style="color:red; text-align:center;">تعذر جلب البيانات. تأكد من النشر (Deployment).</p>';
+            } catch (err) {
+                loader.style.display = "none";
+                list.innerHTML = "<p style='color:red; text-align:center;'>خطأ في تحميل البيانات.</p>";
             }
         }
-
-        function clearData() {
-            if(confirm("هل تريد تسجيل الخروج ومسح الاسم؟")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-
-        window.onload = () => { if(document.getElementById('history').classList.contains('active')) loadUserOrders(); };
     </script>
 </body>
 </html>
