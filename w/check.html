@@ -6,6 +6,7 @@
     <title>LikCash Pro - الداشبورد</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* نظام الألوان والتوسيط */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: #fff; color: #000; overflow-x: hidden; }
 
@@ -15,71 +16,73 @@
         .menu-icon { font-size: 20px; cursor: pointer; width: 30px; }
 
         /* Sidebar */
-        .sidebar { position: fixed; right: -100%; top: 0; width: 85%; max-width: 300px; height: 100%; background: #fff; z-index: 2000; transition: 0.3s ease; padding: 40px 20px; display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.05); }
+        .sidebar { position: fixed; right: -100%; top: 0; width: 80%; max-width: 300px; height: 100%; background: #fff; z-index: 2000; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 40px 20px; display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.05); }
         .sidebar.active { right: 0; }
         .nav-item { padding: 16px; border-radius: 12px; cursor: pointer; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; font-weight: 600; color: #555; }
         .nav-item.active { background: #f5f5f5; color: #000; }
 
-        /* Content */
-        .main-content { padding: 20px; max-width: 500px; margin: auto; min-height: 80vh; }
+        /* Main Content */
+        .main-content { padding: 20px; max-width: 450px; margin: auto; min-height: 85vh; text-align: center; }
         .view { display: none; }
         .view.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background: #fff; border: 1px solid #eee; border-radius: 24px; padding: 25px; margin-bottom: 15px; }
-        .btn-black { background: #000; color: #fff; border: none; padding: 16px; width: 100%; border-radius: 14px; font-weight: 700; cursor: pointer; font-size: 15px; margin-top: 10px; }
+        /* Cards */
+        .card { background: #fff; border: 1px solid #eee; border-radius: 25px; padding: 25px; margin-bottom: 20px; transition: 0.2s; }
+        .btn-black { background: #000; color: #fff; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 15px; margin-top: 10px; }
 
-        /* Orders Styling */
-        .order-card { background: #fff; border: 1px solid #eee; border-radius: 20px; padding: 20px; margin-bottom: 20px; transition: 0.3s; }
-        .promo-pill { background: #f9f9f9; padding: 12px; border-radius: 12px; margin: 15px 0; display: flex; justify-content: space-between; align-items: center; border: 1px dashed #ddd; }
-        .promo-text { font-family: 'Courier New', monospace; font-weight: 900; font-size: 18px; color: #000; }
-        
-        .status-badge { font-size: 10px; padding: 5px 12px; border-radius: 20px; font-weight: 800; }
-        .status-pending { background: #fff3cd; color: #856404; }
-        .status-verified { background: #d4edda; color: #155724; border: 1px solid #155724; }
+        /* سجل الباقات */
+        .order-item { background: #fff; border: 2px solid #eee; border-radius: 22px; padding: 20px; margin-bottom: 15px; text-align: right; transition: 0.3s; }
+        .status-tag { font-size: 11px; padding: 5px 12px; border-radius: 20px; font-weight: 800; float: left; }
+        .pending-tag { background: #fff8e1; color: #f57f17; }
+        .verified-tag { background: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d32; }
 
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.2); z-index: 1500; backdrop-filter: blur(4px); }
+        .promo-container { background: #f9f9f9; padding: 15px; border-radius: 15px; margin-top: 15px; text-align: center; border: 1px dashed #ccc; }
+        .promo-code { font-family: monospace; font-size: 20px; font-weight: 900; color: #000; letter-spacing: 2px; }
+        .blur-text { filter: blur(5px); user-select: none; }
+
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1500; backdrop-filter: blur(4px); }
         .overlay.active { display: block; }
-
-        .loader { text-align: center; padding: 50px; color: #999; font-size: 14px; }
+        
+        .loader { padding: 40px; color: #888; font-style: italic; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="menu-icon" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
-        <div class="logo">LikCash Dashboard</div>
+        <div class="menu-icon" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+        <div class="logo">LikCash PRO</div>
     </div>
 
-    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
     <div class="sidebar" id="sidebar">
-        <div class="nav-item active" id="btn-shop" onclick="showView('shop')"><i class="fas fa-store"></i> المتجر</div>
-        <div class="nav-item" id="btn-history" onclick="showView('history')"><i class="fas fa-receipt"></i> باقاتي وسجل الطلبات</div>
+        <div class="nav-item active" id="tab-shop" onclick="switchTab('shop')"><i class="fas fa-store"></i> المتجر</div>
+        <div class="nav-item" id="tab-history" onclick="switchTab('history')"><i class="fas fa-history"></i> سجل باقاتي</div>
         <div style="border-top: 1px solid #eee; margin: 20px 0;"></div>
-        <div class="nav-item" style="color:#ff3b30" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</div>
+        <div class="nav-item" style="color:#ff3b30" onclick="exit()"><i class="fas fa-sign-out-alt"></i> خروج</div>
     </div>
 
     <div class="main-content">
         
         <div id="shop" class="view active">
-            <h2 style="margin-bottom: 25px; font-size: 20px; font-weight: 800;">اقتناء باقة جديدة</h2>
+            <h2 style="margin: 20px 0; font-size: 22px;">اختر باقتك المفضلة</h2>
             <div class="card">
-                <p style="font-size:12px; color:#666;">الباقة الأساسية</p>
-                <h3 style="font-size:28px; font-weight:900;">300 DH</h3>
-                <button class="btn-black" onclick="initiateOrder('300 DH')">اقتناء الآن</button>
+                <p style="color:#666; font-size:13px;">باقة المبتدئين</p>
+                <h3 style="font-size:32px; margin:10px 0;">300 DH</h3>
+                <button class="btn-black" onclick="buy('300 DH')">اقتناء الآن</button>
             </div>
             <div class="card">
-                <p style="font-size:12px; color:#666;">الباقة الذهبية</p>
-                <h3 style="font-size:28px; font-weight:900;">600 DH</h3>
-                <button class="btn-black" onclick="initiateOrder('600 DH')">اقتناء الآن</button>
+                <p style="color:#666; font-size:13px;">باقة المحترفين</p>
+                <h3 style="font-size:32px; margin:10px 0;">600 DH</h3>
+                <button class="btn-black" onclick="buy('600 DH')">اقتناء الآن</button>
             </div>
         </div>
 
         <div id="history" class="view">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2 style="font-size: 20px; font-weight: 800;">باقاتي النشطة</h2>
-                <button onclick="loadOrders()" style="border:none; background:none; color:#007aff; font-weight:bold;">تحديث <i class="fas fa-sync"></i></button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                <h2 style="font-size: 20px;">سجل الباقات</h2>
+                <i class="fas fa-sync-alt" onclick="fetchOrders()" style="color:#007aff; cursor:pointer;"></i>
             </div>
             <div id="orders-list"></div>
         </div>
@@ -87,83 +90,86 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqExvcqzlsIUcYV7i4VIMU6HNt0zRmwZtp3bBttPiXI-1G_bBMjyVv453nlsJQc9yJVw/exec";
+        // الرابط الجديد الذي وضعته
+        const API_URL = "https://script.google.com/macros/s/AKfycbwEAFy5HdC-umchAC7XJCxPEIi0bu29FZDbAgYppkeOd4kkoluMT6D8dEQVky0Q3eyJBw/exec";
 
-        function toggleSidebar() {
+        function toggleMenu() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        function showView(viewId) {
+        function switchTab(tab) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            document.getElementById('btn-' + viewId).classList.add('active');
-            if(viewId === 'history') loadOrders();
-            if(document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+            if(tab === 'history') fetchOrders();
+            if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
         }
 
-        function initiateOrder(price) {
-            const code = 'LC-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+        function buy(price) {
+            const randomID = 'LC' + Math.floor(1000 + Math.random() * 9000);
             localStorage.setItem('pending_order', JSON.stringify({
                 planPrice: price,
-                newCode: code
+                newCode: randomID
             }));
             window.location.href = 'pyme.html';
         }
 
-        async function loadOrders() {
+        async function fetchOrders() {
             const list = document.getElementById('orders-list');
-            const userName = localStorage.getItem('user_full_name') || "مستخدم"; 
+            const user = localStorage.getItem('user_full_name') || "مستخدم";
             
-            list.innerHTML = '<div class="loader">جاري فحص باقاتك في السيرفر...</div>';
+            list.innerHTML = '<div class="loader">جاري تحديث السجل من السيرفر...</div>';
 
             try {
-                const response = await fetch(SCRIPT_URL);
-                const allData = await response.json();
+                const res = await fetch(API_URL);
+                const data = await res.json();
                 
-                // تصفية الطلبات الخاصة بالمستخدم والتي لم يتم إغلاقها (Ferme)
-                const myOrders = allData.filter(o => o.name === userName && o.statusLabel !== "Ferme");
+                // فلترة الطلبات حسب الاسم وتجاهل المحذوفة (Ferme)
+                const myItems = data.filter(item => item.name === user && item.statusLabel !== "Ferme");
 
-                if(myOrders.length === 0) {
-                    list.innerHTML = '<p style="text-align:center; color:#ccc; margin-top:100px;">لا توجد باقات حالياً.</p>';
+                if(myItems.length === 0) {
+                    list.innerHTML = '<p style="margin-top:100px; color:#bbb;">لا توجد باقات مسجلة حالياً.</p>';
                     return;
                 }
 
-                list.innerHTML = myOrders.map(order => {
-                    const isV = (order.statusLabel === "Verefie");
+                list.innerHTML = myItems.map(item => {
+                    const ok = (item.statusLabel === "Verefie");
                     return `
-                        <div class="order-card" style="border: 2px solid ${isV ? '#000' : '#eee'}">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <strong style="font-size:16px;">باقة ${order.plan}</strong>
-                                <span class="status-badge ${isV ? 'status-verified' : 'status-pending'}">
-                                    ${isV ? 'مفعلة ✅' : 'قيد الانتظار ⏳'}
-                                </span>
-                            </div>
+                        <div class="order-item" style="border-color: ${ok ? '#2e7d32' : '#eee'}">
+                            <span class="status-tag ${ok ? 'verified-tag' : 'pending-tag'}">
+                                ${ok ? 'مفعّلة ✅' : 'قيد الانتظار ⏳'}
+                            </span>
+                            <p style="font-weight:700;">باقة ${item.plan}</p>
                             
-                            <div class="promo-pill">
-                                <span style="font-size:11px; color:#666;">كود الإحالة:</span>
-                                <span class="promo-text" style="filter: ${isV ? 'none' : 'blur(5px)'}">
-                                    ${isV ? order.refCode : '🔒 مخفي'}
-                                </span>
+                            <div class="promo-container">
+                                <p style="font-size:11px; color:#888; margin-bottom:5px;">كود الإحالة الخاص بك:</p>
+                                <div class="promo-code ${ok ? '' : 'blur-text'}">
+                                    ${ok ? item.refCode : 'XXXXXX'}
+                                </div>
+                                ${!ok ? '<p style="font-size:9px; color:#d32f2f; margin-top:8px;">يظهر الكود بعد تأكيد الإدارة للوصل</p>' : ''}
                             </div>
-
-                            ${!isV ? '<p style="font-size:10px; color:#ff3b30; text-align:center; font-weight:bold;">سيظهر الكود هنا فور تأكيد الدفع من الإدارة</p>' : ''}
                         </div>
                     `;
                 }).join('');
-                
-            } catch (e) {
-                list.innerHTML = '<p style="text-align:center; color:red;">خطأ في الاتصال بالسيرفر</p>';
+
+            } catch (err) {
+                list.innerHTML = '<p style="color:red; padding:20px;">تعذر جلب البيانات. تأكد من اتصالك بالإنترنت.</p>';
             }
         }
 
-        function logout() {
-            localStorage.clear();
-            location.reload();
+        function exit() {
+            if(confirm('هل تريد تسجيل الخروج؟')) {
+                localStorage.clear();
+                location.reload();
+            }
         }
 
-        window.onload = loadOrders;
+        // تحميل البيانات تلقائياً عند فتح السجل
+        window.onload = () => {
+            if(document.getElementById('history').classList.contains('active')) fetchOrders();
+        };
     </script>
 </body>
 </html>
