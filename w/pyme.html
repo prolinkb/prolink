@@ -2,34 +2,37 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LikCash - تأكيد الدفع والإرسال</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LikCash - تأكيد الطلب</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background-color: #ffffff; display: flex; justify-content: center; padding: 20px; }
-        .payment-container { width: 100%; max-width: 400px; text-align: center; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #fff; color: #000; display: flex; justify-content: center; padding: 20px; }
+        .payment-container { width: 100%; max-width: 400px; text-align: center; padding-top: 30px; }
         
-        .step { display: none; animation: fadeIn 0.3s; }
+        .step { display: none; animation: fadeIn 0.3s ease; }
         .step.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        h2 { font-size: 18px; font-weight: 800; margin-bottom: 20px; color: #000; }
+        h2 { font-size: 19px; font-weight: 800; margin-bottom: 25px; }
 
-        /* بطاقة معلومات البنك */
-        .bank-card { background: #fcfcfc; border: 1px solid #eee; padding: 15px; border-radius: 15px; margin-bottom: 20px; text-align: right; }
-        .bank-card p { font-size: 11px; color: #888; margin-bottom: 2px; }
-        .bank-card strong { font-size: 13px; color: #000; display: block; margin-bottom: 10px; word-break: break-all; }
+        /* معلومات البنك */
+        .bank-info { background: #fcfcfc; border: 1px solid #eee; padding: 20px; border-radius: 20px; margin-bottom: 25px; text-align: right; }
+        .bank-info p { font-size: 11px; color: #888; margin-bottom: 4px; }
+        .bank-info strong { font-size: 14px; color: #000; display: block; margin-bottom: 12px; word-break: break-all; }
 
-        .btn-black { background: #000; color: #fff; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; margin-bottom: 10px; }
+        /* الأزرار */
+        .btn-black { background: #000; color: #fff; border: none; padding: 16px; width: 100%; border-radius: 14px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; }
         .btn-black:disabled { background: #ccc; cursor: not-allowed; }
 
-        input { width: 100%; padding: 14px; border: 1px solid #eee; border-radius: 12px; outline: none; margin-bottom: 15px; font-size: 14px; text-align: right; }
+        input { width: 100%; padding: 15px; border: 1px solid #eee; border-radius: 14px; outline: none; margin-bottom: 15px; font-size: 14px; text-align: right; }
+        input:focus { border-color: #000; }
 
-        .upload-area { border: 2px dashed #eee; padding: 30px; border-radius: 15px; cursor: pointer; background: #fafafa; margin-bottom: 20px; position: relative; }
-        .upload-area i { font-size: 30px; color: #ccc; }
+        /* منطقة الرفع */
+        .upload-box { border: 2px dashed #eee; padding: 40px 20px; border-radius: 20px; cursor: pointer; background: #fafafa; margin-bottom: 25px; position: relative; }
+        .upload-box i { font-size: 35px; color: #ddd; margin-bottom: 10px; }
         
-        .spinner { display: none; margin: 10px auto; border: 3px solid #f3f3f3; border-top: 3px solid #000; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        .loader { display: none; margin: 10px auto; border: 3px solid #f3f3f3; border-top: 3px solid #000; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -38,115 +41,117 @@
 <div class="payment-container">
     
     <div id="p-step1" class="step active">
-        <h2>معلومات التحويل البنكي</h2>
-        <div class="bank-card">
-            <p>البنك:</p><strong>CIH BANK</strong>
+        <h2>أرسل مبلغ الباقة للحساب</h2>
+        <div class="bank-info">
+            <p>اسم البنك:</p><strong>CIH BANK</strong>
             <p>رقم الحساب (RIB):</p><strong>230 000 0000000000 00</strong>
-            <p>الاسم:</p><strong>MOHAMED *******</strong>
+            <p>اسم صاحب الحساب:</p><strong>MOHAMED *******</strong>
         </div>
-        <button class="btn-black" onclick="showPStep(2)">لقد قمت بالدفع ✅</button>
+        <button class="btn-black" onclick="nextStep(2)">لقد قمت بالتحويل ✅</button>
     </div>
 
     <div id="p-step2" class="step">
         <h2>تأكيد الطلب</h2>
-        <input type="text" id="full-name-input" placeholder="أدخل اسمك الكامل بالفرنسية">
+        <input type="text" id="full-name" placeholder="اسمك الكامل (نفس اسم الحساب)">
         
-        <div class="upload-area" onclick="document.getElementById('file-input').click()">
-            <i class="fas fa-file-invoice-dollar"></i>
-            <p id="status-text" style="font-size: 12px; color: #999; margin-top: 10px;">ارفع صورة وصل الدفع (الروسي)</p>
-            <div id="upload-spinner" class="spinner"></div>
-            <input type="file" id="file-input" hidden accept="image/*" onchange="handleImgUpload()">
+        <div class="upload-box" onclick="document.getElementById('file-field').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p id="msg" style="font-size: 13px; color: #666;">ارفع صورة الوصل (الروسي)</p>
+            <div id="loader" class="loader"></div>
+            <input type="file" id="file-field" hidden accept="image/*" onchange="uploadImage()">
         </div>
 
-        <button class="btn-black" id="submit-btn" onclick="submitToSheet()" disabled>إرسال البيانات للجدول</button>
+        <button class="btn-black" id="final-send" onclick="sendAllData()" disabled>إرسال البيانات للجدول</button>
     </div>
 
 </div>
 
 <script>
-    // الإعدادات الخاصة بك
-    const IMGBB_API_KEY = "1b9671dbfcf13881d735b217c84fb360";
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwp0ZMSeXY3z86t09CV0mkcmr3JjfR6wPHOeFXHNJ3KsVGMS3tSruaJAl26V8DsqVjlhg/exec";
+    // الإعدادات
+    const IMGBB_KEY = "1b9671dbfcf13881d735b217c84fb360";
+    const GOOGLE_URL = "https://script.google.com/macros/s/AKfycbxOW0Z8Qtnd3anRpBLsTsQmuHUK4dkCGkgUvpd1tW9xi5XYU2rOnfPW-thLsoE8q3CHRQ/exec";
 
-    let finalImageUrl = "";
-    // جلب بيانات الباقة من صفحة المتجر
-    const orderData = JSON.parse(localStorage.getItem('pending_order'));
+    let imgUrl = "";
+    // جلب بيانات الباقة من الذاكرة
+    const order = JSON.parse(localStorage.getItem('pending_order'));
 
-    function showPStep(n) {
+    function nextStep(n) {
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('p-step' + n).classList.add('active');
     }
 
     // رفع الصورة لـ ImgBB
-    async function handleImgUpload() {
-        const file = document.getElementById('file-input').files[0];
-        const status = document.getElementById('status-text');
-        const spinner = document.getElementById('upload-spinner');
-        const btn = document.getElementById('submit-btn');
+    async function uploadImage() {
+        const file = document.getElementById('file-field').files[0];
+        const msg = document.getElementById('msg');
+        const loader = document.getElementById('loader');
+        const btn = document.getElementById('final-send');
 
         if(!file) return;
 
-        status.innerText = "جاري رفع الصورة...";
-        spinner.style.display = "block";
+        msg.innerText = "جاري الرفع...";
+        loader.style.display = "block";
         btn.disabled = true;
 
-        const formData = new FormData();
-        formData.append("image", file);
+        const fd = new FormData();
+        fd.append("image", file);
 
         try {
-            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
                 method: "POST",
-                body: formData
+                body: fd
             });
-            const json = await res.json();
-            finalImageUrl = json.data.url;
+            const data = await res.json();
+            imgUrl = data.data.url;
             
-            status.innerText = "✅ تم رفع الوصل بنجاح";
-            status.style.color = "green";
-            spinner.style.display = "none";
+            msg.innerText = "✅ تم الرفع بنجاح";
+            msg.style.color = "green";
+            loader.style.display = "none";
             btn.disabled = false;
         } catch (e) {
-            status.innerText = "❌ خطأ في الرفع، حاول مجدداً";
-            spinner.style.display = "none";
+            msg.innerText = "❌ خطأ في الرفع";
+            loader.style.display = "none";
         }
     }
 
     // الإرسال النهائي لـ Google Sheets
-    function submitToSheet() {
-        const name = document.getElementById('full-name-input').value.trim();
-        const btn = document.getElementById('submit-btn');
+    function sendAllData() {
+        const name = document.getElementById('full-name').value.trim();
+        const btn = document.getElementById('final-send');
 
-        if(!name) { alert("يرجى كتابة الاسم الكامل"); return; }
-        if(!orderData) { alert("خطأ: لم يتم العثور على بيانات الباقة"); return; }
+        if(!name) { alert("أدخل اسمك أولاً"); return; }
+        if(!order) { alert("خطأ في بيانات الباقة، ابدأ من جديد"); return; }
 
-        btn.innerText = "جاري الحفظ في الجدول...";
+        btn.innerText = "جاري الإرسال للجدول...";
         btn.disabled = true;
 
-        // البيانات مرتبة حسب أعمدة الشيت (B, C, D, E)
+        // تجهيز البيانات
         const payload = {
-            name: name,                  // Full Name
-            receipt: finalImageUrl,      // Receipt URL
-            plan: orderData.planPrice,   // Plan
-            refCode: orderData.newCode   // Referrer Code
+            name: name,
+            receipt: imgUrl,
+            plan: order.planPrice,
+            refCode: order.newCode
         };
 
+        // استخدام XMLHttpRequest لتفادي مشاكل CORS
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", APPS_SCRIPT_URL, true);
+        xhr.open("POST", GOOGLE_URL, true);
         xhr.setRequestHeader('Content-Type', 'text/plain;charset=UTF-8');
         
         xhr.onload = function() {
-            alert("✅ تم إرسال طلبك! الكود الخاص بك هو: " + orderData.newCode);
-            // حفظ الطلب في سجل المستخدم المحلي قبل مسح البيانات
-            const myOrders = JSON.parse(localStorage.getItem('my_orders') || "[]");
-            myOrders.push({...orderData, status: "Pending"});
-            localStorage.setItem('my_orders', JSON.stringify(myOrders));
+            alert("✅ وصل طلبك بنجاح! كودك الجديد هو: " + order.newCode);
+            
+            // حفظ الطلب في سجل المستخدم
+            const history = JSON.parse(localStorage.getItem('my_orders') || "[]");
+            history.push({...order, status: "Pending", userName: name});
+            localStorage.setItem('my_orders', JSON.stringify(history));
             
             localStorage.removeItem('pending_order');
-            window.location.href = "index.html"; // العودة للمتجر
+            window.location.href = "index.html"; 
         };
 
         xhr.onerror = function() {
-            alert("حدث خطأ في الاتصال.");
+            alert("حدث خطأ في الاتصال، تأكد من الإنترنت.");
             btn.disabled = false;
             btn.innerText = "إرسال البيانات للجدول";
         };
