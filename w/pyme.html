@@ -3,63 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LikCash - تأكيد الطلب</title>
+    <title>LikCash - تأكيد العملية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* تصميم عصري ومنظم في الوسط */
+        /* تصميم عصري ممركز في الوسط */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
-        body { background-color: #f9f9f9; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; }
+        body { background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         
-        .main-container { 
+        .card-container { 
             width: 100%; 
             max-width: 400px; 
             background: #fff; 
-            padding: 30px; 
-            border-radius: 25px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            padding: 35px 25px; 
+            border-radius: 30px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
             text-align: center; 
         }
         
-        .step { display: none; animation: slideUp 0.4s ease; }
-        .step.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .view-step { display: none; animation: fadeIn 0.4s ease-out; }
+        .view-step.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        h2 { font-size: 20px; font-weight: 800; margin-bottom: 25px; color: #111; }
+        h2 { font-size: 22px; font-weight: 800; margin-bottom: 25px; color: #111; }
         
-        .bank-box { 
-            background: #fcfcfc; 
+        .bank-info { 
+            background: #fdfdfd; 
             border: 1px solid #eee; 
             padding: 20px; 
             border-radius: 20px; 
             margin-bottom: 25px; 
             text-align: right; 
         }
-        .bank-box p { font-size: 11px; color: #999; margin-bottom: 5px; }
-        .bank-box strong { font-size: 14px; color: #000; display: block; margin-bottom: 12px; word-break: break-all; }
+        .bank-info p { font-size: 11px; color: #999; margin-bottom: 5px; }
+        .bank-info strong { font-size: 14px; color: #000; display: block; margin-bottom: 15px; word-break: break-all; }
 
         input { 
             width: 100%; 
-            padding: 16px; 
+            padding: 18px; 
             border: 1.5px solid #f0f0f0; 
-            border-radius: 15px; 
+            border-radius: 16px; 
             outline: none; 
             margin-bottom: 20px; 
             text-align: center; 
             font-size: 16px;
             background: #fafafa;
+            transition: 0.2s;
         }
         input:focus { border-color: #000; background: #fff; }
 
-        .upload-card { 
+        .upload-area { 
             border: 2px dashed #ddd; 
             padding: 40px 20px; 
             border-radius: 20px; 
             cursor: pointer; 
-            background: #fdfdfd; 
+            background: #fcfcfc; 
             margin-bottom: 30px; 
+            transition: 0.3s;
         }
+        .upload-area:hover { border-color: #000; background: #fff; }
         
-        .btn-confirm { 
+        .btn-action { 
             background: #000; 
             color: #fff; 
             border: none; 
@@ -69,17 +72,18 @@
             font-weight: 700; 
             font-size: 16px; 
             cursor: pointer; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
-        .btn-confirm:disabled { background: #ccc; }
+        .btn-action:disabled { background: #ccc; box-shadow: none; }
 
-        .loader { 
+        .loader-icon { 
             display: none; 
             margin: 10px auto; 
             border: 3px solid #f3f3f3; 
             border-top: 3px solid #000; 
             border-radius: 50%; 
-            width: 24px; 
-            height: 24px; 
+            width: 25px; 
+            height: 25px; 
             animation: spin 1s linear infinite; 
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -87,101 +91,102 @@
 </head>
 <body>
 
-<div class="main-container">
+<div class="card-container">
     
-    <div id="s1" class="step active">
-        <h2>تحويل مبلغ الباقة</h2>
-        <div class="bank-box">
+    <div id="v1" class="view-step active">
+        <h2>تحويل المبلغ</h2>
+        <div class="bank-info">
             <p>RIB CIH BANK:</p>
             <strong>230 000 0000000000 0000 00</strong>
-            <p>الاسم:</p>
+            <p>الاسم الكامل:</p>
             <strong>MOHAMED *******</strong>
         </div>
-        <button class="btn-confirm" onclick="move(2)">أرسلت المبلغ ✅</button>
+        <button class="btn-action" onclick="go(2)">لقد قمت بالتحويل ✅</button>
     </div>
 
-    <div id="s2" class="step">
-        <h2>تأكيد بيانات الوصل</h2>
-        <input type="text" id="userNameInp" placeholder="اكتب اسمك الكامل">
+    <div id="v2" class="view-step">
+        <h2>تأكيد الطلب</h2>
+        <input type="text" id="nameInp" placeholder="ادخل اسمك الكامل">
         
-        <div class="upload-card" onclick="document.getElementById('fileInp').click()">
-            <i class="fas fa-camera-retro" style="font-size: 30px; color: #ddd; margin-bottom: 10px;"></i>
-            <p id="upText" style="font-size: 13px; color: #888;">ارفع صورة الوصل (الروسي)</p>
-            <div id="loadingIcon" class="loader"></div>
-            <input type="file" id="fileInp" hidden accept="image/*" onchange="uploadToImgBB()">
+        <div class="upload-area" onclick="document.getElementById('fileInp').click()">
+            <i class="fas fa-file-invoice" style="font-size: 35px; color: #eee; margin-bottom: 12px;"></i>
+            <p id="upLabel" style="font-size: 13px; color: #888;">ارفع صورة الوصل (الروسي)</p>
+            <div id="spin" class="loader-icon"></div>
+            <input type="file" id="fileInp" hidden accept="image/*" onchange="upload()">
         </div>
 
-        <button class="btn-confirm" id="finalBtn" onclick="sendToGoogle()" disabled>إرسال الطلب للمراجعة</button>
+        <button class="btn-action" id="sub" onclick="send()" disabled>إرسال البيانات للمراجعة</button>
     </div>
 
 </div>
 
 <script>
-    // الرابط الجديد الخاص بك
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqExvcqzlsIUcYV7i4VIMU6HNt0zRmwZtp3bBttPiXI-1G_bBMjyVv453nlsJQc9yJVw/exec";
+    // الرابط الجديد الذي زودتنا به
+    const APP_URL = "https://script.google.com/macros/s/AKfycbwLLsdJgGIfrIrFF9rC8woNy6Y4l5UH8SZ-kEyFY-FTH2D1uY-ULJzUVvhEWcAP1FEh4w/exec";
     const IMGBB_KEY = "1b9671dbfcf13881d735b217c84fb360";
 
-    let finalImgUrl = "";
-    const pendingData = JSON.parse(localStorage.getItem('pending_order'));
+    let imgURL = "";
+    const orderData = JSON.parse(localStorage.getItem('pending_order'));
 
-    function move(n) {
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById('s' + n).classList.add('active');
+    function go(n) {
+        document.querySelectorAll('.view-step').forEach(v => v.classList.remove('active'));
+        document.getElementById('v' + n).classList.add('active');
     }
 
-    async function uploadToImgBB() {
+    async function upload() {
         const file = document.getElementById('fileInp').files[0];
         if(!file) return;
 
-        document.getElementById('loadingIcon').style.display = "block";
-        document.getElementById('upText').innerText = "جاري رفع الوصل...";
+        document.getElementById('spin').style.display = "block";
+        document.getElementById('upLabel').innerText = "جاري الرفع...";
 
         const fd = new FormData();
         fd.append("image", file);
 
         try {
             const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
-            const data = await res.json();
-            finalImgUrl = data.data.url;
+            const d = await res.json();
+            imgURL = d.data.url;
             
-            document.getElementById('upText').innerText = "✅ تم رفع الوصل";
-            document.getElementById('upText').style.color = "green";
-            document.getElementById('finalBtn').disabled = false;
+            document.getElementById('upLabel').innerText = "✅ تم رفع الوصل";
+            document.getElementById('upLabel').style.color = "#2ecc71";
+            document.getElementById('sub').disabled = false;
         } catch (e) {
-            document.getElementById('upText').innerText = "❌ فشل الرفع";
+            document.getElementById('upLabel').innerText = "❌ فشل الرفع، حاول ثانية";
         } finally {
-            document.getElementById('loadingIcon').style.display = "none";
+            document.getElementById('spin').style.display = "none";
         }
     }
 
-    function sendToGoogle() {
-        const name = document.getElementById('userNameInp').value.trim();
-        const btn = document.getElementById('finalBtn');
+    function send() {
+        const name = document.getElementById('nameInp').value.trim();
+        const btn = document.getElementById('sub');
 
         if(!name) { alert("أدخل اسمك أولاً"); return; }
-        
+        if(!orderData) { alert("خطأ في البيانات، اعد الطلب من المتجر"); return; }
+
         btn.innerText = "جاري الإرسال...";
         btn.disabled = true;
 
         const payload = {
             name: name,
-            receipt: finalImgUrl,
-            plan: pendingData.planPrice,
-            refCode: pendingData.newCode
+            receipt: imgURL,
+            plan: orderData.planPrice,
+            refCode: orderData.newCode
         };
 
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", SCRIPT_URL, true);
+        xhr.open("POST", APP_URL, true);
         xhr.setRequestHeader('Content-Type', 'text/plain;charset=UTF-8');
         
         xhr.onload = function() {
-            alert("✅ تم إرسال طلبك! سيظهر الكود في السجل بعد المراجعة.");
+            alert("✅ وصل طلبك! سيظهر في سجل باقاتك 'قيد الانتظار'.");
             localStorage.removeItem('pending_order');
             window.location.href = "index.html"; 
         };
 
         xhr.onerror = function() {
-            alert("تنبيه: تحقق من السجل للتأكد من وصول الطلب.");
+            alert("حدث خطأ بسيط، يرجى التحقق من السجل.");
             btn.disabled = false;
         };
 
