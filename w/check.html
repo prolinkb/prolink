@@ -32,14 +32,7 @@
         .section-subtitle { font-size: 13px; color: #888; margin-bottom: 25px; }
 
         /* Clean Business Cards */
-        .biz-card {
-            background: #fff;
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 20px;
-            border: 1px solid #eee;
-            transition: 0.3s;
-        }
+        .biz-card { background: #fff; border-radius: 20px; padding: 25px; margin-bottom: 20px; border: 1px solid #eee; transition: 0.3s; }
         .biz-card:hover { border-color: #ddd; }
         
         .card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
@@ -57,10 +50,7 @@
         .price-label { font-size: 10px; color: #bbb; display: block; margin-bottom: 5px; }
         .price-amount { font-size: 20px; font-weight: 800; }
 
-        .btn-select { 
-            background: var(--main-color); color: #fff; border: none; padding: 12px 22px; 
-            border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; 
-        }
+        .btn-select { background: var(--main-color); color: #fff; border: none; padding: 12px 22px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; }
 
         /* History Items */
         .history-item { background: #fff; border: 1px solid #eee; border-radius: 15px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
@@ -72,7 +62,7 @@
 <body>
 
     <div class="header">
-        <div class="menu-btn" onclick="toggleNav()"><i class="fas fa-bars-social"></i> <i class="fas fa-bars"></i></div>
+        <div class="menu-btn" onclick="toggleNav()"><i class="fas fa-bars"></i></div>
         <div class="logo">LikCash Dashboard</div>
     </div>
 
@@ -150,7 +140,8 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwfIEUw30z5goNlgOCPYxT4m-l2pmlcuHFfBANGox2_lcnaJlie_YGJJmIwlrPk5AGArA/exec";
+        // الرابط الجديد اللي عطيتيني
+        const API_URL = "https://script.google.com/macros/s/AKfycbw0Q-_jtwkVFsN98cY5hy_OYRcX9r4sAxdcwTQPgtzSwyAtRKkTEZ73Q6qJnNM7Xwpryw/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -171,6 +162,7 @@
         }
 
         function goToPyme(price) {
+            // كود التمرير: كنسجلو الثمن في localStorage باش صفحة pyme تلقاه واجد
             localStorage.setItem('selected_plan_price', price);
             window.location.href = "pyme.html";
         }
@@ -181,6 +173,8 @@
             try {
                 const res = await fetch(API_URL);
                 const data = await res.json();
+                
+                // تصفية العمليات الخاصة بالمستخدم الحالي فقط
                 const myRows = data.filter(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase());
                 
                 if(myRows.length === 0) {
@@ -189,6 +183,7 @@
                 }
 
                 container.innerHTML = myRows.map(row => {
+                    // التحقق من الحالة لتغيير اللون
                     const isOk = (row.statusLabel === "Verefie");
                     return `
                         <div class="history-item">
@@ -206,7 +201,9 @@
                         </div>
                     `;
                 }).join('');
-            } catch (e) { container.innerHTML = "خطأ في جلب البيانات"; }
+            } catch (e) { 
+                container.innerHTML = '<p style="text-align:center; color:red;">خطأ في جلب البيانات</p>'; 
+            }
         }
 
         function logout() { localStorage.clear(); window.location.href = "../index.html"; }
