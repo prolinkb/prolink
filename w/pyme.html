@@ -3,113 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LikCash - تأكيد الدفع</title>
+    <title>LikCash - إتمام الدفع</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #000; --gray: #f8f9fa; --text-main: #1a1a1a; }
+        :root { --primary: #000; --bg: #f4f4f7; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
-        body { background-color: #f4f4f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        
-        .pyme-card { background: #fff; width: 100%; max-width: 400px; padding: 30px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
-        
-        .header-pyme { text-align: center; margin-bottom: 25px; }
-        .header-pyme h2 { font-size: 22px; font-weight: 800; color: var(--text-main); }
-        .header-pyme p { font-size: 13px; color: #777; margin-top: 6px; }
-
+        body { background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .card { background: #fff; width: 100%; max-width: 400px; padding: 30px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .header-pyme { text-align: center; margin-bottom: 20px; }
         .info-box { background: #fafafa; border: 1.5px dashed #eee; padding: 15px; border-radius: 16px; margin-bottom: 20px; text-align: center; }
-        .selected-plan { font-size: 22px; font-weight: 900; color: var(--primary); }
-
-        .input-group { margin-bottom: 18px; }
-        .input-group label { display: block; font-size: 13px; font-weight: 700; color: #555; margin-bottom: 8px; }
-        
-        input { 
-            width: 100%; padding: 14px; border: 1px solid #eee; border-radius: 12px; 
-            font-size: 15px; outline: none; background: #fcfcfc; transition: 0.3s;
-        }
-        input:focus { border-color: var(--primary); background: #fff; }
-
-        .upload-area { 
-            border: 2px dashed #ddd; padding: 25px; border-radius: 16px; cursor: pointer; 
-            text-align: center; transition: 0.3s; background: #fdfdfd;
-        }
-        .upload-area:hover { border-color: var(--primary); background: #f9f9f9; }
-        #imgPreview { width: 100%; max-height: 180px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px; }
-
-        .btn-confirm { 
-            background: var(--primary); color: #fff; border: none; padding: 16px; width: 100%; 
-            border-radius: 14px; font-weight: 700; cursor: pointer; font-size: 16px; margin-top: 10px;
-        }
-        .btn-confirm:disabled { background: #ccc; cursor: not-allowed; }
-
-        #statusMsg { margin-top: 15px; font-size: 12px; text-align: center; font-weight: 600; min-height: 18px; }
+        .selected-plan { font-size: 22px; font-weight: 900; }
+        input { width: 100%; padding: 14px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 15px; outline: none; }
+        .upload-area { border: 2px dashed #ddd; padding: 20px; border-radius: 16px; cursor: pointer; text-align: center; margin-bottom: 20px; }
+        #imgPreview { width: 100%; max-height: 150px; object-fit: contain; display: none; margin-top: 10px; border-radius: 8px; }
+        .btn { background: var(--primary); color: #fff; border: none; padding: 16px; width: 100%; border-radius: 14px; font-weight: 700; cursor: pointer; }
+        .btn:disabled { background: #ccc; }
+        #statusMsg { margin-top: 15px; font-size: 12px; text-align: center; font-weight: 600; }
     </style>
 </head>
 <body>
-
-    <div class="pyme-card">
-        <div class="header-pyme">
-            <h2>إتمام الطلب</h2>
-            <p>أرسل لقطة شاشة لوصل التحويل</p>
+    <div class="card">
+        <div class="header-pyme"><h2>تأكيد الطلب</h2><p>ارفع وصل التحويل لإتمام العملية</p></div>
+        <div class="info-box"><p style="font-size:11px; color:#999;">الباقة</p><div class="selected-plan" id="planDisplay">---</div></div>
+        <input type="text" id="custName" placeholder="الاسم الكامل">
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-camera" style="font-size:24px; color:#ccc;"></i>
+            <p style="font-size:12px; color:#aaa;">اضغط لرفع الوصل</p>
+            <input type="file" id="fileInput" hidden accept="image/*" onchange="handleFile(this)">
+            <img id="imgPreview">
         </div>
-
-        <div class="info-box">
-            <p style="font-size: 11px; color: #999;">الباقة المختارة</p>
-            <div class="selected-plan" id="planDisplay">---</div>
-        </div>
-
-        <div class="input-group">
-            <label>اسمك الكامل</label>
-            <input type="text" id="custName" placeholder="اكتب اسمك هنا">
-        </div>
-
-        <div class="input-group">
-            <label>وصل التحويل</label>
-            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                <div id="uploadPlaceholder">
-                    <i class="fas fa-cloud-upload-alt" style="font-size: 28px; color: #bbb;"></i>
-                    <p style="font-size: 12px; color: #aaa; margin-top: 8px;">اضغط لاختيار الصورة</p>
-                </div>
-                <input type="file" id="fileInput" hidden accept="image/*" onchange="handleFile(this)">
-                <img id="imgPreview">
-            </div>
-        </div>
-
-        <button class="btn-confirm" id="sendBtn" onclick="submitToSheet()">إرسال وتأكيد الطلب</button>
+        <button class="btn" id="sendBtn" onclick="submitToSheet()">إرسال الطلب الآن</button>
         <div id="statusMsg"></div>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx0JWFlVcrdb61T8JLbvJVQTJ81I1Yf8FIJ_1F3jTT130m3R9-upoI3Yvi58DZStET6oA/exec";
-        
+        const API_URL = "https://script.google.com/macros/s/AKfycbnu4jyFnEOmQgM_2-tWH6bBTGl52lLDeB-YK8860AX4tx8lwnFvbJWBcXqbhwxT0Fn5A/exec";
         const userEmail = localStorage.getItem('user_gmail');
-        const selectedPrice = localStorage.getItem('selected_plan_price') || "غير محدد";
-
-        if (!userEmail) { window.location.href = "../index.html"; }
-        document.getElementById('planDisplay').innerText = selectedPrice;
+        document.getElementById('planDisplay').innerText = localStorage.getItem('selected_plan_price') || "غير محدد";
 
         let base64Img = "";
-
         function handleFile(input) {
             const file = input.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    // تصغير حجم الصورة باستخدام Canvas
                     const img = new Image();
                     img.src = e.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
-                        const maxWidth = 800; // تصغير العرض لـ 800 بيكسل
-                        const scale = maxWidth / img.width;
-                        canvas.width = maxWidth;
-                        canvas.height = img.height * scale;
+                        canvas.width = 600; canvas.height = img.height * (600 / img.width);
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        
-                        base64Img = canvas.toDataURL('image/jpeg', 0.7); // ضغط الجودة لـ 70%
+                        base64Img = canvas.toDataURL('image/jpeg', 0.6);
                         document.getElementById('imgPreview').src = base64Img;
                         document.getElementById('imgPreview').style.display = "block";
-                        document.getElementById('uploadPlaceholder').style.display = "none";
                     };
                 };
                 reader.readAsDataURL(file);
@@ -118,48 +65,25 @@
 
         async function submitToSheet() {
             const name = document.getElementById('custName').value.trim();
+            if (!name || !base64Img) return alert("أكمل البيانات");
+            
             const btn = document.getElementById('sendBtn');
-            const status = document.getElementById('statusMsg');
-
-            if (!name || !base64Img) {
-                alert("أدخل اسمك وارفع صورة الوصل أولاً");
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerText = "جاري الإرسال...";
-            status.style.color = "#666";
-            status.innerText = "جاري رفع البيانات، يرجى الانتظار...";
+            btn.disabled = true; btn.innerText = "جاري الإرسال...";
 
             const payload = {
-                name: name,
-                email: userEmail,
-                plan: selectedPrice,
+                name: name, email: userEmail,
+                plan: localStorage.getItem('selected_plan_price'),
                 receipt: base64Img,
                 refCode: "LC" + Math.floor(10000 + Math.random() * 90000)
             };
 
             try {
-                const response = await fetch(API_URL, {
-                    method: "POST",
-                    body: JSON.stringify(payload),
-                    headers: { "Content-Type": "text/plain;charset=utf-8" }
-                });
-                
-                const resData = await response.json();
-
-                if (resData.result === "SUCCESS") {
-                    status.style.color = "green";
-                    status.innerText = "تم إرسال طلبك بنجاح!";
-                    setTimeout(() => { window.location.href = "check.html"; }, 1500);
-                } else {
-                    throw new Error(resData.message);
-                }
-            } catch (err) {
-                btn.disabled = false;
-                btn.innerText = "إعادة المحاولة";
-                status.style.color = "red";
-                status.innerText = "وقع خطأ، جرب مرة أخرى";
+                await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
+                document.getElementById('statusMsg').innerHTML = "<span style='color:green'>تم الإرسال بنجاح!</span>";
+                setTimeout(() => window.location.href = "check.html", 2000);
+            } catch (e) {
+                btn.disabled = false; btn.innerText = "إعادة المحاولة";
+                document.getElementById('statusMsg').innerText = "خطأ في الاتصال";
             }
         }
     </script>
