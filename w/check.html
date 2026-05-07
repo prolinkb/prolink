@@ -2,154 +2,109 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LikCash PRO - الداشبورد</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LikCash Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main-color: #1a1a1a; --accent-color: #007aff; --bg-gray: #fcfcfc; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
-        body { background-color: var(--bg-gray); color: var(--main-color); line-height: 1.6; overflow-x: hidden; }
-
-        /* Navigation & Header */
-        .header { background: #fff; padding: 18px 25px; display: flex; align-items: center; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000; }
-        .logo { flex-grow: 1; text-align: center; font-weight: 800; font-size: 18px; letter-spacing: 0.5px; }
-        .menu-btn { font-size: 20px; cursor: pointer; color: #333; width: 30px; }
-
-        /* Sidebar */
-        .sidebar { position: fixed; right: -100%; top: 0; width: 280px; height: 100%; background: #fff; z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 50px 25px; box-shadow: -10px 0 30px rgba(0,0,0,0.1); }
+        :root { --main: #1a1a1a; --bg: #fcfcfc; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
+        body { background: var(--bg); color: var(--main); }
+        .header { background: #fff; padding: 15px 20px; display: flex; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000; }
+        .menu-btn { font-size: 20px; cursor: pointer; flex: 1; }
+        .logo { flex: 2; text-align: center; font-weight: 800; }
+        
+        .sidebar { position: fixed; right: -100%; top: 0; width: 260px; height: 100%; background: #fff; z-index: 2000; transition: 0.3s; padding: 40px 20px; box-shadow: -5px 0 20px rgba(0,0,0,0.05); }
         .sidebar.active { right: 0; }
-        .nav-link { padding: 14px 18px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; font-weight: 600; color: #666; transition: 0.2s; }
-        .nav-link.active { background: #f5f5f7; color: var(--main-color); }
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1500; backdrop-filter: blur(3px); }
+        .nav-link { padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: 600; color: #555; margin-bottom: 5px; border-radius: 10px; }
+        .nav-link.active { background: #f0f0f0; color: #000; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1500; }
         .overlay.active { display: block; }
 
-        /* Content */
-        .main-container { padding: 20px; max-width: 480px; margin: auto; }
-        .view-section { display: none; animation: fadeIn 0.3s ease; }
-        .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .section-title { font-size: 22px; font-weight: 800; margin-bottom: 5px; color: #000; }
-        .section-subtitle { font-size: 13px; color: #888; margin-bottom: 25px; }
-
-        /* Cards (Shop) */
-        .biz-card { background: #fff; border-radius: 20px; padding: 25px; margin-bottom: 20px; border: 1px solid #eee; }
-        .card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-        .plan-name { font-size: 17px; font-weight: 700; }
-        .plan-duration { font-size: 11px; color: #999; background: #f9f9f9; padding: 4px 10px; border-radius: 6px; }
-        .price-amount { font-size: 22px; font-weight: 800; display: block; margin-bottom: 15px; }
-        .btn-select { background: var(--main-color); color: #fff; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer; }
-
-        /* History Items */
-        .history-item { background: #fff; border: 1px solid #eee; border-radius: 15px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .status-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; }
-        .pending { background: #fff9e6; color: #f39c12; }
-        .verified { background: #eefdf5; color: #27ae60; }
+        .main { padding: 20px; max-width: 500px; margin: auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .card { background: #fff; border-radius: 18px; padding: 20px; margin-bottom: 15px; border: 1px solid #eee; }
+        .btn-buy { background: #000; color: #fff; border: none; width: 100%; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        
+        .history-item { background: #fff; padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .status { font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 5px; }
+        .st-pending { background: #fff4e5; color: #d4a017; }
+        .st-done { background: #eafff2; color: #27ae60; }
     </style>
 </head>
 <body>
-
     <div class="header">
         <div class="menu-btn" onclick="toggleNav()"><i class="fas fa-bars"></i></div>
-        <div class="logo">LikCash Dashboard</div>
+        <div class="logo">LIKCASH</div>
+        <div style="flex:1"></div>
     </div>
 
     <div class="overlay" id="overlay" onclick="toggleNav()"></div>
-
     <div class="sidebar" id="sidebar">
-        <div class="nav-link active" id="tab-shop" onclick="showTab('shop')"><i class="fas fa-shopping-bag"></i> المتجر</div>
-        <div class="nav-link" id="tab-history" onclick="showTab('history')"><i class="fas fa-history"></i> سجل طلباتي</div>
-        <div style="border-top: 1px solid #eee; margin: 20px 0;"></div>
-        <div class="nav-link" style="color:#e74c3c" onclick="logout()"><i class="fas fa-sign-out-alt"></i> خروج</div>
+        <div class="nav-link active" id="l-shop" onclick="showTab('shop')"><i class="fas fa-store"></i> المتجر</div>
+        <div class="nav-link" id="l-hist" onclick="showTab('hist')"><i class="fas fa-history"></i> طلباتي</div>
+        <hr style="margin:15px 0; border:none; border-top:1px solid #eee;">
+        <div class="nav-link" style="color:red" onclick="localStorage.clear(); location.href='index.html'"><i class="fas fa-sign-out-alt"></i> خروج</div>
     </div>
 
-    <div class="main-container">
-        <div id="shop" class="view-section active">
-            <h2 class="section-title">الباقات المتاحة</h2>
-            <p class="section-subtitle">اختر باقتك المفضلة للبدء</p>
-            
-            <div class="biz-card">
-                <div class="card-head">
-                    <div class="plan-name">اشتراك الفئة الأولى</div>
-                    <span class="plan-duration">30 يوم</span>
-                </div>
-                <div class="price-amount">300 DH</div>
-                <button class="btn-select" onclick="goToPyme('300 DH')">شراء الآن</button>
+    <div class="main">
+        <div id="shop" class="tab-content active">
+            <h2 style="margin-bottom:15px">الباقات</h2>
+            <div class="card">
+                <div style="display:flex; justify-content:space-between"><b>الفئة 1</b> <span>30 يوم</span></div>
+                <div style="font-size:24px; font-weight:900; margin:10px 0">300 DH</div>
+                <button class="btn-buy" onclick="buy('300 DH')">شراء</button>
             </div>
-
-            <div class="biz-card">
-                <div class="card-head">
-                    <div class="plan-name">اشتراك الفئة الثانية</div>
-                    <span class="plan-duration">30 يوم</span>
-                </div>
-                <div class="price-amount">600 DH</div>
-                <button class="btn-select" onclick="goToPyme('600 DH')">شراء الآن</button>
+            <div class="card">
+                <div style="display:flex; justify-content:space-between"><b>الفئة 2</b> <span>30 يوم</span></div>
+                <div style="font-size:24px; font-weight:900; margin:10px 0">600 DH</div>
+                <button class="btn-buy" onclick="buy('600 DH')">شراء</button>
             </div>
         </div>
 
-        <div id="history" class="view-section">
-            <h2 class="section-title">سجل العمليات</h2>
-            <p class="section-subtitle">تتبع حالة طلباتك من هنا</p>
-            <div id="orders-container"></div>
+        <div id="hist" class="tab-content">
+            <h2 style="margin-bottom:15px">سجل الطلبات</h2>
+            <div id="hist-list"></div>
         </div>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx0JWFlVcrdb61T8JLbvJVQTJ81I1Yf8FIJ_1F3jTT130m3R9-upoI3Yvi58DZStET6oA/exec";
-        const userEmail = localStorage.getItem('user_gmail');
-
-        if (!userEmail) { window.location.href = "../index.html"; }
+        const API_URL = "https://script.google.com/macros/s/AKfycbnu4jyFnEOmQgM_2-tWH6bBTGl52lLDeB-YK8860AX4tx8lwnFvbJWBcXqbhwxT0Fn5A/exec";
+        const email = localStorage.getItem('user_gmail');
+        if(!email) location.href="index.html";
 
         function toggleNav() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        function showTab(tabId) {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            document.getElementById('tab-' + tabId).classList.add('active');
-            if(tabId === 'history') loadOrders();
-            if(window.innerWidth < 768) toggleNav();
+        function showTab(t) {
+            document.querySelectorAll('.tab-content, .nav-link').forEach(el => el.classList.remove('active'));
+            document.getElementById(t).classList.add('active');
+            document.getElementById('l-' + (t=='shop'?'shop':'hist')).classList.add('active');
+            if(t == 'hist') loadHist();
+            toggleNav();
         }
 
-        function goToPyme(price) {
-            localStorage.setItem('selected_plan_price', price);
-            window.location.href = "pyme.html";
-        }
+        function buy(p) { localStorage.setItem('selected_plan_price', p); location.href='pyme.html'; }
 
-        async function loadOrders() {
-            const container = document.getElementById('orders-container');
-            container.innerHTML = '<p style="text-align:center; padding:20px; color:#999;">جاري التحميل...</p>';
+        async function loadHist() {
+            const list = document.getElementById('hist-list');
+            list.innerHTML = "جاري التحميل...";
             try {
                 const res = await fetch(API_URL);
                 const data = await res.json();
-                const myRows = data.filter(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase());
-                
-                if(myRows.length === 0) {
-                    container.innerHTML = '<p style="text-align:center; color:#bbb;">لا توجد عمليات</p>';
-                    return;
-                }
-
-                container.innerHTML = myRows.reverse().map(row => {
-                    const isOk = (row.statusLabel === "Verefie");
-                    return `
-                        <div class="history-item">
-                            <div>
-                                <div style="font-weight:700;">${row.plan}</div>
-                                <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
-                            </div>
-                            <div class="status-badge ${isOk ? 'verified' : 'pending'}">
-                                ${isOk ? 'مكتمل' : 'قيد الانتظار'}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch (e) { container.innerHTML = 'خطأ في جلب البيانات'; }
+                const myData = data.filter(d => d.email === email.toLowerCase().trim());
+                list.innerHTML = myData.length ? myData.reverse().map(d => {
+                    const isOk = d.statusLabel === "Verefie";
+                    return `<div class="history-item">
+                        <div><b>${d.plan}</b><br><small style="color:#999">${new Date(d.date).toLocaleDateString()}</small></div>
+                        <div class="status ${isOk?'st-done':'st-pending'}">${isOk?'مكتمل':'قيد الانتظار'}</div>
+                    </div>`;
+                }).join('') : "لا توجد طلبات";
+            } catch(e) { list.innerHTML = "خطأ في الجلب"; }
         }
-
-        function logout() { localStorage.clear(); window.location.href = "../index.html"; }
     </script>
 </body>
 </html>
