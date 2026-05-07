@@ -1,102 +1,109 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>LikCash Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #ffffff; }
-        #sidebar { transition: transform 0.3s ease-in-out; z-index: 100; }
-        .sidebar-open { transform: translateX(0) !important; }
-        .page-section { display: none; }
-        .active-page { display: block; }
+        :root { --main: #1a1a1a; --bg: #fcfcfc; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
+        body { background: var(--bg); color: var(--main); }
+        .header { background: #fff; padding: 15px 20px; display: flex; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000; }
+        .menu-btn { font-size: 20px; cursor: pointer; flex: 1; }
+        .logo { flex: 2; text-align: center; font-weight: 800; }
+        
+        .sidebar { position: fixed; right: -100%; top: 0; width: 260px; height: 100%; background: #fff; z-index: 2000; transition: 0.3s; padding: 40px 20px; box-shadow: -5px 0 20px rgba(0,0,0,0.05); }
+        .sidebar.active { right: 0; }
+        .nav-link { padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: 600; color: #555; margin-bottom: 5px; border-radius: 10px; }
+        .nav-link.active { background: #f0f0f0; color: #000; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1500; }
+        .overlay.active { display: block; }
+
+        .main { padding: 20px; max-width: 500px; margin: auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .card { background: #fff; border-radius: 18px; padding: 20px; margin-bottom: 15px; border: 1px solid #eee; }
+        .btn-buy { background: #000; color: #fff; border: none; width: 100%; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        
+        .history-item { background: #fff; padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .status { font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 5px; }
+        .st-pending { background: #fff4e5; color: #d4a017; }
+        .st-done { background: #eafff2; color: #27ae60; }
     </style>
 </head>
-<body class="relative">
-
-    <aside id="sidebar" class="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl transform translate-x-full flex flex-col border-l border-gray-100">
-        <div class="p-6 border-b flex justify-between items-center">
-            <span class="font-bold text-xl">LikCash</span>
-            <button onclick="toggleSidebar()" class="text-2xl text-gray-400">&times;</button>
-        </div>
-        <nav class="flex-1 p-4 space-y-3">
-            <button onclick="showPage('packagesPage')" class="w-full text-right p-4 bg-gray-50 rounded-2xl font-bold flex items-center">🏠 الرئيسية</button>
-            <button onclick="showPage('historyPage')" class="w-full text-right p-4 hover:bg-gray-50 rounded-2xl text-gray-600 flex items-center">📋 سجل العمليات</button>
-        </nav>
-    </aside>
-
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/20 hidden z-40"></div>
-
-    <header class="p-4 flex justify-between items-center bg-white border-b sticky top-0 z-30">
-        <button onclick="toggleSidebar()" class="p-2 hover:bg-gray-100 rounded-xl">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        </button>
-        <h1 id="pageTitle" class="font-black text-lg text-center flex-1">الرئيسية</h1>
-        <div id="userLabel" class="text-[10px] bg-gray-100 px-3 py-1 rounded-full font-bold text-gray-600 max-w-[120px] truncate">
-            جاري التحميل...
-        </div>
-    </header>
-
-    <div id="packagesPage" class="page-section active-page p-6 max-w-lg mx-auto">
-        <div class="space-y-4">
-            <div class="p-6 border border-gray-100 rounded-[2rem] flex justify-between items-center shadow-sm hover:border-black transition cursor-pointer">
-                <span class="font-bold text-xl">150 درهم</span>
-                <button onclick="buy(150)" class="bg-black text-white px-6 py-2 rounded-xl font-bold text-sm">شراء</button>
-            </div>
-            <div class="p-6 border-2 border-black rounded-[2rem] flex justify-between items-center shadow-sm cursor-pointer">
-                <span class="font-bold text-xl">300 درهم</span>
-                <button onclick="buy(300)" class="bg-black text-white px-6 py-2 rounded-xl font-bold text-sm">شراء</button>
-            </div>
-            <div class="p-6 border border-gray-100 rounded-[2rem] flex justify-between items-center shadow-sm hover:border-black transition cursor-pointer">
-                <span class="font-bold text-xl">600 درهم</span>
-                <button onclick="buy(600)" class="bg-black text-white px-6 py-2 rounded-xl font-bold text-sm">شراء</button>
-            </div>
-        </div>
+<body>
+    <div class="header">
+        <div class="menu-btn" onclick="toggleNav()"><i class="fas fa-bars"></i></div>
+        <div class="logo">LIKCASH</div>
+        <div style="flex:1"></div>
     </div>
 
-    <div id="historyPage" class="page-section p-6 max-w-lg mx-auto">
-        <h2 class="text-sm font-bold text-gray-400 mb-6 text-center uppercase">سجل الحساب</h2>
-        <div id="logs" class="space-y-3">
-            <div class="bg-gray-50 p-4 rounded-3xl flex justify-between items-center border border-gray-100">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">💰</div>
-                    <div>
-                        <p class="text-[10px] text-gray-500 font-bold" id="displayEmail">gmail@user.com</p>
-                        <p class="text-sm font-bold">آخر عملية شراء</p>
-                    </div>
-                </div>
-                <span class="text-red-500 font-bold" id="lastPrice">0.00</span>
+    <div class="overlay" id="overlay" onclick="toggleNav()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="nav-link active" id="l-shop" onclick="showTab('shop')"><i class="fas fa-store"></i> المتجر</div>
+        <div class="nav-link" id="l-hist" onclick="showTab('hist')"><i class="fas fa-history"></i> طلباتي</div>
+        <hr style="margin:15px 0; border:none; border-top:1px solid #eee;">
+        <div class="nav-link" style="color:red" onclick="localStorage.clear(); location.href='index.html'"><i class="fas fa-sign-out-alt"></i> خروج</div>
+    </div>
+
+    <div class="main">
+        <div id="shop" class="tab-content active">
+            <h2 style="margin-bottom:15px">الباقات</h2>
+            <div class="card">
+                <div style="display:flex; justify-content:space-between"><b>الفئة 1</b> <span>30 يوم</span></div>
+                <div style="font-size:24px; font-weight:900; margin:10px 0">300 DH</div>
+                <button class="btn-buy" onclick="buy('300 DH')">شراء</button>
             </div>
+            <div class="card">
+                <div style="display:flex; justify-content:space-between"><b>الفئة 2</b> <span>30 يوم</span></div>
+                <div style="font-size:24px; font-weight:900; margin:10px 0">600 DH</div>
+                <button class="btn-buy" onclick="buy('600 DH')">شراء</button>
+            </div>
+        </div>
+
+        <div id="hist" class="tab-content">
+            <h2 style="margin-bottom:15px">سجل الطلبات</h2>
+            <div id="hist-list"></div>
         </div>
     </div>
 
     <script>
-        // دالة لجلب الجيمايل من الصفحة index.html (عبر LocalStorage)
-        window.onload = function() {
-            // كنفترضو أنك في index.html درتي: localStorage.setItem("userEmail", "test@gmail.com");
-            const storedEmail = localStorage.getItem("userEmail") || "لا يوجد حساب";
-            document.getElementById('userLabel').innerText = storedEmail;
-            document.getElementById('displayEmail').innerText = storedEmail;
-        };
+        const API_URL = "https://script.google.com/macros/s/AKfycbnu4jyFnEOmQgM_2-tWH6bBTGl52lLDeB-YK8860AX4tx8lwnFvbJWBcXqbhwxT0Fn5A/exec";
+        const email = localStorage.getItem('user_gmail');
+        if(!email) location.href="index.html";
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('sidebar-open');
-            document.getElementById('overlay').classList.toggle('hidden');
+        function toggleNav() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
         }
 
-        function showPage(pageId) {
-            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active-page'));
-            document.getElementById(pageId).classList.add('active-page');
-            document.getElementById('pageTitle').innerText = (pageId === 'packagesPage') ? 'الرئيسية' : 'سجل العمليات';
-            toggleSidebar();
+        function showTab(t) {
+            document.querySelectorAll('.tab-content, .nav-link').forEach(el => el.classList.remove('active'));
+            document.getElementById(t).classList.add('active');
+            document.getElementById('l-' + (t=='shop'?'shop':'hist')).classList.add('active');
+            if(t == 'hist') loadHist();
+            toggleNav();
         }
 
-        function buy(price) {
-            const email = localStorage.getItem("userEmail");
-            document.getElementById('lastPrice').innerText = "-" + price + " DH";
-            alert("تم إرسال طلب الباقة للحساب: " + email);
-            // هنا كترسل البيانات لـ Google Sheet
+        function buy(p) { localStorage.setItem('selected_plan_price', p); location.href='pyme.html'; }
+
+        async function loadHist() {
+            const list = document.getElementById('hist-list');
+            list.innerHTML = "جاري التحميل...";
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                const myData = data.filter(d => d.email === email.toLowerCase().trim());
+                list.innerHTML = myData.length ? myData.reverse().map(d => {
+                    const isOk = d.statusLabel === "Verefie";
+                    return `<div class="history-item">
+                        <div><b>${d.plan}</b><br><small style="color:#999">${new Date(d.date).toLocaleDateString()}</small></div>
+                        <div class="status ${isOk?'st-done':'st-pending'}">${isOk?'مكتمل':'قيد الانتظار'}</div>
+                    </div>`;
+                }).join('') : "لا توجد طلبات";
+            } catch(e) { list.innerHTML = "خطأ في الجلب"; }
         }
     </script>
 </body>
