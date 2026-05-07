@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #ffffff; }
+        #sidebar { transition: transform 0.3s ease-in-out; z-index: 100; }
+        .sidebar-open { transform: translateX(0) !important; }
+        .page-section { display: none; }
+        .active-page { display: block; }
+    </style>
+</head>
+<body class="relative overflow-x-hidden">
+
+    <aside id="sidebar" class="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl transform translate-x-full flex flex-col border-l border-gray-100">
+        <div class="p-6 border-b flex justify-between items-center">
+            <span class="font-bold text-xl text-black">LikCash</span>
+            <button onclick="toggleSidebar()" class="text-2xl text-gray-400">&times;</button>
+        </div>
+        <nav class="flex-1 p-4 space-y-3">
+            <button onclick="showPage('packagesPage')" class="w-full text-right p-4 bg-gray-50 rounded-2xl font-bold flex items-center">
+                <span class="ml-3">🏠</span> الرئيسية (الباقات)
+            </button>
+            <button onclick="showPage('historyPage')" class="w-full text-right p-4 hover:bg-gray-50 rounded-2xl text-gray-600 flex items-center transition">
+                <span class="ml-3">📋</span> سجل العمليات
+            </button>
+        </nav>
+    </aside>
+
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/20 hidden z-40"></div>
+
+    <header class="p-4 flex justify-between items-center bg-white border-b sticky top-0 z-30">
+        <button onclick="toggleSidebar()" class="p-2 hover:bg-gray-100 rounded-xl">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <h1 id="pageTitle" class="font-black text-lg">الرئيسية</h1>
+        <div id="userAvatar" class="w-9 h-9 bg-black text-white rounded-full flex items-center justify-center text-xs font-bold">..</div>
+    </header>
+
+    <div id="packagesPage" class="page-section active-page p-6 max-w-lg mx-auto">
+        <div class="space-y-6">
+            <div class="p-6 border border-gray-100 rounded-[2.5rem] flex justify-between items-center shadow-sm">
+                <span class="font-bold text-2xl">150 <small class="text-xs font-normal">درهم</small></span>
+                <button onclick="processOrder(150)" class="bg-black text-white px-8 py-3 rounded-2xl font-bold">شراء</button>
+            </div>
+            <div class="p-6 border-2 border-black rounded-[2.5rem] flex justify-between items-center shadow-md">
+                <span class="font-bold text-2xl">300 <small class="text-xs font-normal">درهم</small></span>
+                <button onclick="processOrder(300)" class="bg-black text-white px-8 py-3 rounded-2xl font-bold">شراء</button>
+            </div>
+            <div class="p-6 border border-gray-100 rounded-[2.5rem] flex justify-between items-center shadow-sm">
+                <span class="font-bold text-2xl">600 <small class="text-xs font-normal">درهم</small></span>
+                <button onclick="processOrder(600)" class="bg-black text-white px-8 py-3 rounded-2xl font-bold">شراء</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="historyPage" class="page-section p-6 max-w-lg mx-auto">
+        <h2 class="text-sm font-bold text-gray-400 mb-6 text-center">سجل معاملاتك على الجيميل</h2>
+        <div id="logsContainer" class="space-y-3">
+            <div class="text-center py-10 text-gray-400">جاري جلب السجل من الجيميل...</div>
+        </div>
+    </div>
+
+    <script>
+        // بمجرد فتح الصفحة، نطلب الايميل من السكريبت
+        window.onload = function() {
+            google.script.run.withSuccessHandler(function(email) {
+                document.getElementById('userAvatar').innerText = email.charAt(0).toUpperCase();
+            }).getUserEmail(); // دالة يجب أن تكون في Code.gs
+        };
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('sidebar-open');
+            document.getElementById('overlay').classList.toggle('hidden');
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active-page'));
+            document.getElementById(pageId).classList.add('active-page');
+            document.getElementById('pageTitle').innerText = (pageId === 'packagesPage') ? 'الرئيسية' : 'سجل العمليات';
+            
+            if(pageId === 'historyPage') {
+                loadHistory(); // جلب السجل عند فتح الصفحة
+            }
+            toggleSidebar();
+        }
+
+        function loadHistory() {
+            // هنا تطلب السجل من Google Apps Script
+            google.script.run.withSuccessHandler(function(history) {
+                let container = document.getElementById('logsContainer');
+                container.innerHTML = ""; // مسح "جاري التحميل"
+                
+                if (history.length === 0) {
+                    container.innerHTML = '<div class="text-center text-gray-400">لا توجد عمليات سابقة.</div>';
+                    return;
+                }
+
+                history.forEach(row => {
+                    container.innerHTML += `
+                        <div class="bg-gray-50 p-5 rounded-3xl flex justify-between items-center border border-gray-100">
+                            <div>
+                                <p class="text-sm font-bold">باقة ${row.amount} درهم</p>
+                                <p class="text-[10px] text-gray-400">${row.date}</p>
+                            </div>
+                            <span class="text-red-500 font-bold">-${row.amount}</span>
+                        </div>`;
+                });
+            }).getUserHistory(); // دالة في Code.gs تجلب البيانات بناءً على ايميل المستخدم
+        }
+
+        function processOrder(price) {
+            google.script.run.withSuccessHandler(function() {
+                alert("تم تسجيل العملية بنجاح!");
+            }).recordPurchase(price); // دالة في Code.gs لحفظ العملية
+        }
+    </script>
+</body>
+</html>
