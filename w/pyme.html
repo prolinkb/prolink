@@ -9,30 +9,23 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
         body { background-color: #f8f9fa; padding: 20px; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
         .pyme-card { background: #fff; width: 100%; max-width: 420px; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
-        .header-pyme { margin-bottom: 25px; }
-        .header-pyme h2 { font-size: 22px; font-weight: 800; color: #000; }
-        .header-pyme p { font-size: 14px; color: #666; margin-top: 5px; }
         .info-box { background: #fdfdfd; border: 1px dashed #ddd; padding: 15px; border-radius: 15px; margin-bottom: 20px; }
         .selected-plan { font-size: 20px; font-weight: 900; color: #000; }
         .input-group { text-align: right; margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 13px; font-weight: 700; color: #444; margin-bottom: 8px; margin-right: 5px; }
-        input { width: 100%; padding: 14px; border: 1.5px solid #eee; border-radius: 12px; font-size: 15px; outline: none; transition: 0.3s; background: #fafafa; }
-        input:focus { border-color: #000; background: #fff; }
-        .upload-area { border: 2px dashed #eee; padding: 20px; border-radius: 15px; cursor: pointer; margin-bottom: 20px; transition: 0.3s; }
-        .upload-area:hover { border-color: #000; background: #f9f9f9; }
+        .input-group label { display: block; font-size: 13px; font-weight: 700; color: #444; margin-bottom: 8px; }
+        input { width: 100%; padding: 14px; border: 1.5px solid #eee; border-radius: 12px; font-size: 15px; outline: none; background: #fafafa; }
+        .upload-area { border: 2px dashed #eee; padding: 20px; border-radius: 15px; cursor: pointer; margin-bottom: 20px; }
         #imgPreview { width: 100%; max-height: 150px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px; }
-        .btn-confirm { background: #000; color: #fff; border: none; padding: 16px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        .btn-confirm:disabled { background: #ccc; cursor: not-allowed; }
-        #statusMsg { margin-top: 15px; font-size: 13px; font-weight: 600; min-height: 20px; }
+        .btn-confirm { background: #000; color: #fff; border: none; padding: 16px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; }
+        .btn-confirm:disabled { background: #ccc; }
+        #statusMsg { margin-top: 15px; font-size: 13px; font-weight: 600; }
     </style>
 </head>
 <body>
 
     <div class="pyme-card">
-        <div class="header-pyme">
-            <h2>تأكيد الطلب</h2>
-            <p>يرجى رفع وصل التحويل لإتمام العملية</p>
-        </div>
+        <h2>تأكيد الطلب</h2>
+        <p style="font-size: 14px; color: #666; margin-bottom: 20px;">ارفع وصل التحويل لإتمام العملية</p>
 
         <div class="info-box">
             <p style="font-size: 12px; color: #888;">الباقة المختارة:</p>
@@ -40,15 +33,15 @@
         </div>
 
         <div class="input-group">
-            <label>اسمك الكامل (كما في الحساب)</label>
-            <input type="text" id="custName" placeholder="مثال: محمد العلوي">
+            <label>الاسم الكامل</label>
+            <input type="text" id="custName" placeholder="محمد العلوي">
         </div>
 
         <div class="input-group">
-            <label>وصل التحويل (صورة)</label>
+            <label>وصل التحويل</label>
             <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                <i class="fas fa-cloud-upload-alt" style="font-size: 24px; color: #aaa;"></i>
-                <p id="uploadText" style="font-size: 12px; color: #aaa; margin-top: 5px;">اضغط هنا لرفع الصورة</p>
+                <i class="fas fa-camera" style="font-size: 24px; color: #aaa;"></i>
+                <p id="uploadText" style="font-size: 12px; color: #aaa; margin-top: 5px;">اضغط لرفع الصورة</p>
                 <input type="file" id="fileInput" hidden accept="image/*" onchange="handleFile(this)">
                 <img id="imgPreview">
             </div>
@@ -59,14 +52,13 @@
     </div>
 
     <script>
-        // الرابط الأخير اللي عطيتيني (مهم جداً)
-        const API_URL = "https://script.google.com/macros/s/AKfycbwsW5VtVaUVPvBvitSnMZnW8WGcjZnwry5RR909gDyCrhyzSHLJbxkDOPIk_hWqJmb8qQ/exec";
+        // رابط الـ Apps Script الجديد (الذي يحتوي على كود ImgBB)
+        const API_URL = "رابط_الـ_EXEC_الجديد_هنا"; 
         
         const userEmail = localStorage.getItem('user_gmail');
         const selectedPrice = localStorage.getItem('selected_plan_price') || "غير محدد";
 
         if (!userEmail) { window.location.href = "../index.html"; }
-
         document.getElementById('planDisplay').innerText = selectedPrice;
 
         let base64Img = "";
@@ -90,21 +82,18 @@
             const btn = document.getElementById('sendBtn');
             const status = document.getElementById('statusMsg');
 
-            if (!name || !base64Img) {
-                alert("يرجى إدخال اسمك ورفع صورة الوصل");
-                return;
-            }
+            if (!name || !base64Img) { alert("عمر الخانات كاملة"); return; }
 
             btn.disabled = true;
-            btn.innerText = "جاري الإرسال...";
+            btn.innerText = "جاري الرفع...";
             status.style.color = "#666";
-            status.innerText = "يتم الآن معالجة طلبك ورفع الصورة...";
+            status.innerText = "كنرفعوا التصويرة لـ ImgBB وكنسجلوا الطلب...";
 
             const payload = {
                 name: name,
                 email: userEmail,
                 plan: selectedPrice,
-                receipt: base64Img,
+                receipt: base64Img, // هادي غيصيفطها لـ Apps Script وهو يتكلف بـ ImgBB
                 refCode: "LC" + Math.floor(10000 + Math.random() * 90000)
             };
 
@@ -113,24 +102,18 @@
                     method: "POST",
                     body: JSON.stringify(payload)
                 });
-                
                 const resData = await response.json();
 
                 if (resData.result === "SUCCESS") {
                     status.style.color = "green";
-                    status.innerText = "تم إرسال الطلب بنجاح!";
-                    setTimeout(() => {
-                        window.location.href = "check.html"; // التوجيه للداشبورد
-                    }, 1500);
-                } else {
-                    throw new Error(resData.message);
-                }
+                    status.innerText = "نادي! تم الإرسال بنجاح.";
+                    setTimeout(() => { window.location.href = "check.html"; }, 1500);
+                } else { throw new Error(); }
             } catch (err) {
                 btn.disabled = false;
-                btn.innerText = "إرسال الطلب الآن";
+                btn.innerText = "إعادة المحاولة";
                 status.style.color = "red";
-                status.innerText = "حدث خطأ في الإرسال. تأكد من إعدادات النشر.";
-                console.error(err);
+                status.innerText = "كاين شي غلط في الرابط أو الـ API";
             }
         }
     </script>
