@@ -52,7 +52,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxVLi0oemYulWjuZYbaQ4H0rmiFbLb4xq_CHk6O-8fMym4zaxhCw-Fnvt1ZxhQLF9nR_w/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbyKYvWS5k2UwjmSznmrGsm4DsU_-I0OCBqRxxtVRY7zYGb4tS-y6wSiPw6J3fY2yTnZ7A/exec"; 
         
         const userEmail = localStorage.getItem('user_gmail');
         const selectedPrice = localStorage.getItem('selected_plan_price') || "غير محدد";
@@ -86,7 +86,7 @@
             btn.disabled = true;
             btn.innerText = "جاري الرفع...";
             status.style.color = "#666";
-            status.innerText = "جاري رفع الصورة إلى Google Drive...";
+            status.innerText = "جاري رفع الصورة إلى Google Drive وتسجيل البيانات...";
 
             const payload = {
                 name: name,
@@ -97,6 +97,7 @@
             };
 
             try {
+                // إرسال البيانات كـ text/plain لتجنب مشاكل CORS المعقدة مع استمرار المعالجة في الخلفية
                 await fetch(API_URL, {
                     method: "POST",
                     mode: "no-cors",
@@ -106,7 +107,7 @@
                     body: JSON.stringify(payload)
                 });
 
-                // بما أن Google Apps Script يواجه مشاكل CORS عند استخدام POST، نعتبر الإرسال تم بنجاح هنا
+                // إظهار رسالة النجاح والتوجه لصفحة السجل
                 status.style.color = "green";
                 status.innerText = "نادي! تم الإرسال بنجاح.";
                 setTimeout(() => { window.location.href = "check.html"; }, 1500);
