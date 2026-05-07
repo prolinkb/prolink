@@ -6,103 +6,155 @@
     <title>LikCash PRO - الداشبورد</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f8f9fa; color: #1a1a1a; }
+        :root { --main-color: #1a1a1a; --accent-color: #007aff; --bg-gray: #fcfcfc; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
+        body { background-color: var(--bg-gray); color: var(--main-color); line-height: 1.6; }
 
-        /* Header */
-        .header { background: #fff; padding: 15px 20px; display: flex; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000; }
-        .logo { flex-grow: 1; text-align: center; font-weight: 900; font-size: 20px; letter-spacing: -1px; }
-        .menu-btn { font-size: 20px; cursor: pointer; width: 30px; }
+        /* Navigation */
+        .header { background: #fff; padding: 18px 25px; display: flex; align-items: center; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000; }
+        .logo { flex-grow: 1; text-align: center; font-weight: 800; font-size: 18px; letter-spacing: 0.5px; }
+        .menu-btn { font-size: 18px; cursor: pointer; color: #555; }
 
-        /* Sidebar */
-        .sidebar { position: fixed; right: -100%; top: 0; width: 80%; max-width: 300px; height: 100%; background: #fff; z-index: 2000; transition: 0.3s; padding: 40px 20px; box-shadow: -10px 0 30px rgba(0,0,0,0.05); }
+        .sidebar { position: fixed; right: -100%; top: 0; width: 280px; height: 100%; background: #fff; z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 50px 25px; box-shadow: -5px 0 25px rgba(0,0,0,0.03); }
         .sidebar.active { right: 0; }
-        .nav-link { padding: 16px; border-radius: 12px; cursor: pointer; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; font-weight: 600; color: #555; transition: 0.2s; }
-        .nav-link.active { background: #000; color: #fff; }
+        .nav-link { padding: 14px 18px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; font-weight: 500; color: #666; transition: 0.2s; }
+        .nav-link.active { background: #f5f5f7; color: var(--main-color); font-weight: 700; }
 
-        /* Content Area */
-        .main-container { padding: 20px; max-width: 450px; margin: auto; min-height: 85vh; }
-        .view-section { display: none; }
-        .view-section.active { display: block; animation: fadeInUp 0.4s ease; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Cards & Buttons */
-        .plan-card { background: #fff; border: 1px solid #eee; border-radius: 25px; padding: 25px; margin-bottom: 20px; text-align: center; }
-        .price-tag { font-size: 32px; font-weight: 900; margin: 10px 0; display: block; }
-        .btn-buy { background: #000; color: #fff; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; }
-
-        /* سجل الطلبات */
-        .order-box { background: #fff; border: 2px solid #eee; border-radius: 22px; padding: 20px; margin-bottom: 15px; position: relative; }
-        .status-pill { font-size: 10px; padding: 5px 12px; border-radius: 20px; font-weight: 800; float: left; }
-        .pill-wait { background: #fff3cd; color: #856404; }
-        .pill-ok { background: #d4edda; color: #155724; border: 1px solid #155724; }
-
-        .promo-box { background: #fdfdfd; padding: 15px; border-radius: 15px; margin-top: 15px; text-align: center; border: 1px dashed #ddd; }
-        .code-display { font-family: monospace; font-size: 22px; font-weight: 900; color: #000; letter-spacing: 2px; }
-        .blurred { filter: blur(6px); user-select: none; }
-
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1500; backdrop-filter: blur(4px); }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.2); z-index: 1500; backdrop-filter: blur(2px); }
         .overlay.active { display: block; }
+
+        /* Main Wrapper */
+        .main-container { padding: 25px; max-width: 480px; margin: auto; }
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+
+        .section-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: #000; }
+        .section-subtitle { font-size: 13px; color: #888; margin-bottom: 25px; }
+
+        /* Clean Business Cards */
+        .biz-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+            transition: 0.3s;
+        }
+        .biz-card:hover { border-color: #ddd; }
         
-        .user-badge { background: #f0f0f0; padding: 5px 15px; border-radius: 10px; font-size: 12px; margin-bottom: 10px; display: inline-block; }
+        .card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .plan-name { font-size: 16px; font-weight: 700; color: #222; }
+        .plan-duration { font-size: 11px; color: #999; background: #f9f9f9; padding: 4px 10px; border-radius: 6px; }
+
+        .stats-row { display: flex; border-top: 1px solid #f9f9f9; padding-top: 20px; margin-bottom: 20px; }
+        .stat-item { flex: 1; }
+        .stat-label { font-size: 10px; color: #aaa; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .stat-value { font-size: 15px; font-weight: 700; color: #333; }
+        .stat-value.profit { color: #27ae60; }
+
+        .card-action { display: flex; align-items: center; justify-content: space-between; }
+        .price-group { line-height: 1; }
+        .price-label { font-size: 10px; color: #bbb; display: block; margin-bottom: 5px; }
+        .price-amount { font-size: 20px; font-weight: 800; }
+
+        .btn-select { 
+            background: var(--main-color); color: #fff; border: none; padding: 12px 22px; 
+            border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; 
+        }
+
+        /* History Items */
+        .history-item { background: #fff; border: 1px solid #eee; border-radius: 15px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-left: 8px; }
+
+        .user-info-bar { font-size: 11px; color: #999; margin-bottom: 15px; display: block; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="menu-btn" onclick="toggleNav()"><i class="fas fa-bars"></i></div>
-        <div class="logo">LikCash PRO</div>
+        <div class="menu-btn" onclick="toggleNav()"><i class="fas fa-bars-social"></i> <i class="fas fa-bars"></i></div>
+        <div class="logo">LikCash Dashboard</div>
     </div>
 
     <div class="overlay" id="overlay" onclick="toggleNav()"></div>
 
     <div class="sidebar" id="sidebar">
-        <div class="nav-link active" id="tab-shop" onclick="showTab('shop')"><i class="fas fa-shopping-cart"></i> المتجر</div>
-        <div class="nav-link" id="tab-history" onclick="showTab('history')"><i class="fas fa-history"></i> باقاتي النشطة</div>
-        <div style="border-top: 1px solid #eee; margin: 20px 0;"></div>
-        <div class="nav-link" style="color:#ff3b30" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</div>
+        <div class="nav-link active" id="tab-shop" onclick="showTab('shop')"><i class="fas fa-th-large"></i> الباقات المتوفرة</div>
+        <div class="nav-link" id="tab-history" onclick="showTab('history')"><i class="fas fa-sync-alt"></i> سجل العمليات</div>
+        <div style="border-top: 1px solid #eee; margin: 25px 0;"></div>
+        <div class="nav-link" style="color:#e74c3c" onclick="logout()"><i class="fas fa-power-off"></i> خروج</div>
     </div>
 
     <div class="main-container">
         
         <div id="shop" class="view-section active">
-            <div id="user-display" class="user-badge">...</div>
-            <h2 style="margin-bottom: 20px;">اختر باقة للبدء</h2>
+            <span class="user-info-bar" id="user-display">جاري التحميل...</span>
+            <h2 class="section-title">إدارة الاشتراكات</h2>
+            <p class="section-subtitle">اختر الخطة المناسبة لبدء العمل في المنصة</p>
             
-            <div class="plan-card">
-                <p style="color:#888;">الباقة الأساسية</p>
-                <span class="price-tag">300 DH</span>
-                <button class="btn-buy" onclick="goToPyme('300 DH')">اقتناء الآن</button>
+            <div class="biz-card">
+                <div class="card-head">
+                    <div class="plan-name">اشتراك الفئة الأولى</div>
+                    <span class="plan-duration">صلاحية 30 يوم</span>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-label">سقف الأرباح</span>
+                        <div class="stat-value profit">600.00 DH</div>
+                    </div>
+                    <div class="stat-item" style="text-align: left;">
+                        <span class="stat-label">نظام العمل</span>
+                        <div class="stat-value">تلقائي</div>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <div class="price-group">
+                        <span class="price-label">تكلفة الاشتراك</span>
+                        <span class="price-amount">300 DH</span>
+                    </div>
+                    <button class="btn-select" onclick="goToPyme('300 DH')">بدء الاشتراك</button>
+                </div>
             </div>
 
-            <div class="plan-card">
-                <p style="color:#888;">الباقة المتقدمة</p>
-                <span class="price-tag">600 DH</span>
-                <button class="btn-buy" onclick="goToPyme('600 DH')">اقتناء الآن</button>
+            <div class="biz-card">
+                <div class="card-head">
+                    <div class="plan-name">اشتراك الفئة الثانية</div>
+                    <span class="plan-duration">صلاحية 30 يوم</span>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-label">سقف الأرباح</span>
+                        <div class="stat-value profit">1200.00 DH</div>
+                    </div>
+                    <div class="stat-item" style="text-align: left;">
+                        <span class="stat-label">نظام العمل</span>
+                        <div class="stat-value">تلقائي</div>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <div class="price-group">
+                        <span class="price-label">تكلفة الاشتراك</span>
+                        <span class="price-amount">600 DH</span>
+                    </div>
+                    <button class="btn-select" onclick="goToPyme('600 DH')">بدء الاشتراك</button>
+                </div>
             </div>
         </div>
 
         <div id="history" class="view-section">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-                <h2>سجل باقاتي</h2>
-                <button onclick="loadUserOrders()" style="border:none; background:none; color:#007aff; font-weight:bold; cursor:pointer;"><i class="fas fa-sync-alt"></i></button>
-            </div>
+            <h2 class="section-title">العمليات السابقة</h2>
+            <p class="section-subtitle">تتبع حالة طلباتك وتاريخ تفعيل الحسابات</p>
             <div id="orders-container"></div>
         </div>
 
     </div>
 
     <script>
-        // رابط Apps Script ديالك
         const API_URL = "https://script.google.com/macros/s/AKfycbxTK9DCO--kObWjqKuW54o0MXcmFCwngFHRCyd3Q4oP4eQRpCAVx4LDh7vfYRnpx4YgWQ/exec";
-
         const userEmail = localStorage.getItem('user_gmail');
 
-        if (!userEmail) {
-            window.location.href = "../index.html"; 
-        } else {
-            document.getElementById('user-display').innerText = "الحساب: " + userEmail;
-        }
+        if (!userEmail) { window.location.href = "../index.html"; }
+        document.getElementById('user-display').innerText = "متصل بـ: " + userEmail;
 
         function toggleNav() {
             document.getElementById('sidebar').classList.toggle('active');
@@ -120,58 +172,44 @@
 
         function goToPyme(price) {
             localStorage.setItem('selected_plan_price', price);
-            // التوجيه لصفحة pyme.html اللي معاها في نفس المجلد w
-            window.location.href = "pyme.html"; 
+            window.location.href = "pyme.html";
         }
 
         async function loadUserOrders() {
             const container = document.getElementById('orders-container');
-            container.innerHTML = '<div style="text-align:center; padding:50px; color:#999;">جاري التحديث...</div>';
-
+            container.innerHTML = '<p style="text-align:center; padding:20px; color:#999; font-size:13px;">جاري تحديث البيانات...</p>';
             try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                const myRows = data.filter(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase());
                 
-                // فلترة بالجيميل
-                const myRows = data.filter(item => 
-                    item.email && item.email.toLowerCase().trim() === userEmail.toLowerCase().trim()
-                );
-
                 if(myRows.length === 0) {
-                    container.innerHTML = '<p style="text-align:center; color:#ccc; margin-top:80px;">لا توجد باقات حالياً.</p>';
+                    container.innerHTML = '<p style="text-align:center; margin-top:30px; color:#bbb;">لا توجد عمليات مسجلة</p>';
                     return;
                 }
 
                 container.innerHTML = myRows.map(row => {
-                    const isActive = (row.statusLabel === "Verefie");
+                    const isOk = (row.statusLabel === "Verefie");
                     return `
-                        <div class="order-box" style="border-color: ${isActive ? '#28a745' : '#eee'}">
-                            <span class="status-pill ${isActive ? 'pill-ok' : 'pill-wait'}">
-                                ${isActive ? 'مفعّلة ✅' : 'قيد المراجعة ⏳'}
-                            </span>
-                            <p style="font-weight:800; font-size:16px;">باقة ${row.plan}</p>
-                            <div class="promo-box">
-                                <div class="code-display ${isActive ? '' : 'blurred'}">
-                                    ${isActive ? row.refCode : 'XXXXX'}
-                                </div>
+                        <div class="history-item">
+                            <div>
+                                <div style="font-weight:700; font-size:14px;">اشتراك ${row.plan}</div>
+                                <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
+                            </div>
+                            <div style="text-align: left;">
+                                <span style="font-size:11px; font-weight:700; color: ${isOk ? '#27ae60' : '#f39c12'}">
+                                    <span class="status-dot" style="background: ${isOk ? '#27ae60' : '#f39c12'}"></span>
+                                    ${isOk ? 'مكتمل' : 'قيد المعالجة'}
+                                </span>
+                                <div style="font-size:10px; font-family:monospace; color:#ccc;">${row.refCode || ''}</div>
                             </div>
                         </div>
                     `;
                 }).join('');
-            } catch (error) {
-                container.innerHTML = '<p style="color:red; text-align:center;">خطأ في الاتصال بالسيرفر.</p>';
-            }
+            } catch (e) { container.innerHTML = "خطأ في جلب البيانات"; }
         }
 
-        function logout() {
-            if(confirm("هل تريد تسجيل الخروج؟")) {
-                localStorage.clear();
-                window.location.href = "../index.html";
-            }
-        }
-
-        // تحميل الطلبات أوتوماتيكياً إيلا كان السجل هو اللي مفتوح
-        window.onload = () => { if(document.getElementById('history').classList.contains('active')) loadUserOrders(); };
+        function logout() { localStorage.clear(); window.location.href = "../index.html"; }
     </script>
 </body>
 </html>
