@@ -54,20 +54,18 @@
     </div>
 
     <script>
-        // رابط النشر الجديد الخاص بك
-        const API_URL = "https://script.google.com/macros/s/AKfycbwnAEBk6wsY6j4HyUZ1pkqZ8FqU8TjzR5l8HINpI4cZ536A7sP6DiYry4FaahUJ3ATtDg/exec"; 
+        // الرابط الجديد الخاص بك
+        const API_URL = "https://script.google.com/macros/s/AKfycbwNLM4SLWJuxXe-cASGKzEaHVCF8ffz3v-ZLiVu3Yb8e2FEjOHALzrlgL8MWZH7te2DGQ/exec"; 
         const IMGBB_API_KEY = "f2d9be6981c0d0877f86feaf452b22ee";
         
         const userEmail = localStorage.getItem('user_gmail');
         const selectedPrice = localStorage.getItem('selected_plan_price') || "غير محدد";
 
-        // التحقق من وجود الإيميل
         if (!userEmail) { window.location.href = "login.html"; }
         document.getElementById('planDisplay').innerText = selectedPrice;
 
         let base64Img = "";
 
-        // معالجة الملف وتحويله لـ Base64
         function handleFile(input) {
             const file = input.files[0];
             if (file) {
@@ -117,7 +115,7 @@
             status.innerText = "جاري إرسال البيانات ومعالجة الصورة...";
 
             try {
-                // رفع الصورة أولاً إلى ImgBB
+                // رفع الصورة إلى ImgBB أولاً
                 const uploadedImageUrl = await uploadToImgBB(base64Img);
 
                 const payload = {
