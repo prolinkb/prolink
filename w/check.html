@@ -31,9 +31,16 @@
         .section-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: #000; }
         .section-subtitle { font-size: 13px; color: #888; margin-bottom: 25px; }
 
+        /* Referral Search Box */
+        .ref-search-card { background: #fff; border-radius: 20px; padding: 20px; margin-bottom: 25px; border: 2px solid #000; }
+        .ref-input-group { display: flex; gap: 10px; margin-top: 10px; }
+        .ref-input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 10px; outline: none; }
+        .btn-check-ref { background: #000; color: #fff; border: none; padding: 0 15px; border-radius: 10px; cursor: pointer; }
+
         /* Clean Business Cards */
-        .biz-card { background: #fff; border-radius: 20px; padding: 25px; margin-bottom: 20px; border: 1px solid #eee; transition: 0.3s; }
+        .biz-card { background: #fff; border-radius: 20px; padding: 25px; margin-bottom: 20px; border: 1px solid #eee; transition: 0.3s; position: relative; }
         .biz-card:hover { border-color: #ddd; }
+        .card-overlay-lock { position: absolute; inset: 0; background: rgba(255,255,255,0.7); z-index: 10; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #999; }
         
         .card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
         .plan-name { font-size: 16px; font-weight: 700; color: #222; }
@@ -80,9 +87,20 @@
         <div id="shop" class="view-section active">
             <span class="user-info-bar" id="user-display">جاري التحميل...</span>
             <h2 class="section-title">إدارة الاشتراكات</h2>
-            <p class="section-subtitle">اختر الخطة المناسبة لبدء العمل في المنصة</p>
+            <p class="section-subtitle">أدخل كود الإحالة أولاً لتفعيل اختيار الباقة</p>
             
-            <div class="biz-card">
+            <!-- البحث عن كود الإحالة -->
+            <div class="ref-search-card">
+                <label style="font-size: 12px; font-weight: 700;">كود الإحالة (اختياري)</label>
+                <div class="ref-input-group">
+                    <input type="text" id="referralInput" class="ref-input" placeholder="أدخل الكود هنا...">
+                    <button class="btn-check-ref" onclick="checkReferral()">تأكيد</button>
+                </div>
+                <div id="refStatus" style="font-size: 11px; margin-top: 8px; font-weight: 600;"></div>
+            </div>
+
+            <div class="biz-card" id="card1">
+                <div class="card-overlay-lock" id="lock1">يجب تأكيد الكود أولاً</div>
                 <div class="card-head">
                     <div class="plan-name">اشتراك الفئة الأولى</div>
                     <span class="plan-duration">صلاحية 30 يوم</span>
@@ -106,7 +124,8 @@
                 </div>
             </div>
 
-            <div class="biz-card">
+            <div class="biz-card" id="card2">
+                <div class="card-overlay-lock" id="lock2">يجب تأكيد الكود أولاً</div>
                 <div class="card-head">
                     <div class="plan-name">اشتراك الفئة الثانية</div>
                     <span class="plan-duration">صلاحية 30 يوم</span>
@@ -140,12 +159,53 @@
     </div>
 
     <script>
-        // الرابط الجديد اللي عطيتيني
-        const API_URL = "https://script.google.com/macros/s/AKfycbxybnvNfN6KoCMUVV3sCvB6-wNvuuIClsfcNmr8ZKVo_Ndma1El0bb_qbdsvklGFpSy1g/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbz49El5mMdsjshuzOIHqp0ioWDBSndFJveI-siMnHE9ACuYdADt5nln1lboJoyoLujsJA/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
         document.getElementById('user-display').innerText = "متصل بـ: " + userEmail;
+
+        let confirmedRefCode = "نوريفيرايت";
+
+        async function checkReferral() {
+            const input = document.getElementById('referralInput').value.trim();
+            const status = document.getElementById('refStatus');
+            
+            if(!input) {
+                status.innerText = "تم المتابعة بدون كود إحالة";
+                status.style.color = "blue";
+                unlockPlans("نوريفيرايت");
+                return;
+            }
+
+            status.innerText = "جاري البحث عن الكود...";
+            status.style.color = "#666";
+
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                const found = data.find(i => i.refCode === input);
+
+                if(found) {
+                    status.innerText = "الكود صحيح! صاحب الكود: " + found.name;
+                    status.style.color = "green";
+                    unlockPlans(input);
+                } else {
+                    status.innerText = "كود غير موجود، المرجو التأكد";
+                    status.style.color = "red";
+                }
+            } catch(e) {
+                status.innerText = "خطأ في الاتصال بالخادم";
+            }
+        }
+
+        function unlockPlans(code) {
+            confirmedRefCode = code;
+            document.getElementById('lock1').style.display = "none";
+            document.getElementById('lock2').style.display = "none";
+            document.getElementById('referralInput').disabled = true;
+            document.querySelector('.btn-check-ref').disabled = true;
+        }
 
         function toggleNav() {
             document.getElementById('sidebar').classList.toggle('active');
@@ -162,8 +222,8 @@
         }
 
         function goToPyme(price) {
-            // كود التمرير: كنسجلو الثمن في localStorage باش صفحة pyme تلقاه واجد
             localStorage.setItem('selected_plan_price', price);
+            localStorage.setItem('final_ref_code', confirmedRefCode);
             window.location.href = "pyme.html";
         }
 
@@ -173,8 +233,6 @@
             try {
                 const res = await fetch(API_URL);
                 const data = await res.json();
-                
-                // تصفية العمليات الخاصة بالمستخدم الحالي فقط
                 const myRows = data.filter(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase());
                 
                 if(myRows.length === 0) {
@@ -183,8 +241,7 @@
                 }
 
                 container.innerHTML = myRows.map(row => {
-                    // التحقق من الحالة لتغيير اللون
-                    const isOk = (row.statusLabel === "Verefie");
+                    const isOk = (row.statusLabel === "Verifie");
                     return `
                         <div class="history-item">
                             <div>
@@ -196,7 +253,6 @@
                                     <span class="status-dot" style="background: ${isOk ? '#27ae60' : '#f39c12'}"></span>
                                     ${isOk ? 'مكتمل' : 'قيد المعالجة'}
                                 </span>
-                                <div style="font-size:10px; font-family:monospace; color:#ccc;">${row.refCode || ''}</div>
                             </div>
                         </div>
                     `;
