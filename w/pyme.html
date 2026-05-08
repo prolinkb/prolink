@@ -14,11 +14,11 @@
         .input-group { text-align: right; margin-bottom: 15px; }
         .input-group label { display: block; font-size: 13px; font-weight: 700; color: #444; margin-bottom: 8px; }
         input { width: 100%; padding: 14px; border: 1.5px solid #eee; border-radius: 12px; font-size: 15px; outline: none; background: #fafafa; }
-        .upload-area { border: 2px dashed #eee; padding: 20px; border-radius: 15px; cursor: pointer; margin-bottom: 20px; }
-        #imgPreview { width: 100%; max-height: 150px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px; }
-        .btn-confirm { background: #000; color: #fff; border: none; padding: 16px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; }
-        .btn-confirm:disabled { background: #ccc; }
-        #statusMsg { margin-top: 15px; font-size: 13px; font-weight: 600; }
+        .upload-area { border: 2px dashed #eee; padding: 20px; border-radius: 15px; cursor: pointer; margin-bottom: 20px; position: relative; overflow: hidden; }
+        #imgPreview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px; }
+        .btn-confirm { background: #000; color: #fff; border: none; padding: 16px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-confirm:disabled { background: #ccc; cursor: not-allowed; }
+        #statusMsg { margin-top: 15px; font-size: 13px; font-weight: 600; min-height: 20px; }
     </style>
 </head>
 <body>
@@ -40,8 +40,10 @@
         <div class="input-group">
             <label>وصل التحويل</label>
             <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                <i class="fas fa-camera" style="font-size: 24px; color: #aaa;"></i>
-                <p id="uploadText" style="font-size: 12px; color: #aaa; margin-top: 5px;">اضغط لرفع الصورة</p>
+                <div id="uploadPlaceholder">
+                    <i class="fas fa-camera" style="font-size: 24px; color: #aaa;"></i>
+                    <p style="font-size: 12px; color: #aaa; margin-top: 5px;">اضغط لرفع صورة الوصل</p>
+                </div>
                 <input type="file" id="fileInput" hidden accept="image/*" onchange="handleFile(this)">
                 <img id="imgPreview">
             </div>
@@ -52,25 +54,34 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyKYvWS5k2UwjmSznmrGsm4DsU_-I0OCBqRxxtVRY7zYGb4tS-y6wSiPw6J3fY2yTnZ7A/exec"; 
+        // رابط النشر الجديد الخاص بك
+        const API_URL = "https://script.google.com/macros/s/AKfycbyPTK8RDp1AaD5kbgE2IKx_gH-0Ei7oUAnHZ0NL3jNL6v7ZNbEDCqg8NqR8yhlg_qvuFQ/exec"; 
         
         const userEmail = localStorage.getItem('user_gmail');
         const selectedPrice = localStorage.getItem('selected_plan_price') || "غير محدد";
 
-        if (!userEmail) { window.location.href = "../index.html"; }
+        // التحقق من وجود الإيميل
+        if (!userEmail) { window.location.href = "login.html"; }
         document.getElementById('planDisplay').innerText = selectedPrice;
 
         let base64Img = "";
 
+        // معالجة الملف وتحويله لـ Base64
         function handleFile(input) {
             const file = input.files[0];
             if (file) {
+                // التأكد من حجم الملف (اختياري: لتجنب الملفات الضخمة جداً)
+                if (file.size > 5 * 1024 * 1024) { 
+                    alert("الصورة كبيرة جداً، يرجى اختيار صورة أقل من 5 ميجا");
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     base64Img = e.target.result;
                     document.getElementById('imgPreview').src = base64Img;
                     document.getElementById('imgPreview').style.display = "block";
-                    document.getElementById('uploadText').style.display = "none";
+                    document.getElementById('uploadPlaceholder').style.display = "none";
                 };
                 reader.readAsDataURL(file);
             }
@@ -81,23 +92,24 @@
             const btn = document.getElementById('sendBtn');
             const status = document.getElementById('statusMsg');
 
-            if (!name || !base64Img) { alert("عمر الخانات كاملة"); return; }
+            if (!name) { alert("يرجى إدخال الاسم"); return; }
+            if (!base64Img) { alert("يرجى رفع صورة الوصل"); return; }
 
             btn.disabled = true;
-            btn.innerText = "جاري الرفع...";
+            btn.innerText = "جاري المعالجة...";
             status.style.color = "#666";
-            status.innerText = "جاري رفع الصورة إلى Google Drive وتسجيل البيانات...";
+            status.innerText = "جاري إرسال البيانات ومعالجة الصورة...";
 
             const payload = {
                 name: name,
                 email: userEmail,
                 plan: selectedPrice,
-                receipt: base64Img,
+                receipt: base64Img, // الكود الذي سيعالجه Apps Script
                 refCode: "LC" + Math.floor(10000 + Math.random() * 90000)
             };
 
             try {
-                // إرسال البيانات كـ text/plain لتجنب مشاكل CORS المعقدة مع استمرار المعالجة في الخلفية
+                // إرسال كـ text/plain لضمان تجاوز CORS بنجاح
                 await fetch(API_URL, {
                     method: "POST",
                     mode: "no-cors",
@@ -107,16 +119,20 @@
                     body: JSON.stringify(payload)
                 });
 
-                // إظهار رسالة النجاح والتوجه لصفحة السجل
+                // بما أن mode هو no-cors، سنفترض النجاح بعد الإرسال
                 status.style.color = "green";
-                status.innerText = "نادي! تم الإرسال بنجاح.";
-                setTimeout(() => { window.location.href = "check.html"; }, 1500);
+                status.innerText = "تم الإرسال بنجاح! جاري الانتقال للسجل...";
+                
+                setTimeout(() => { 
+                    window.location.href = "check.html"; 
+                }, 2000);
 
             } catch (err) {
                 btn.disabled = false;
                 btn.innerText = "إعادة المحاولة";
                 status.style.color = "red";
-                status.innerText = "كاين شي غلط في الرابط أو الـ API";
+                status.innerText = "حدث خطأ في الاتصال، حاول مرة أخرى.";
+                console.error(err);
             }
         }
     </script>
