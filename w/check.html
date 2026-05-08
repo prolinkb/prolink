@@ -89,6 +89,7 @@
             <h2 class="section-title">إدارة الاشتراكات</h2>
             <p class="section-subtitle">أدخل كود الإحالة أولاً لتفعيل اختيار الباقة</p>
             
+            <!-- البحث عن كود الإحالة -->
             <div class="ref-search-card">
                 <label style="font-size: 12px; font-weight: 700;">كود الإحالة (اختياري)</label>
                 <div class="ref-input-group">
@@ -166,26 +167,6 @@
 
         let confirmedRefCode = "نوريفيرايت";
 
-        // التحقق من حالة المستخدم عند الدخول (هل لديه اشتراك مفعل؟)
-        async function checkUserSubscription() {
-            try {
-                const res = await fetch(API_URL + "?t=" + new Date().getTime());
-                const data = await res.json();
-                const activeSub = data.find(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase() && i.statusLabel && i.statusLabel.toLowerCase().trim().startsWith("ver"));
-                
-                if (activeSub) {
-                    document.getElementById('shop').innerHTML = `
-                        <div style="text-align:center; padding:40px 20px;">
-                            <i class="fas fa-check-circle" style="font-size:50px; color:#27ae60; margin-bottom:20px;"></i>
-                            <h2 class="section-title">لديك اشتراك مفعل بالفعل</h2>
-                            <p class="section-subtitle">يمكنك متابعة عملياتك من صفحة السجل</p>
-                        </div>
-                    `;
-                }
-            } catch (e) { console.log("Check Error"); }
-        }
-        checkUserSubscription();
-
         async function checkReferral() {
             const input = document.getElementById('referralInput').value.trim();
             const status = document.getElementById('refStatus');
@@ -197,7 +178,7 @@
                 return;
             }
 
-            status.innerText = "جاري البحث...";
+            status.innerText = "جاري البحث عن الكود...";
             status.style.color = "#666";
 
             try {
@@ -206,21 +187,21 @@
                 const found = data.find(i => i.refCode === input);
 
                 if(found) {
-                    const count = parseInt(found.referralCount) || 0;
-                    if(count >= 3) {
-                        status.innerText = "هذا الكود وصل للحد الأقصى (3 أشخاص)";
+                    const refCount = found.referralCount || 0;
+                    if(refCount >= 3) {
+                        status.innerText = "عذراً، هذا الكود استوفى الحد الأقصى (3 أشخاص)";
                         status.style.color = "red";
                     } else {
-                        status.innerText = "كود صحيح! صاحب الكود: " + found.name;
+                        status.innerText = "الكود صحيح! صاحب الكود: " + found.name;
                         status.style.color = "green";
                         unlockPlans(input);
                     }
                 } else {
-                    status.innerText = "كود غير موجود";
+                    status.innerText = "كود غير موجود، المرجو التأكد";
                     status.style.color = "red";
                 }
             } catch(e) {
-                status.innerText = "خطأ في الاتصال";
+                status.innerText = "خطأ في الاتصال بالخادم";
             }
         }
 
@@ -254,28 +235,28 @@
 
         async function loadUserOrders() {
             const container = document.getElementById('orders-container');
-            container.innerHTML = '<p style="text-align:center; padding:20px; color:#999;">جاري التحديث...</p>';
+            container.innerHTML = '<p style="text-align:center; padding:20px; color:#999; font-size:13px;">جاري تحديث البيانات...</p>';
             try {
                 const res = await fetch(API_URL + "?t=" + new Date().getTime());
                 const data = await res.json();
                 const myRows = data.filter(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase());
                 
                 if(myRows.length === 0) {
-                    container.innerHTML = '<p style="text-align:center; margin-top:30px; color:#bbb;">لا توجد عمليات</p>';
+                    container.innerHTML = '<p style="text-align:center; margin-top:30px; color:#bbb;">لا توجد عمليات مسجلة</p>';
                     return;
                 }
 
                 container.innerHTML = myRows.map(row => {
                     const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
-                    const isOk = label.startsWith("ver");
-                    const isRefused = label.startsWith("fer");
+                    const isOk = label.startsWith("ver") || label.startsWith("acc"); 
+                    const isRefused = label.startsWith("ref") || label.startsWith("fer");
                     
                     return `
                         <div class="history-item">
                             <div>
-                                <div style="font-weight:700; font-size:14px;">اشتراك ${row.plan}</div>
+                                <div style="font-weight:700; font-size:14px;">اشتراك ${row.plan || "---"}</div>
                                 <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
-                                <div style="font-size:11px; color:#27ae60; font-weight:600;">الإحالات: ${row.referralCount || 0}/3</div>
+                                <div style="font-size:11px; color:#27ae60; font-weight:600;">الإحالات المفعّلة: ${row.referralCount || 0}/3</div>
                             </div>
                             <div style="text-align: left;">
                                 <span style="font-size:11px; font-weight:700; color: ${isOk ? '#27ae60' : (isRefused ? '#e74c3c' : '#f39c12')}">
@@ -287,7 +268,7 @@
                     `;
                 }).join('');
             } catch (e) { 
-                container.innerHTML = '<p style="text-align:center; color:red;">خطأ في الجلب</p>'; 
+                container.innerHTML = '<p style="text-align:center; color:red;">خطأ في جلب البيانات</p>'; 
             }
         }
 
