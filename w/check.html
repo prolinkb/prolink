@@ -159,7 +159,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxd05UdxXwoWuZljacoOb6Nh1WFD5x0Ibq2howYhwFGa53hwzvXa4yapDXLT7wBC51azw/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyXsSS6p7GTXBlvRfhjtrw-awPb2ph38OcQrIpulBkwAlSHYHJiod0FDsmQTvL5jrDvCw/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -252,6 +252,7 @@
                             <div>
                                 <div style="font-weight:700; font-size:14px;">اشتراك ${row.plan}</div>
                                 <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
+                                <div style="font-size:11px; color:#27ae60; font-weight:600;">الإحالات: ${row.referralCount || 0}</div>
                             </div>
                             <div style="text-align: left;">
                                 <span style="font-size:11px; font-weight:700; color: ${isOk ? '#27ae60' : '#f39c12'}">
