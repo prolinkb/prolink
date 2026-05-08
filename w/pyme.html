@@ -3,272 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LikCash PRO - الداشبورد</title>
+    <title>LikCash - إتمام الدفع</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main-color: #1a1a1a; --accent-color: #007aff; --bg-gray: #fcfcfc; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
-        body { background-color: var(--bg-gray); color: var(--main-color); line-height: 1.6; }
-
-        /* Navigation */
-        .header { background: #fff; padding: 18px 25px; display: flex; align-items: center; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000; }
-        .logo { flex-grow: 1; text-align: center; font-weight: 800; font-size: 18px; letter-spacing: 0.5px; }
-        .menu-btn { font-size: 18px; cursor: pointer; color: #555; }
-
-        .sidebar { position: fixed; right: -100%; top: 0; width: 280px; height: 100%; background: #fff; z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 50px 25px; box-shadow: -5px 0 25px rgba(0,0,0,0.03); }
-        .sidebar.active { right: 0; }
-        .nav-link { padding: 14px 18px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; font-weight: 500; color: #666; transition: 0.2s; }
-        .nav-link.active { background: #f5f5f7; color: var(--main-color); font-weight: 700; }
-
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.2); z-index: 1500; backdrop-filter: blur(2px); }
-        .overlay.active { display: block; }
-
-        /* Main Wrapper */
-        .main-container { padding: 25px; max-width: 480px; margin: auto; }
-        .view-section { display: none; }
-        .view-section.active { display: block; }
-
-        .section-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: #000; }
-        .section-subtitle { font-size: 13px; color: #888; margin-bottom: 25px; }
-
-        /* Referral Search Box */
-        .ref-search-card { background: #fff; border-radius: 20px; padding: 20px; margin-bottom: 25px; border: 2px solid #000; }
-        .ref-input-group { display: flex; gap: 10px; margin-top: 10px; }
-        .ref-input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 10px; outline: none; }
-        .btn-check-ref { background: #000; color: #fff; border: none; padding: 0 15px; border-radius: 10px; cursor: pointer; }
-
-        /* Clean Business Cards */
-        .biz-card { background: #fff; border-radius: 20px; padding: 25px; margin-bottom: 20px; border: 1px solid #eee; transition: 0.3s; position: relative; }
-        .biz-card:hover { border-color: #ddd; }
-        .card-overlay-lock { position: absolute; inset: 0; background: rgba(255,255,255,0.7); z-index: 10; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #999; }
-        
-        .card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-        .plan-name { font-size: 16px; font-weight: 700; color: #222; }
-        .plan-duration { font-size: 11px; color: #999; background: #f9f9f9; padding: 4px 10px; border-radius: 6px; }
-
-        .stats-row { display: flex; border-top: 1px solid #f9f9f9; padding-top: 20px; margin-bottom: 20px; }
-        .stat-item { flex: 1; }
-        .stat-label { font-size: 10px; color: #aaa; text-transform: uppercase; display: block; margin-bottom: 4px; }
-        .stat-value { font-size: 15px; font-weight: 700; color: #333; }
-        .stat-value.profit { color: #27ae60; }
-
-        .card-action { display: flex; align-items: center; justify-content: space-between; }
-        .price-group { line-height: 1; }
-        .price-label { font-size: 10px; color: #bbb; display: block; margin-bottom: 5px; }
-        .price-amount { font-size: 20px; font-weight: 800; }
-
-        .btn-select { background: var(--main-color); color: #fff; border: none; padding: 12px 22px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; }
-
-        /* History Items */
-        .history-item { background: #fff; border: 1px solid #eee; border-radius: 15px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-left: 8px; }
-
-        .user-info-bar { font-size: 11px; color: #999; margin-bottom: 15px; display: block; }
+        body { background-color: #ffffff; padding: 20px; display: flex; align-items: center; justify-content: center; min-height: 100vh; color: #000; }
+        .pyme-card { background: #fff; width: 100%; max-width: 400px; padding: 25px; border-radius: 20px; text-align: center; }
+        h2 { font-weight: 800; font-size: 24px; margin-bottom: 10px; }
+        .info-box { background: #f9f9f9; padding: 15px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #eee; }
+        .selected-plan { font-size: 22px; font-weight: 900; color: #000; }
+        .input-group { text-align: right; margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; }
+        input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; outline: none; background: #fff; transition: 0.3s; }
+        input:focus { border-color: #000; }
+        .upload-area { border: 2px dashed #ccc; padding: 25px; border-radius: 15px; cursor: pointer; margin-bottom: 25px; position: relative; background: #fafafa; }
+        #imgPreview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px; }
+        .btn-confirm { background: #000; color: #fff; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-confirm:disabled { background: #666; cursor: not-allowed; opacity: 0.7; }
+        #statusMsg { margin-top: 15px; font-size: 13px; font-weight: 600; min-height: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="menu-btn" onclick="toggleNav()"><i class="fas fa-bars"></i></div>
-        <div class="logo">LikCash Dashboard</div>
-    </div>
+    <div class="pyme-card">
+        <h2>تأكيد الطلب</h2>
+        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">ارفع وصل التحويل لإتمام العملية</p>
 
-    <div class="overlay" id="overlay" onclick="toggleNav()"></div>
+        <div class="info-box">
+            <p style="font-size: 12px; color: #888;">الباقة المختارة:</p>
+            <div class="selected-plan" id="planDisplay">---</div>
+            <div style="font-size: 11px; margin-top: 5px; color: #555;">كود الإحالة: <span id="refDisplay" style="font-weight:700;">---</span></div>
+        </div>
 
-    <div class="sidebar" id="sidebar">
-        <div class="nav-link active" id="tab-shop" onclick="showTab('shop')"><i class="fas fa-th-large"></i> الباقات المتوفرة</div>
-        <div class="nav-link" id="tab-history" onclick="showTab('history')"><i class="fas fa-sync-alt"></i> سجل العمليات</div>
-        <div style="border-top: 1px solid #eee; margin: 25px 0;"></div>
-        <div class="nav-link" style="color:#e74c3c" onclick="logout()"><i class="fas fa-power-off"></i> خروج</div>
-    </div>
+        <div class="input-group">
+            <label>الاسم الكامل</label>
+            <input type="text" id="custName" placeholder="مثال: محمد العلوي">
+        </div>
 
-    <div class="main-container">
-        
-        <div id="shop" class="view-section active">
-            <span class="user-info-bar" id="user-display">جاري التحميل...</span>
-            <h2 class="section-title">إدارة الاشتراكات</h2>
-            <p class="section-subtitle">أدخل كود الإحالة أولاً لتفعيل اختيار الباقة</p>
-            
-            <!-- البحث عن كود الإحالة -->
-            <div class="ref-search-card">
-                <label style="font-size: 12px; font-weight: 700;">كود الإحالة (اختياري)</label>
-                <div class="ref-input-group">
-                    <input type="text" id="referralInput" class="ref-input" placeholder="أدخل الكود هنا...">
-                    <button class="btn-check-ref" onclick="checkReferral()">تأكيد</button>
+        <div class="input-group">
+            <label>وصل التحويل</label>
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div id="uploadPlaceholder">
+                    <i class="fas fa-camera" style="font-size: 28px; color: #000;"></i>
+                    <p style="font-size: 13px; color: #555; margin-top: 8px;">اضغط لرفع صورة الوصل</p>
                 </div>
-                <div id="refStatus" style="font-size: 11px; margin-top: 8px; font-weight: 600;"></div>
-            </div>
-
-            <div class="biz-card" id="card1">
-                <div class="card-overlay-lock" id="lock1">يجب تأكيد الكود أولاً</div>
-                <div class="card-head">
-                    <div class="plan-name">اشتراك الفئة الأولى</div>
-                    <span class="plan-duration">صلاحية 30 يوم</span>
-                </div>
-                <div class="stats-row">
-                    <div class="stat-item">
-                        <span class="stat-label">سقف الأرباح</span>
-                        <div class="stat-value profit">600.00 DH</div>
-                    </div>
-                    <div class="stat-item" style="text-align: left;">
-                        <span class="stat-label">نظام العمل</span>
-                        <div class="stat-value">تلقائي</div>
-                    </div>
-                </div>
-                <div class="card-action">
-                    <div class="price-group">
-                        <span class="price-label">تكلفة الاشتراك</span>
-                        <span class="price-amount">300 DH</span>
-                    </div>
-                    <button class="btn-select" onclick="goToPyme('300 DH')">بدء الاشتراك</button>
-                </div>
-            </div>
-
-            <div class="biz-card" id="card2">
-                <div class="card-overlay-lock" id="lock2">يجب تأكيد الكود أولاً</div>
-                <div class="card-head">
-                    <div class="plan-name">اشتراك الفئة الثانية</div>
-                    <span class="plan-duration">صلاحية 30 يوم</span>
-                </div>
-                <div class="stats-row">
-                    <div class="stat-item">
-                        <span class="stat-label">سقف الأرباح</span>
-                        <div class="stat-value profit">1200.00 DH</div>
-                    </div>
-                    <div class="stat-item" style="text-align: left;">
-                        <span class="stat-label">نظام العمل</span>
-                        <div class="stat-value">تلقائي</div>
-                    </div>
-                </div>
-                <div class="card-action">
-                    <div class="price-group">
-                        <span class="price-label">تكلفة الاشتراك</span>
-                        <span class="price-amount">600 DH</span>
-                    </div>
-                    <button class="btn-select" onclick="goToPyme('600 DH')">بدء الاشتراك</button>
-                </div>
+                <input type="file" id="fileInput" hidden accept="image/*" onchange="handleFile(this)">
+                <img id="imgPreview">
             </div>
         </div>
 
-        <div id="history" class="view-section">
-            <h2 class="section-title">العمليات السابقة</h2>
-            <p class="section-subtitle">تتبع حالة طلباتك وتاريخ تفعيل الحسابات</p>
-            <div id="orders-container"></div>
-        </div>
-
+        <button class="btn-confirm" id="sendBtn" onclick="submitToSheet()">إرسال الطلب الآن</button>
+        <div id="statusMsg"></div>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyXsSS6p7GTXBlvRfhjtrw-awPb2ph38OcQrIpulBkwAlSHYHJiod0FDsmQTvL5jrDvCw/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyXsSS6p7GTXBlvRfhjtrw-awPb2ph38OcQrIpulBkwAlSHYHJiod0FDsmQTvL5jrDvCw/exec"; 
+        const IMGBB_API_KEY = "f2d9be6981c0d0877f86feaf452b22ee";
+        
         const userEmail = localStorage.getItem('user_gmail');
+        const selectedPrice = localStorage.getItem('selected_plan_price') || "غير محدد";
+        const finalRef = localStorage.getItem('final_ref_code') || "نوريفيرايت";
 
-        if (!userEmail) { window.location.href = "../index.html"; }
-        document.getElementById('user-display').innerText = "متصل بـ: " + userEmail;
+        if (!userEmail) { window.location.href = "index.html"; }
+        document.getElementById('planDisplay').innerText = selectedPrice + " MAD";
+        document.getElementById('refDisplay').innerText = finalRef;
 
-        let confirmedRefCode = "نوريفيرايت";
+        let base64Img = "";
 
-        async function checkReferral() {
-            const input = document.getElementById('referralInput').value.trim();
-            const status = document.getElementById('refStatus');
-            
-            if(!input) {
-                status.innerText = "تم المتابعة بدون كود إحالة";
-                status.style.color = "blue";
-                unlockPlans("نوريفيرايت");
-                return;
+        function handleFile(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    base64Img = e.target.result;
+                    document.getElementById('imgPreview').src = base64Img;
+                    document.getElementById('imgPreview').style.display = "block";
+                    document.getElementById('uploadPlaceholder').style.display = "none";
+                };
+                reader.readAsDataURL(file);
             }
+        }
 
-            status.innerText = "جاري البحث عن الكود...";
-            status.style.color = "#666";
+        async function uploadToImgBB(base64Data) {
+            const formData = new FormData();
+            formData.append("image", base64Data.split(",")[1]);
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: "POST",
+                body: formData
+            });
+            const data = await response.json();
+            return data.success ? data.data.url : null;
+        }
+
+        async function submitToSheet() {
+            const name = document.getElementById('custName').value.trim();
+            const btn = document.getElementById('sendBtn');
+            const status = document.getElementById('statusMsg');
+
+            if (!name || !base64Img) { alert("يرجى إكمال البيانات"); return; }
+
+            btn.disabled = true;
+            btn.innerText = "جاري الإرسال...";
+            status.innerText = "جاري معالجة الطلب...";
 
             try {
-                // إضافة timestamp لمنع الكاش عند البحث عن الكود
-                const res = await fetch(API_URL + "?t=" + new Date().getTime());
-                const data = await res.json();
-                const found = data.find(i => i.refCode === input);
+                const uploadedImageUrl = await uploadToImgBB(base64Img);
+                const payload = {
+                    name: name,
+                    email: userEmail,
+                    plan: selectedPrice,
+                    receipt: uploadedImageUrl, 
+                    refCode: "LC" + Math.floor(10000 + Math.random() * 90000),
+                    enteredCode: finalRef
+                };
 
-                if(found) {
-                    status.innerText = "الكود صحيح! صاحب الكود: " + found.name;
-                    status.style.color = "green";
-                    unlockPlans(input);
-                } else {
-                    status.innerText = "كود غير موجود، المرجو التأكد";
-                    status.style.color = "red";
-                }
-            } catch(e) {
-                status.innerText = "خطأ في الاتصال بالخادم";
+                await fetch(API_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "text/plain" },
+                    body: JSON.stringify(payload)
+                });
+
+                status.style.color = "green";
+                status.innerText = "تم الإرسال بنجاح!";
+                setTimeout(() => { window.location.href = "check.html"; }, 2000);
+            } catch (err) {
+                btn.disabled = false;
+                btn.innerText = "إعادة المحاولة";
+                status.style.color = "red";
+                status.innerText = "خطأ في الإرسال.";
             }
         }
-
-        function unlockPlans(code) {
-            confirmedRefCode = code;
-            document.getElementById('lock1').style.display = "none";
-            document.getElementById('lock2').style.display = "none";
-            document.getElementById('referralInput').disabled = true;
-            document.querySelector('.btn-check-ref').disabled = true;
-        }
-
-        function toggleNav() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-
-        function showTab(tabId) {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            document.getElementById('tab-' + tabId).classList.add('active');
-            if(tabId === 'history') loadUserOrders();
-            if(document.getElementById('sidebar').classList.contains('active')) toggleNav();
-        }
-
-        function goToPyme(price) {
-            localStorage.setItem('selected_plan_price', price);
-            localStorage.setItem('final_ref_code', confirmedRefCode);
-            window.location.href = "pyme.html";
-        }
-
-        async function loadUserOrders() {
-            const container = document.getElementById('orders-container');
-            container.innerHTML = '<p style="text-align:center; padding:20px; color:#999; font-size:13px;">جاري تحديث البيانات...</p>';
-            try {
-                // إضافة متغير عشوائي (?t=...) لمنع المتصفح من عرض بيانات قديمة مخزنة
-                const res = await fetch(API_URL + "?t=" + new Date().getTime());
-                const data = await res.json();
-                const myRows = data.filter(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase());
-                
-                if(myRows.length === 0) {
-                    container.innerHTML = '<p style="text-align:center; margin-top:30px; color:#bbb;">لا توجد عمليات مسجلة</p>';
-                    return;
-                }
-
-                container.innerHTML = myRows.map(row => {
-                    // جعل التحقق مرن: يقبل Verifie أو Verified مع تجاهل حالة الأحرف
-                    const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
-                    const isOk = label.startsWith("ver"); 
-                    
-                    return `
-                        <div class="history-item">
-                            <div>
-                                <div style="font-weight:700; font-size:14px;">اشتراك ${row.plan}</div>
-                                <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
-                                <div style="font-size:11px; color:#27ae60; font-weight:600;">الإحالات: ${row.referralCount || 0}</div>
-                            </div>
-                            <div style="text-align: left;">
-                                <span style="font-size:11px; font-weight:700; color: ${isOk ? '#27ae60' : '#f39c12'}">
-                                    <span class="status-dot" style="background: ${isOk ? '#27ae60' : '#f39c12'}"></span>
-                                    ${isOk ? 'مكتمل' : 'قيد المعالجة'}
-                                </span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch (e) { 
-                container.innerHTML = '<p style="text-align:center; color:red;">خطأ في جلب البيانات</p>'; 
-            }
-        }
-
-        function logout() { localStorage.clear(); window.location.href = "../index.html"; }
     </script>
 </body>
 </html>
