@@ -14,68 +14,69 @@
         .input-group { text-align: right; margin-bottom: 15px; }
         .input-group label { display: block; font-size: 13px; font-weight: 700; color: #444; margin-bottom: 8px; }
         input { width: 100%; padding: 14px; border: 1.5px solid #eee; border-radius: 12px; font-size: 15px; outline: none; background: #fafafa; }
-        .upload-area { border: 2px dashed #eee; padding: 20px; border-radius: 15px; cursor: pointer; margin-bottom: 20px; position: relative; overflow: hidden; }
+        .upload-area { border: 2px dashed #eee; padding: 20px; border-radius: 15px; cursor: pointer; margin-bottom: 20px; position: relative; }
         #imgPreview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px; }
         .btn-confirm { background: #000; color: #fff; border: none; padding: 16px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s; }
         .btn-confirm:disabled { background: #ccc; cursor: not-allowed; }
-        #statusMsg { margin-top: 15px; font-size: 13px; font-weight: 600; min-height: 20px; }
+        #statusMsg { margin-top: 15px; font-size: 13px; font-weight: 600; }
+        
+        /* شاشة التحميل مثل الموقع الآخر */
+        #loadingScreen { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:9999; justify-content:center; align-items:center; flex-direction:column; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #000; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
+    <div id="loadingScreen">
+        <div class="spinner"></div>
+        <p style="margin-top:15px; font-weight:bold;">جاري معالجة الطلب...</p>
+    </div>
+
     <div class="pyme-card">
-        <h2>تأكيد الطلب</h2>
-        <p style="font-size: 14px; color: #666; margin-bottom: 20px;">ارفع وصل التحويل لإتمام العملية</p>
+        <h2>تأكيد الدفع</h2>
+        <p style="font-size: 14px; color: #666; margin-bottom: 20px;">ارفع الوصل لتفعيل باقتك</p>
 
         <div class="info-box">
-            <p style="font-size: 12px; color: #888;">الباقة المختارة:</p>
+            <p style="font-size: 12px; color: #888;">المبلغ المطلوب:</p>
             <div class="selected-plan" id="planDisplay">---</div>
         </div>
 
         <div class="input-group">
             <label>الاسم الكامل</label>
-            <input type="text" id="custName" placeholder="محمد العلوي">
+            <input type="text" id="custName" placeholder="إسمك بالكامل">
         </div>
 
         <div class="input-group">
-            <label>وصل التحويل</label>
+            <label>صورة الوصل</label>
             <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                 <div id="uploadPlaceholder">
                     <i class="fas fa-camera" style="font-size: 24px; color: #aaa;"></i>
-                    <p style="font-size: 12px; color: #aaa; margin-top: 5px;">اضغط لرفع صورة الوصل</p>
+                    <p style="font-size: 12px; color: #aaa; margin-top: 5px;">إضغط هنا لرفع الصورة</p>
                 </div>
                 <input type="file" id="fileInput" hidden accept="image/*" onchange="handleFile(this)">
                 <img id="imgPreview">
             </div>
         </div>
 
-        <button class="btn-confirm" id="sendBtn" onclick="submitToSheet()">إرسال الطلب الآن</button>
+        <button class="btn-confirm" id="submitBtn" onclick="sendData()">تأكيد العملية</button>
         <div id="statusMsg"></div>
     </div>
 
     <script>
         // رابط النشر الجديد الخاص بك
-        const API_URL = "https://script.google.com/macros/s/AKfycbyPTK8RDp1AaD5kbgE2IKx_gH-0Ei7oUAnHZ0NL3jNL6v7ZNbEDCqg8NqR8yhlg_qvuFQ/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxcIgx99j-8QzW2HZFiGT0qA0Cl_xEXtgpkXkisfbSblxzXT6O-c3ZuvV-urgY-qLA2FA/exec"; 
         
-        const userEmail = localStorage.getItem('user_gmail');
-        const selectedPrice = localStorage.getItem('selected_plan_price') || "غير محدد";
+        const userEmail = localStorage.getItem('user_gmail') || "no-email";
+        const selectedPrice = localStorage.getItem('selected_plan_price') || "0 MAD";
 
-        // التحقق من وجود الإيميل
-        if (!userEmail) { window.location.href = "login.html"; }
         document.getElementById('planDisplay').innerText = selectedPrice;
 
         let base64Img = "";
 
-        // معالجة الملف وتحويله لـ Base64
         function handleFile(input) {
             const file = input.files[0];
             if (file) {
-                // التأكد من حجم الملف (اختياري: لتجنب الملفات الضخمة جداً)
-                if (file.size > 5 * 1024 * 1024) { 
-                    alert("الصورة كبيرة جداً، يرجى اختيار صورة أقل من 5 ميجا");
-                    return;
-                }
-
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     base64Img = e.target.result;
@@ -87,52 +88,43 @@
             }
         }
 
-        async function submitToSheet() {
+        async function sendData() {
             const name = document.getElementById('custName').value.trim();
-            const btn = document.getElementById('sendBtn');
-            const status = document.getElementById('statusMsg');
+            const submitBtn = document.getElementById('submitBtn');
+            const loadingScreen = document.getElementById('loadingScreen');
 
-            if (!name) { alert("يرجى إدخال الاسم"); return; }
-            if (!base64Img) { alert("يرجى رفع صورة الوصل"); return; }
+            if (!name || !base64Img) {
+                alert("يرجى ملء الاسم ورفع صورة الوصل");
+                return;
+            }
 
-            btn.disabled = true;
-            btn.innerText = "جاري المعالجة...";
-            status.style.color = "#666";
-            status.innerText = "جاري إرسال البيانات ومعالجة الصورة...";
-
-            const payload = {
-                name: name,
-                email: userEmail,
-                plan: selectedPrice,
-                receipt: base64Img, // الكود الذي سيعالجه Apps Script
-                refCode: "LC" + Math.floor(10000 + Math.random() * 90000)
-            };
+            submitBtn.disabled = true;
+            loadingScreen.style.display = "flex";
 
             try {
-                // إرسال كـ text/plain لضمان تجاوز CORS بنجاح
-                await fetch(API_URL, {
+                // استخدام URLSearchParams لإرسال البيانات بطريقة منظمة (مثل الموقع الآخر)
+                const formData = new URLSearchParams();
+                formData.append('fullname', name);
+                formData.append('amount', selectedPrice);
+                formData.append('email', userEmail);
+                formData.append('imageBase64', base64Img); // إرسال الصورة كـ Parameter
+
+                const response = await fetch(API_URL, {
                     method: "POST",
-                    mode: "no-cors",
                     headers: {
-                        "Content-Type": "text/plain;charset=utf-8"
+                        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
                     },
-                    body: JSON.stringify(payload)
+                    body: formData.toString()
                 });
 
-                // بما أن mode هو no-cors، سنفترض النجاح بعد الإرسال
-                status.style.color = "green";
-                status.innerText = "تم الإرسال بنجاح! جاري الانتقال للسجل...";
-                
-                setTimeout(() => { 
-                    window.location.href = "check.html"; 
-                }, 2000);
+                // توجيه المستخدم لصفحة السجل فور النجاح
+                window.location.replace("check.html");
 
             } catch (err) {
-                btn.disabled = false;
-                btn.innerText = "إعادة المحاولة";
-                status.style.color = "red";
-                status.innerText = "حدث خطأ في الاتصال، حاول مرة أخرى.";
                 console.error(err);
+                alert("حدث خطأ، حاول مرة أخرى");
+                submitBtn.disabled = false;
+                loadingScreen.style.display = "none";
             }
         }
     </script>
