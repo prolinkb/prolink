@@ -182,7 +182,8 @@
             status.style.color = "#666";
 
             try {
-                const res = await fetch(API_URL);
+                // إضافة timestamp لمنع الكاش عند البحث عن الكود
+                const res = await fetch(API_URL + "?t=" + new Date().getTime());
                 const data = await res.json();
                 const found = data.find(i => i.refCode === input);
 
@@ -231,7 +232,8 @@
             const container = document.getElementById('orders-container');
             container.innerHTML = '<p style="text-align:center; padding:20px; color:#999; font-size:13px;">جاري تحديث البيانات...</p>';
             try {
-                const res = await fetch(API_URL);
+                // إضافة متغير عشوائي (?t=...) لمنع المتصفح من عرض بيانات قديمة مخزنة
+                const res = await fetch(API_URL + "?t=" + new Date().getTime());
                 const data = await res.json();
                 const myRows = data.filter(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase());
                 
@@ -241,7 +243,10 @@
                 }
 
                 container.innerHTML = myRows.map(row => {
-                    const isOk = (row.statusLabel === "Verifie");
+                    // جعل التحقق مرن: يقبل Verifie أو Verified مع تجاهل حالة الأحرف
+                    const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
+                    const isOk = label.startsWith("ver"); 
+                    
                     return `
                         <div class="history-item">
                             <div>
