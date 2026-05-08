@@ -3,74 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LikCash PRO - إتمام الدفع</title>
+    <title>LikCash - إتمام الدفع</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main-color: #1a1a1a; --bg-gray: #fcfcfc; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
-        body { background-color: var(--bg-gray); color: var(--main-color); padding: 20px; }
-        .main-container { max-width: 480px; margin: auto; padding-top: 20px; }
-        .pyme-card { background: #fff; border-radius: 20px; padding: 25px; border: 1px solid #eee; text-align: center; }
+        body { background-color: #ffffff; padding: 20px; display: flex; align-items: center; justify-content: center; min-height: 100vh; color: #000; }
+        .pyme-card { background: #fff; width: 100%; max-width: 400px; padding: 25px; border-radius: 20px; text-align: center; }
+        h2 { font-weight: 800; font-size: 24px; margin-bottom: 10px; }
         .info-box { background: #f9f9f9; padding: 15px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #eee; }
         .selected-plan { font-size: 22px; font-weight: 900; color: #000; }
         .input-group { text-align: right; margin-bottom: 20px; }
         .input-group label { display: block; font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; }
-        input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; outline: none; transition: 0.3s; }
+        input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; outline: none; background: #fff; transition: 0.3s; }
         input:focus { border-color: #000; }
-        .upload-area { border: 2px dashed #ccc; padding: 25px; border-radius: 15px; cursor: pointer; margin-bottom: 25px; background: #fafafa; }
+        .upload-area { border: 2px dashed #ccc; padding: 25px; border-radius: 15px; cursor: pointer; margin-bottom: 25px; position: relative; background: #fafafa; }
         #imgPreview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px; }
-        .btn-confirm { background: #000; color: #fff; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; }
-        .btn-confirm:disabled { background: #666; cursor: not-allowed; }
-        #statusMsg { margin-top: 15px; font-size: 13px; font-weight: 600; }
-        .header-back { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; cursor: pointer; font-weight: 600; }
+        .btn-confirm { background: #000; color: #fff; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-confirm:disabled { background: #666; cursor: not-allowed; opacity: 0.7; }
+        #statusMsg { margin-top: 15px; font-size: 13px; font-weight: 600; min-height: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <div class="header-back" onclick="history.back()"><i class="fas fa-arrow-right"></i> رجوع</div>
+    <div class="pyme-card">
+        <h2>تأكيد الطلب</h2>
+        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">ارفع وصل التحويل لإتمام العملية</p>
 
-        <div class="pyme-card">
-            <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 5px;">تأكيد الطلب</h2>
-            <p style="font-size: 13px; color: #888; margin-bottom: 25px;">ارفع وصل التحويل لإتمام العملية</p>
-
-            <div class="info-box">
-                <p style="font-size: 12px; color: #888;">الباقة المختارة:</p>
-                <div class="selected-plan" id="planDisplay">---</div>
-                <div style="font-size: 11px; margin-top: 5px; color: #555;">كود الإحالة: <span id="refDisplay" style="font-weight:700;">---</span></div>
-            </div>
-
-            <div class="input-group">
-                <label>الاسم الكامل</label>
-                <input type="text" id="custName" placeholder="أدخل اسمك كما في الهوية">
-            </div>
-
-            <div class="input-group">
-                <label>وصل التحويل</label>
-                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                    <div id="uploadPlaceholder">
-                        <i class="fas fa-camera" style="font-size: 28px; color: #000;"></i>
-                        <p style="font-size: 13px; color: #555; margin-top: 8px;">اضغط لرفع صورة الوصل</p>
-                    </div>
-                    <input type="file" id="fileInput" hidden accept="image/*" onchange="handleFile(this)">
-                    <img id="imgPreview">
-                </div>
-            </div>
-
-            <button class="btn-confirm" id="sendBtn" onclick="submitToSheet()">إرسال الطلب الآن</button>
-            <div id="statusMsg"></div>
+        <div class="info-box">
+            <p style="font-size: 12px; color: #888;">الباقة المختارة:</p>
+            <div class="selected-plan" id="planDisplay">---</div>
+            <div style="font-size: 11px; margin-top: 5px; color: #555;">كود الإحالة: <span id="refDisplay" style="font-weight:700;">---</span></div>
         </div>
+
+        <div class="input-group">
+            <label>الاسم الكامل</label>
+            <input type="text" id="custName" placeholder="مثال: محمد العلوي">
+        </div>
+
+        <div class="input-group">
+            <label>وصل التحويل</label>
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div id="uploadPlaceholder">
+                    <i class="fas fa-camera" style="font-size: 28px; color: #000;"></i>
+                    <p style="font-size: 13px; color: #555; margin-top: 8px;">اضغط لرفع صورة الوصل</p>
+                </div>
+                <input type="file" id="fileInput" hidden accept="image/*" onchange="handleFile(this)">
+                <img id="imgPreview">
+            </div>
+        </div>
+
+        <button class="btn-confirm" id="sendBtn" onclick="submitToSheet()">إرسال الطلب الآن</button>
+        <div id="statusMsg"></div>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyow6_i2coOUw1nX9M3GGKDnWAtBOwOo1kUEMrkPW9JWblis2AYyAETA4qDV_nhaUfEcQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyd-Yh_ktXKnDpKUaHaUZ_XIR13C-Y9vCXPYWAb3CLPcLVIkm_GsupEUgPeKE92YbcN3w/exec";
         const IMGBB_API_KEY = "f2d9be6981c0d0877f86feaf452b22ee";
         
         const userEmail = localStorage.getItem('user_gmail');
         const selectedPrice = localStorage.getItem('selected_plan_price') || "غير محدد";
         const finalRef = localStorage.getItem('final_ref_code') || "نوريفيرايت";
 
-        document.getElementById('planDisplay').innerText = selectedPrice;
+        if (!userEmail) { window.location.href = "index.html"; }
+        document.getElementById('planDisplay').innerText = selectedPrice + " MAD";
         document.getElementById('refDisplay').innerText = finalRef;
 
         let base64Img = "";
@@ -114,7 +109,6 @@
             try {
                 const uploadedImageUrl = await uploadToImgBB(base64Img);
                 const payload = {
-                    action: "submitOrder",
                     name: name,
                     email: userEmail,
                     plan: selectedPrice,
@@ -132,7 +126,7 @@
 
                 status.style.color = "green";
                 status.innerText = "تم الإرسال بنجاح!";
-                setTimeout(() => { window.location.href = "check.html"; }, 2000);
+                setTimeout(() => { window.location.href = "pyme.html"; }, 2000);
             } catch (err) {
                 btn.disabled = false;
                 btn.innerText = "إعادة المحاولة";
