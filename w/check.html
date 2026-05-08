@@ -10,7 +10,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
         body { background-color: var(--bg-gray); color: var(--main-color); line-height: 1.6; }
 
-        /* Navigation */
         .header { background: #fff; padding: 18px 25px; display: flex; align-items: center; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 1000; }
         .logo { flex-grow: 1; text-align: center; font-weight: 800; font-size: 18px; letter-spacing: 0.5px; }
         .menu-btn { font-size: 18px; cursor: pointer; color: #555; }
@@ -23,7 +22,6 @@
         .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.2); z-index: 1500; backdrop-filter: blur(2px); }
         .overlay.active { display: block; }
 
-        /* Main Wrapper */
         .main-container { padding: 25px; max-width: 480px; margin: auto; }
         .view-section { display: none; }
         .view-section.active { display: block; }
@@ -31,13 +29,11 @@
         .section-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: #000; }
         .section-subtitle { font-size: 13px; color: #888; margin-bottom: 25px; }
 
-        /* Referral Search Box */
         .ref-search-card { background: #fff; border-radius: 20px; padding: 20px; margin-bottom: 25px; border: 2px solid #000; }
         .ref-input-group { display: flex; gap: 10px; margin-top: 10px; }
         .ref-input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 10px; outline: none; }
         .btn-check-ref { background: #000; color: #fff; border: none; padding: 0 15px; border-radius: 10px; cursor: pointer; }
 
-        /* Clean Business Cards */
         .biz-card { background: #fff; border-radius: 20px; padding: 25px; margin-bottom: 20px; border: 1px solid #eee; transition: 0.3s; position: relative; }
         .biz-card:hover { border-color: #ddd; }
         .card-overlay-lock { position: absolute; inset: 0; background: rgba(255,255,255,0.7); z-index: 10; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #999; }
@@ -59,7 +55,6 @@
 
         .btn-select { background: var(--main-color); color: #fff; border: none; padding: 12px 22px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; }
 
-        /* History Items */
         .history-item { background: #fff; border: 1px solid #eee; border-radius: 15px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-left: 8px; }
 
@@ -89,7 +84,6 @@
             <h2 class="section-title">إدارة الاشتراكات</h2>
             <p class="section-subtitle">أدخل كود الإحالة أولاً لتفعيل اختيار الباقة</p>
             
-            <!-- البحث عن كود الإحالة -->
             <div class="ref-search-card">
                 <label style="font-size: 12px; font-weight: 700;">كود الإحالة (اختياري)</label>
                 <div class="ref-input-group">
@@ -159,7 +153,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyd-Yh_ktXKnDpKUaHaUZ_XIR13C-Y9vCXPYWAb3CLPcLVIkm_GsupEUgPeKE92YbcN3w/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyow6_i2coOUw1nX9M3GGKDnWAtBOwOo1kUEMrkPW9JWblis2AYyAETA4qDV_nhaUfEcQ/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -170,23 +164,17 @@
         async function checkReferral() {
             const input = document.getElementById('referralInput').value.trim();
             const status = document.getElementById('refStatus');
-            
             if(!input) {
                 status.innerText = "تم المتابعة بدون كود إحالة";
                 status.style.color = "blue";
                 unlockPlans("نوريفيرايت");
                 return;
             }
-
             status.innerText = "جاري البحث عن الكود...";
-            status.style.color = "#666";
-
             try {
-                // إضافة timestamp لمنع الكاش عند البحث عن الكود
-                const res = await fetch(API_URL + "?t=" + new Date().getTime());
+                const res = await fetch(API_URL + "?action=getUsers&t=" + new Date().getTime());
                 const data = await res.json();
                 const found = data.find(i => i.refCode === input);
-
                 if(found) {
                     status.innerText = "الكود صحيح! صاحب الكود: " + found.name;
                     status.style.color = "green";
@@ -195,17 +183,13 @@
                     status.innerText = "كود غير موجود، المرجو التأكد";
                     status.style.color = "red";
                 }
-            } catch(e) {
-                status.innerText = "خطأ في الاتصال بالخادم";
-            }
+            } catch(e) { status.innerText = "خطأ في الاتصال بالخادم"; }
         }
 
         function unlockPlans(code) {
             confirmedRefCode = code;
             document.getElementById('lock1').style.display = "none";
             document.getElementById('lock2').style.display = "none";
-            document.getElementById('referralInput').disabled = true;
-            document.querySelector('.btn-check-ref').disabled = true;
         }
 
         function toggleNav() {
@@ -230,29 +214,24 @@
 
         async function loadUserOrders() {
             const container = document.getElementById('orders-container');
-            container.innerHTML = '<p style="text-align:center; padding:20px; color:#999; font-size:13px;">جاري تحديث البيانات...</p>';
+            container.innerHTML = '<p style="text-align:center; padding:20px; color:#999;">جاري التحديث...</p>';
             try {
-                // إضافة متغير عشوائي (?t=...) لمنع المتصفح من عرض بيانات قديمة مخزنة
-                const res = await fetch(API_URL + "?t=" + new Date().getTime());
+                const res = await fetch(API_URL + "?action=getUsers&t=" + new Date().getTime());
                 const data = await res.json();
                 const myRows = data.filter(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase());
-                
                 if(myRows.length === 0) {
-                    container.innerHTML = '<p style="text-align:center; margin-top:30px; color:#bbb;">لا توجد عمليات مسجلة</p>';
+                    container.innerHTML = '<p style="text-align:center; margin-top:30px; color:#bbb;">لا توجد عمليات</p>';
                     return;
                 }
-
                 container.innerHTML = myRows.map(row => {
-                    // جعل التحقق مرن: يقبل Verifie أو Verified مع تجاهل حالة الأحرف
                     const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
                     const isOk = label.startsWith("ver"); 
-                    
                     return `
                         <div class="history-item">
                             <div>
                                 <div style="font-weight:700; font-size:14px;">اشتراك ${row.plan}</div>
                                 <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
-                                <div style="font-size:11px; color:#27ae60; font-weight:600;">الإحالات: ${row.referralCount || 0}</div>
+                                <div style="font-size:11px; color:#27ae60; font-weight:600;">كودك: ${row.refCode || '---'}</div>
                             </div>
                             <div style="text-align: left;">
                                 <span style="font-size:11px; font-weight:700; color: ${isOk ? '#27ae60' : '#f39c12'}">
@@ -260,12 +239,9 @@
                                     ${isOk ? 'مكتمل' : 'قيد المعالجة'}
                                 </span>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 }).join('');
-            } catch (e) { 
-                container.innerHTML = '<p style="text-align:center; color:red;">خطأ في جلب البيانات</p>'; 
-            }
+            } catch (e) { container.innerHTML = '<p style="text-align:center; color:red;">خطأ في الاتصال</p>'; }
         }
 
         function logout() { localStorage.clear(); window.location.href = "../index.html"; }
