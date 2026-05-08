@@ -6,18 +6,20 @@
     <title>LikCash - إتمام الدفع</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
-        body { background-color: #f8f9fa; padding: 20px; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        .pyme-card { background: #fff; width: 100%; max-width: 420px; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
-        .info-box { background: #fdfdfd; border: 1px dashed #ddd; padding: 15px; border-radius: 15px; margin-bottom: 20px; }
-        .selected-plan { font-size: 20px; font-weight: 900; color: #000; }
-        .input-group { text-align: right; margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 13px; font-weight: 700; color: #444; margin-bottom: 8px; }
-        input { width: 100%; padding: 14px; border: 1.5px solid #eee; border-radius: 12px; font-size: 15px; outline: none; background: #fafafa; }
-        .upload-area { border: 2px dashed #eee; padding: 20px; border-radius: 15px; cursor: pointer; margin-bottom: 20px; position: relative; overflow: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
+        body { background-color: #ffffff; padding: 20px; display: flex; align-items: center; justify-content: center; min-height: 100vh; color: #000; }
+        .pyme-card { background: #fff; width: 100%; max-width: 400px; padding: 25px; border-radius: 20px; text-align: center; }
+        h2 { font-weight: 800; font-size: 24px; margin-bottom: 10px; }
+        .info-box { background: #f9f9f9; padding: 15px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #eee; }
+        .selected-plan { font-size: 22px; font-weight: 900; color: #000; }
+        .input-group { text-align: right; margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; }
+        input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; outline: none; background: #fff; transition: 0.3s; }
+        input:focus { border-color: #000; }
+        .upload-area { border: 2px dashed #ccc; padding: 25px; border-radius: 15px; cursor: pointer; margin-bottom: 25px; position: relative; background: #fafafa; }
         #imgPreview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px; }
-        .btn-confirm { background: #000; color: #fff; border: none; padding: 16px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        .btn-confirm:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-confirm { background: #000; color: #fff; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-confirm:disabled { background: #666; cursor: not-allowed; opacity: 0.7; }
         #statusMsg { margin-top: 15px; font-size: 13px; font-weight: 600; min-height: 20px; }
     </style>
 </head>
@@ -25,7 +27,7 @@
 
     <div class="pyme-card">
         <h2>تأكيد الطلب</h2>
-        <p style="font-size: 14px; color: #666; margin-bottom: 20px;">ارفع وصل التحويل لإتمام العملية</p>
+        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">ارفع وصل التحويل لإتمام العملية</p>
 
         <div class="info-box">
             <p style="font-size: 12px; color: #888;">الباقة المختارة:</p>
@@ -34,15 +36,15 @@
 
         <div class="input-group">
             <label>الاسم الكامل</label>
-            <input type="text" id="custName" placeholder="محمد العلوي">
+            <input type="text" id="custName" placeholder="مثال: محمد العلوي">
         </div>
 
         <div class="input-group">
             <label>وصل التحويل</label>
             <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                 <div id="uploadPlaceholder">
-                    <i class="fas fa-camera" style="font-size: 24px; color: #aaa;"></i>
-                    <p style="font-size: 12px; color: #aaa; margin-top: 5px;">اضغط لرفع صورة الوصل</p>
+                    <i class="fas fa-camera" style="font-size: 28px; color: #000;"></i>
+                    <p style="font-size: 13px; color: #555; margin-top: 8px;">اضغط لرفع صورة الوصل</p>
                 </div>
                 <input type="file" id="fileInput" hidden accept="image/*" onchange="handleFile(this)">
                 <img id="imgPreview">
@@ -54,26 +56,21 @@
     </div>
 
     <script>
-        // الرابط الجديد الخاص بك
-        const API_URL = "https://script.google.com/macros/s/AKfycbwNLM4SLWJuxXe-cASGKzEaHVCF8ffz3v-ZLiVu3Yb8e2FEjOHALzrlgL8MWZH7te2DGQ/exec"; 
+        // الرابط الذي قدمته
+        const API_URL = "https://script.google.com/macros/s/AKfycby4uZrDiOw5_M2Uw_bNQHbWlKd-YnO2zVPH0mt8NngvQvYEleX4vYWObaAMVYQJkbjbJw/exec"; 
         const IMGBB_API_KEY = "f2d9be6981c0d0877f86feaf452b22ee";
         
         const userEmail = localStorage.getItem('user_gmail');
         const selectedPrice = localStorage.getItem('selected_plan_price') || "غير محدد";
 
-        if (!userEmail) { window.location.href = "login.html"; }
-        document.getElementById('planDisplay').innerText = selectedPrice;
+        if (!userEmail) { window.location.href = "index.html"; }
+        document.getElementById('planDisplay').innerText = selectedPrice + " MAD";
 
         let base64Img = "";
 
         function handleFile(input) {
             const file = input.files[0];
             if (file) {
-                if (file.size > 5 * 1024 * 1024) { 
-                    alert("الصورة كبيرة جداً، يرجى اختيار صورة أقل من 5 ميجا");
-                    return;
-                }
-
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     base64Img = e.target.result;
@@ -106,18 +103,18 @@
             const btn = document.getElementById('sendBtn');
             const status = document.getElementById('statusMsg');
 
-            if (!name) { alert("يرجى إدخال الاسم"); return; }
-            if (!base64Img) { alert("يرجى رفع صورة الوصل"); return; }
+            if (!name || !base64Img) { alert("يرجى إكمال البيانات"); return; }
 
             btn.disabled = true;
-            btn.innerText = "جاري المعالجة...";
+            btn.innerText = "جاري الإرسال...";
             status.style.color = "#666";
-            status.innerText = "جاري إرسال البيانات ومعالجة الصورة...";
+            status.innerText = "جاري معالجة الصورة والطلب...";
 
             try {
-                // رفع الصورة إلى ImgBB أولاً
+                // 1. رفع الصورة أولاً
                 const uploadedImageUrl = await uploadToImgBB(base64Img);
 
+                // 2. إرسال البيانات للسكريبت
                 const payload = {
                     name: name,
                     email: userEmail,
@@ -129,25 +126,20 @@
                 await fetch(API_URL, {
                     method: "POST",
                     mode: "no-cors",
-                    headers: {
-                        "Content-Type": "text/plain;charset=utf-8"
-                    },
+                    headers: { "Content-Type": "text/plain" },
                     body: JSON.stringify(payload)
                 });
 
                 status.style.color = "green";
-                status.innerText = "تم الإرسال بنجاح! جاري الانتقال للسجل...";
+                status.innerText = "تم الإرسال بنجاح!";
                 
-                setTimeout(() => { 
-                    window.location.href = "check.html"; 
-                }, 2000);
+                setTimeout(() => { window.location.href = "check.html"; }, 2000);
 
             } catch (err) {
                 btn.disabled = false;
                 btn.innerText = "إعادة المحاولة";
                 status.style.color = "red";
-                status.innerText = "حدث خطأ في الاتصال، حاول مرة أخرى.";
-                console.error(err);
+                status.innerText = "خطأ في الإرسال، حاول مجدداً.";
             }
         }
     </script>
