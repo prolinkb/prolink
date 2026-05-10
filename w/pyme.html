@@ -57,12 +57,12 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzGVUz2EOTNDyvkJjT10uh0mQLNpO6shyrWOYzyS44t_ySN05IvHdbuVLbxshAWWY_UbQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxDXPqYyrC9zo8z_R1QpX-_uFf2FEGVCus3m1MKJUfp5q99BOa8KZMHDp7LCwSJVMI06Q/exec";
         const IMGBB_API_KEY = "f2d9be6981c0d0877f86feaf452b22ee";
         
         const userEmail = localStorage.getItem('user_gmail');
         const selectedPrice = localStorage.getItem('selected_plan_price') || "غير محدد";
-        const finalRef = localStorage.getItem('final_ref_code') || "نوريفيرايت";
+        const finalRef = localStorage.getItem('final_ref_code') || "no ref";
 
         if (!userEmail) { window.location.href = "index.html"; }
         document.getElementById('planDisplay').innerText = selectedPrice + " MAD";
