@@ -18,6 +18,7 @@
         input:focus { border-color: #000; }
         .upload-area { border: 2px dashed #ccc; padding: 25px; border-radius: 15px; cursor: pointer; margin-bottom: 25px; position: relative; background: #fafafa; }
         #imgPreview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px; }
+        .btn-confirm { background: #000; color: #fff; border: none; padding: 188px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s; }
         .btn-confirm { background: #000; color: #fff; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s; }
         .btn-confirm:disabled { background: #666; cursor: not-allowed; opacity: 0.7; }
         #statusMsg { margin-top: 15px; font-size: 13px; font-weight: 600; min-height: 20px; }
@@ -57,7 +58,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxH9KvmmRBmHgBImHhsTuFGGAWYuXS0EblHJG6OpcgPVv14K22gXMDz6EDwcrH3vZTT_Q/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxzlw37UDV9wGQlbY-jxWNHUqLVNTxRwy9M2YNTqApnkAqAXOrq2Gyf_K1HhmnhZUj8OA/exec";
         const IMGBB_API_KEY = "f2d9be6981c0d0877f86feaf452b22ee";
         
         const userEmail = localStorage.getItem('user_gmail');
