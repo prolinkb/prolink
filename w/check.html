@@ -158,7 +158,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxDXPqYyrC9zo8z_R1QpX-_uFf2FEGVCus3m1MKJUfp5q99BOa8KZMHDp7LCwSJVMI06Q/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzABSslhJ8a5RNRguLVi6qYsa518A2MsdMbrxrach4zdM_rBcCfuPVyJ7jukOucckLhgg/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -186,15 +186,17 @@
                 
                 // البحث عن كود الإحالة مع شرط أن يكون صاحب الكود مفعل (Verifie)
                 const found = data.find(i => {
-                    const s = i.statusLabel ? i.statusLabel.toLowerCase().trim() : "";
-                    return i.refCode === input && (s === "verifie" || s === "verified");
+                    const s = i.statusLabel ? i.statusLabel.toString().toLowerCase().trim() : "";
+                    const code = i.refCode ? i.refCode.toString().trim() : "";
+                    return code === input && (s === "verifie" || s === "verified");
                 });
 
                 if(found) {
                     // التحقق من عدد الإحالات المفعلة عند صاحب هذا الكود
                     const activeReferrals = data.filter(i => {
-                        const s = i.statusLabel ? i.statusLabel.toLowerCase().trim() : "";
-                        return i.usedCode === input && (s === "verifie" || s === "verified");
+                        const s = i.statusLabel ? i.statusLabel.toString().toLowerCase().trim() : "";
+                        const used = i.usedCode ? i.usedCode.toString().trim() : "";
+                        return used === input && (s === "verifie" || s === "verified");
                     }).length;
 
                     if (activeReferrals >= 3) {
@@ -248,7 +250,7 @@
             try {
                 const res = await fetch(API_URL + "?t=" + new Date().getTime());
                 const data = await res.json();
-                const myRows = data.filter(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase());
+                const myRows = data.filter(i => i.email && i.email.toString().toLowerCase().trim() === userEmail.toLowerCase().trim());
                 
                 if(myRows.length === 0) {
                     container.innerHTML = '<p style="text-align:center; margin-top:30px; color:#bbb;">لا توجد عمليات مسجلة</p>';
@@ -256,11 +258,10 @@
                 }
 
                 container.innerHTML = myRows.map(row => {
-                    const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
+                    const label = row.statusLabel ? row.statusLabel.toString().toLowerCase().trim() : "";
                     const isOk = label === "verifie" || label === "verified";
                     const isFerme = label === "ferme" || label === "fermé" || label === "refusé";
                     
-                    // إذا كانت الحالة ferme يتم عرض باقة فارغة كما في شروط الـ Apps Script
                     const displayPlan = isFerme ? "ملغى" : (row.plan || "غير محدد");
                     
                     return `
