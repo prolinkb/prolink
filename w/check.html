@@ -89,6 +89,7 @@
             <h2 class="section-title">إدارة الاشتراكات</h2>
             <p class="section-subtitle">أدخل كود الإحالة أولاً لتفعيل اختيار الباقة</p>
             
+            <!-- البحث عن كود الإحالة -->
             <div class="ref-search-card">
                 <label style="font-size: 12px; font-weight: 700;">كود الإحالة (اختياري)</label>
                 <div class="ref-input-group">
@@ -158,7 +159,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwdygoFop2CrhsqtoMOqzmschikojCciwBF0tegF4ddyGq139sD9V2A992yS-mqbLZcjQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyd-Yh_ktXKnDpKUaHaUZ_XIR13C-Y9vCXPYWAb3CLPcLVIkm_GsupEUgPeKE92YbcN3w/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -181,19 +182,15 @@
             status.style.color = "#666";
 
             try {
+                // إضافة timestamp لمنع الكاش عند البحث عن الكود
                 const res = await fetch(API_URL + "?t=" + new Date().getTime());
                 const data = await res.json();
                 const found = data.find(i => i.refCode === input);
 
                 if(found) {
-                    if (found.referralCount >= 3) {
-                         status.innerText = "هذا الكود وصل للحد الأقصى من الإحالات";
-                         status.style.color = "red";
-                    } else {
-                         status.innerText = "الكود صحيح! صاحب الكود: " + found.name;
-                         status.style.color = "green";
-                         unlockPlans(input);
-                    }
+                    status.innerText = "الكود صحيح! صاحب الكود: " + found.name;
+                    status.style.color = "green";
+                    unlockPlans(input);
                 } else {
                     status.innerText = "كود غير موجود، المرجو التأكد";
                     status.style.color = "red";
@@ -235,6 +232,7 @@
             const container = document.getElementById('orders-container');
             container.innerHTML = '<p style="text-align:center; padding:20px; color:#999; font-size:13px;">جاري تحديث البيانات...</p>';
             try {
+                // إضافة متغير عشوائي (?t=...) لمنع المتصفح من عرض بيانات قديمة مخزنة
                 const res = await fetch(API_URL + "?t=" + new Date().getTime());
                 const data = await res.json();
                 const myRows = data.filter(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase());
@@ -245,33 +243,16 @@
                 }
 
                 container.innerHTML = myRows.map(row => {
+                    // جعل التحقق مرن: يقبل Verifie أو Verified مع تجاهل حالة الأحرف
                     const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
                     const isOk = label.startsWith("ver"); 
-                    const isClosed = label.startsWith("fer");
-
-                    if (isClosed) {
-                         return `
-                            <div class="history-item" style="opacity: 0.6;">
-                                <div>
-                                    <div style="font-weight:700; font-size:14px; text-decoration: line-through;">اشتراك ملغى</div>
-                                    <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
-                                </div>
-                                <div style="text-align: left;">
-                                    <span style="font-size:11px; font-weight:700; color: #e74c3c">
-                                        <span class="status-dot" style="background: #e74c3c"></span>
-                                        مغلق
-                                    </span>
-                                </div>
-                            </div>
-                        `;
-                    }
                     
                     return `
                         <div class="history-item">
                             <div>
                                 <div style="font-weight:700; font-size:14px;">اشتراك ${row.plan}</div>
                                 <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
-                                <div style="font-size:11px; color:#27ae60; font-weight:600;">الإحالات: ${row.referralCount || 0}/3</div>
+                                <div style="font-size:11px; color:#27ae60; font-weight:600;">الإحالات: ${row.referralCount || 0}</div>
                             </div>
                             <div style="text-align: left;">
                                 <span style="font-size:11px; font-weight:700; color: ${isOk ? '#27ae60' : '#f39c12'}">
@@ -291,4 +272,3 @@
     </script>
 </body>
 </html>
-
