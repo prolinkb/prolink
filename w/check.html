@@ -157,8 +157,9 @@
 
     </div>
 
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzABSslhJ8a5RNRguLVi6qYsa518A2MsdMbrxrach4zdM_rBcCfuPVyJ7jukOucckLhgg/exec";
+   <script>
+        // الرابط الجديد الذي قدمته
+        const API_URL = "https://script.google.com/macros/s/AKfycbzoNrK4pf7fpj5122hrZQTTgYKl1yCNw1xmb258WCD_zWsxTaZm7A9O359W1zQOxYRZXw/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -166,6 +167,7 @@
 
         let confirmedRefCode = "نوريفيرايت";
 
+        // --- دالة فحص كود الإحالة ---
         async function checkReferral() {
             const input = document.getElementById('referralInput').value.trim();
             const status = document.getElementById('refStatus');
@@ -181,38 +183,40 @@
             status.style.color = "#666";
 
             try {
+                // جلب أحدث البيانات مع ميزة منع التخزين المؤقت
                 const res = await fetch(API_URL + "?t=" + new Date().getTime());
                 const data = await res.json();
                 
-                // البحث عن كود الإحالة مع شرط أن يكون صاحب الكود مفعل (Verifie)
-                const found = data.find(i => {
+                // 1. البحث عن صاحب الكود بشرط أن يكون حسابه مفعلاً (Verifie)
+                const foundOwner = data.find(i => {
                     const s = i.statusLabel ? i.statusLabel.toString().toLowerCase().trim() : "";
                     const code = i.refCode ? i.refCode.toString().trim() : "";
                     return code === input && (s === "verifie" || s === "verified");
                 });
 
-                if(found) {
-                    // التحقق من عدد الإحالات المفعلة عند صاحب هذا الكود
-                    const activeReferrals = data.filter(i => {
+                if(foundOwner) {
+                    // 2. حساب عدد الأشخاص الذين استخدموا هذا الكود وحالتهم مفعّلة
+                    const activeReferralsCount = data.filter(i => {
                         const s = i.statusLabel ? i.statusLabel.toString().toLowerCase().trim() : "";
                         const used = i.usedCode ? i.usedCode.toString().trim() : "";
                         return used === input && (s === "verifie" || s === "verified");
                     }).length;
 
-                    if (activeReferrals >= 3) {
-                        status.innerText = "هذا الكود وصل للحد الأقصى (3 إحالات)";
+                    if (activeReferralsCount >= 3) {
+                        status.innerText = "عذراً، هذا الكود استوفى الحد الأقصى (3 إحالات)";
                         status.style.color = "orange";
                     } else {
-                        status.innerText = "الكود صحيح! صاحب الكود: " + found.name;
+                        status.innerText = "الكود صحيح! صاحب الكود: " + foundOwner.name;
                         status.style.color = "green";
                         unlockPlans(input);
                     }
                 } else {
-                    status.innerText = "كود غير موجود أو صاحبه غير مفعل";
+                    status.innerText = "الكود غير موجود أو لم يتم تفعيل حساب صاحبه بعد";
                     status.style.color = "red";
                 }
             } catch(e) {
-                status.innerText = "خطأ في الاتصال بالخادم";
+                status.innerText = "حدث خطأ في الاتصال بالخادم، حاول ثانية";
+                status.style.color = "red";
             }
         }
 
@@ -221,7 +225,9 @@
             document.getElementById('lock1').style.display = "none";
             document.getElementById('lock2').style.display = "none";
             document.getElementById('referralInput').disabled = true;
-            document.querySelector('.btn-check-ref').disabled = true;
+            document.querySelector('.btn-check-ref').style.opacity = "0.5";
+            document.querySelector('.btn-check-ref').onclick = null;
+            document.querySelector('.btn-check-ref').innerText = "تم التأكيد";
         }
 
         function toggleNav() {
@@ -244,6 +250,7 @@
             window.location.href = "pyme.html";
         }
 
+        // --- دالة عرض سجل العمليات ---
         async function loadUserOrders() {
             const container = document.getElementById('orders-container');
             container.innerHTML = '<p style="text-align:center; padding:20px; color:#999; font-size:13px;">جاري تحديث البيانات...</p>';
@@ -258,7 +265,7 @@
                 }
 
                 container.innerHTML = myRows.map(row => {
-                    const label = row.statusLabel ? row.statusLabel.toString().toLowerCase().trim() : "";
+                    const label = row.statusLabel ? row.statusLabel.toString().toLowerCase().trim() : "en attente";
                     const isOk = label === "verifie" || label === "verified";
                     const isFerme = label === "ferme" || label === "fermé" || label === "refusé";
                     
