@@ -57,7 +57,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbz-pCLywpQ7VQhlvtoUVpTZcVJuOTeIowx9niL9Uz2J9zqoVvzNgIph4HuCeiK6PGRr1A/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyd-Yh_ktXKnDpKUaHaUZ_XIR13C-Y9vCXPYWAb3CLPcLVIkm_GsupEUgPeKE92YbcN3w/exec";
         const IMGBB_API_KEY = "f2d9be6981c0d0877f86feaf452b22ee";
         
         const userEmail = localStorage.getItem('user_gmail');
@@ -107,6 +107,7 @@
             status.innerText = "جاري معالجة الطلب...";
 
             try {
+                // تعديل طريقة الإرسال لقراءة استجابة السيرفر وفحص قيد الحد الأقصى للإحالات
                 const uploadedImageUrl = await uploadToImgBB(base64Img);
                 const payload = {
                     name: name,
@@ -117,21 +118,35 @@
                     enteredCode: finalRef
                 };
 
-                await fetch(API_URL, {
+                const response = await fetch(API_URL, {
                     method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "text/plain" },
                     body: JSON.stringify(payload)
                 });
+                
+                const resultText = await response.text();
+                const resData = JSON.parse(resultText);
 
-                status.style.color = "green";
-                status.innerText = "تم الإرسال بنجاح!";
-                setTimeout(() => { window.location.href = "check.html"; }, 2000);
+                if (resData.result === "SUCCESS") {
+                    status.style.color = "green";
+                    status.innerText = "تم الإرسال بنجاح!";
+                    setTimeout(() => { window.location.href = "check.html"; }, 2000);
+                } else if (resData.message === "وصل الحد الأقصى") {
+                    btn.disabled = false;
+                    btn.innerText = "إرسال الطلب الآن";
+                    status.style.color = "red";
+                    status.innerText = "وصل كود الإحالة هذا إلى الحد الأقصى (3 إحالات).";
+                    alert("عذرًا، كود الإحالة هذا وصل للحد الأقصى من الاستخدام المسموح به!");
+                } else {
+                    btn.disabled = false;
+                    btn.innerText = "إعادة المحاولة";
+                    status.style.color = "red";
+                    status.innerText = "خطأ: " + resData.message;
+                }
             } catch (err) {
                 btn.disabled = false;
                 btn.innerText = "إعادة المحاولة";
                 status.style.color = "red";
-                status.innerText = "خطأ في الإرسال.";
+                status.innerText = "خطأ في الاتصال بالخادم.";
             }
         }
     </script>
