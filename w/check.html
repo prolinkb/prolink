@@ -159,7 +159,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbz-pCLywpQ7VQhlvtoUVpTZcVJuOTeIowx9niL9Uz2J9zqoVvzNgIph4HuCeiK6PGRr1A/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyd-Yh_ktXKnDpKUaHaUZ_XIR13C-Y9vCXPYWAb3CLPcLVIkm_GsupEUgPeKE92YbcN3w/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -185,12 +185,22 @@
                 // إضافة timestamp لمنع الكاش عند البحث عن الكود
                 const res = await fetch(API_URL + "?t=" + new Date().getTime());
                 const data = await res.json();
+                
+                // البحث عن صاحب الكود
                 const found = data.find(i => i.refCode === input);
 
                 if(found) {
-                    status.innerText = "الكود صحيح! صاحب الكود: " + found.name;
-                    status.style.color = "green";
-                    unlockPlans(input);
+                    // حساب إجمالي الإحالات المكتملة لهذا الكود للتأكد من عدم تخطي الحد الأقصى (3)
+                    const activeReferralsCount = data.filter(i => i.usedCode === input && i.statusLabel && (i.statusLabel.toLowerCase().trim() === "verifie" || i.statusLabel.toLowerCase().trim() === "verified")).length;
+                    
+                    if (activeReferralsCount >= 3) {
+                        status.innerText = "هذا الكود وصل للحد الأقصى من الإحالات المسموح بها (3/3)";
+                        status.style.color = "red";
+                    } else {
+                        status.innerText = "الكود صحيح! صاحب الكود: " + found.name;
+                        status.style.color = "green";
+                        unlockPlans(input);
+                    }
                 } else {
                     status.innerText = "كود غير موجود، المرجو التأكد";
                     status.style.color = "red";
@@ -247,10 +257,13 @@
                     const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
                     const isOk = label.startsWith("ver"); 
                     
+                    // إذا تم مسح الباقة (قيمة الباقة فارغة بسبب حالة ferme أو refusé)، تعرض كـ "لا توجد باقة نشطة"
+                    const displayPlanName = (row.plan && row.plan.trim() !== "") ? row.plan : "لا توجد باقة نشطة";
+                    
                     return `
                         <div class="history-item">
                             <div>
-                                <div style="font-weight:700; font-size:14px;">اشتراك ${row.plan}</div>
+                                <div style="font-weight:700; font-size:14px;">اشتراك ${displayPlanName}</div>
                                 <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
                                 <div style="font-size:11px; color:#27ae60; font-weight:600;">الإحالات: ${row.referralCount || 0}</div>
                             </div>
