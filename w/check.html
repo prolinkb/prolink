@@ -89,6 +89,7 @@
             <h2 class="section-title">إدارة الاشتراكات</h2>
             <p class="section-subtitle">أدخل كود الإحالة أولاً لتفعيل اختيار الباقة</p>
             
+            <!-- البحث عن كود الإحالة -->
             <div class="ref-search-card">
                 <label style="font-size: 12px; font-weight: 700;">كود الإحالة (اختياري)</label>
                 <div class="ref-input-group">
@@ -157,9 +158,8 @@
 
     </div>
 
-   <script>
-        // الرابط الجديد الذي قدمته
-        const API_URL = "https://script.google.com/macros/s/AKfycbxtJYu0SvCKZRGCPT9Ycr_cS2pwyh_NjjNKtrdB8IW5T5-yXj4vgzYix5kWcwocv0n1oQ/exec";
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbz-pCLywpQ7VQhlvtoUVpTZcVJuOTeIowx9niL9Uz2J9zqoVvzNgIph4HuCeiK6PGRr1A/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -167,127 +167,36 @@
 
         let confirmedRefCode = "نوريفيرايت";
 
-        // التحقق التلقائي عند تحميل الصفحة لاستعادة حالة الحساب وبقائها عند التحديث
-        window.addEventListener('load', async () => {
-            const savedState = localStorage.getItem('plans_unlocked_state');
-            if (savedState) {
-                const stateData = JSON.parse(savedState);
-                if (stateData.unlocked && stateData.email === userEmail.toLowerCase().trim()) {
-                    // التحقق من أن حالة الحساب الحالية لا تزال تسمح بفتح الباقات
-                    try {
-                        const res = await fetch(API_URL + "?t=" + new Date().getTime());
-                        const data = await res.json();
-                        const myInfo = data.find(i => i.email && i.email.toString().toLowerCase().trim() === userEmail.toLowerCase().trim());
-                        const currentStatus = myInfo && myInfo.statusLabel ? myInfo.statusLabel.toString().toLowerCase().trim() : "";
-                        const isFerme = currentStatus === "ferme" || currentStatus === "fermé" || currentStatus === "refusé";
-                        
-                        if (isFerme) {
-                            lockAllPlansAndAccount();
-                        } else {
-                            unlockPlans(stateData.code);
-                        }
-                    } catch (e) {
-                        unlockPlans(stateData.code);
-                    }
-                    return;
-                }
-            }
-            // فحص مبدئي لحالة الحساب عند الدخول لأول مرة بدون كود محفوظ
-            try {
-                const res = await fetch(API_URL + "?t=" + new Date().getTime());
-                const data = await res.json();
-                const myInfo = data.find(i => i.email && i.email.toString().toLowerCase().trim() === userEmail.toLowerCase().trim());
-                const currentStatus = myInfo && myInfo.statusLabel ? myInfo.statusLabel.toString().toLowerCase().trim() : "";
-                const isFerme = currentStatus === "ferme" || currentStatus === "fermé" || currentStatus === "refusé";
-                if (isFerme) {
-                    lockAllPlansAndAccount();
-                }
-            } catch (e) {}
-        });
-
-        function lockAllPlansAndAccount() {
-            document.getElementById('lock1').style.display = "flex";
-            document.getElementById('lock1').innerText = "الحساب مغلق / مرفوض";
-            document.getElementById('lock2').style.display = "flex";
-            document.getElementById('lock2').innerText = "الحساب مغلق / مرفوض";
-            document.getElementById('referralInput').disabled = true;
-            document.querySelector('.btn-check-ref').style.opacity = "0.5";
-            document.querySelector('.btn-check-ref').onclick = null;
-            document.querySelector('.btn-check-ref').innerText = "مغلق";
-            localStorage.removeItem('plans_unlocked_state');
-        }
-
-        // --- دالة فحص كود الإحالة ---
         async function checkReferral() {
             const input = document.getElementById('referralInput').value.trim();
             const status = document.getElementById('refStatus');
             
+            if(!input) {
+                status.innerText = "تم المتابعة بدون كود إحالة";
+                status.style.color = "blue";
+                unlockPlans("نوريفيرايت");
+                return;
+            }
+
             status.innerText = "جاري البحث عن الكود...";
             status.style.color = "#666";
 
             try {
-                // جلب أحدث البيانات مع ميزة منع التخزين المؤقت
+                // إضافة timestamp لمنع الكاش عند البحث عن الكود
                 const res = await fetch(API_URL + "?t=" + new Date().getTime());
                 const data = await res.json();
-                
-                // فحص حالة حساب المستخدم الحالي المتصل أولاً قبل فتح أي شيء
-                const myInfo = data.find(i => i.email && i.email.toString().toLowerCase().trim() === userEmail.toLowerCase().trim());
-                const currentStatus = myInfo && myInfo.statusLabel ? myInfo.statusLabel.toString().toLowerCase().trim() : "";
-                const isFerme = currentStatus === "ferme" || currentStatus === "fermé" || currentStatus === "refusé";
-                
-                if (isFerme) {
-                    status.innerText = "لا يمكن تفعيل الكود، هذا الحساب مغلق أو مرفوض";
-                    status.style.color = "red";
-                    lockAllPlansAndAccount();
-                    return;
-                }
+                const found = data.find(i => i.refCode === input);
 
-                if(!input) {
-                    status.innerText = "تم المتابعة بدون كود إحالة";
-                    status.style.color = "blue";
-                    unlockPlans("نوريفيرايت");
-                    localStorage.setItem('plans_unlocked_state', JSON.stringify({unlocked: true, code: "نوريفيرايت", email: userEmail.toLowerCase().trim()}));
-                    return;
-                }
-                
-                // 1. البحث عن صاحب الكود بشرط أن يكون حسابه مفعلاً (Verifie)
-                const foundOwner = data.find(i => {
-                    const s = i.statusLabel ? i.statusLabel.toString().toLowerCase().trim() : "";
-                    const code = i.refCode ? i.refCode.toString().trim() : "";
-                    return code === input && (s === "verifie" || s === "verified");
-                });
-
-                if(foundOwner) {
-                    // 2. حساب عدد الأشخاص الذين استخدموا هذا الكود وحالتهم مفعّلة
-                    const activeReferralsCount = data.filter(i => {
-                        const s = i.statusLabel ? i.statusLabel.toString().toLowerCase().trim() : "";
-                        const used = i.statusLabel && i.hasOwnProperty('referralCount') ? (i.usedCode ? i.usedCode.toString().trim() : "") : "";
-                        
-                        // تصحيح الحقول المستقبلة: استخدام الحقل الصحيح الممرر من السيرفر لمقارنة الكود المستخدم
-                        // حيث يتم البحث في حقل البنية البيانية المُعاد من الـ GET عن الأكواد المستخدمة بدقة
-                        const checkingUsedCode = i.usedCode || "";
-                        return checkingUsedCode === input && (s === "verifie" || s === "verified");
-                    }).length;
-
-                    // الاعتماد على حقل التعداد referralCount المعاد مباشرة وحسابه من دالة الخادم لتفادي خلط البيانات
-                    const finalCountFromOwner = foundOwner.referralCount !== undefined ? foundOwner.referralCount : activeReferralsCount;
-
-                    if (finalCountFromOwner >= 3) {
-                        status.innerText = "عذراً، هذا الكود استوفى الحد الأقصى (3 إحالات)";
-                        status.style.color = "orange";
-                    } else {
-                        status.innerText = "الكود صحيح! صاحب الكود: " + foundOwner.name;
-                        status.style.color = "green";
-                        unlockPlans(input);
-                        localStorage.setItem('plans_unlocked_state', JSON.stringify({unlocked: true, code: input, email: userEmail.toLowerCase().trim()}));
-                    }
+                if(found) {
+                    status.innerText = "الكود صحيح! صاحب الكود: " + found.name;
+                    status.style.color = "green";
+                    unlockPlans(input);
                 } else {
-                    status.innerText = "الكود غير موجود أو لم يتم تفعيل حساب صاحبه بعد";
+                    status.innerText = "كود غير موجود، المرجو التأكد";
                     status.style.color = "red";
                 }
             } catch(e) {
-                status.innerText = "حدث خطأ في الاتصال بالخادم، حاول ثانية";
-                status.style.color = "red";
+                status.innerText = "خطأ في الاتصال بالخادم";
             }
         }
 
@@ -296,9 +205,7 @@
             document.getElementById('lock1').style.display = "none";
             document.getElementById('lock2').style.display = "none";
             document.getElementById('referralInput').disabled = true;
-            document.querySelector('.btn-check-ref').style.opacity = "0.5";
-            document.querySelector('.btn-check-ref').onclick = null;
-            document.querySelector('.btn-check-ref').innerText = "تم التأكيد";
+            document.querySelector('.btn-check-ref').disabled = true;
         }
 
         function toggleNav() {
@@ -321,14 +228,14 @@
             window.location.href = "pyme.html";
         }
 
-        // --- دالة عرض سجل العمليات ---
         async function loadUserOrders() {
             const container = document.getElementById('orders-container');
             container.innerHTML = '<p style="text-align:center; padding:20px; color:#999; font-size:13px;">جاري تحديث البيانات...</p>';
             try {
+                // إضافة متغير عشوائي (?t=...) لمنع المتصفح من عرض بيانات قديمة مخزنة
                 const res = await fetch(API_URL + "?t=" + new Date().getTime());
                 const data = await res.json();
-                const myRows = data.filter(i => i.email && i.email.toString().toLowerCase().trim() === userEmail.toLowerCase().trim());
+                const myRows = data.filter(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase());
                 
                 if(myRows.length === 0) {
                     container.innerHTML = '<p style="text-align:center; margin-top:30px; color:#bbb;">لا توجد عمليات مسجلة</p>';
@@ -336,23 +243,21 @@
                 }
 
                 container.innerHTML = myRows.map(row => {
-                    const label = row.statusLabel ? row.statusLabel.toString().toLowerCase().trim() : "en attente";
-                    const isOk = label === "verifie" || label === "verified";
-                    const isFerme = label === "ferme" || label === "fermé" || label === "refusé";
-                    
-                    const displayPlan = isFerme ? "ملغى" : (row.plan || "غير محدد");
+                    // جعل التحقق مرن: يقبل Verifie أو Verified مع تجاهل حالة الأحرف
+                    const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
+                    const isOk = label.startsWith("ver"); 
                     
                     return `
                         <div class="history-item">
                             <div>
-                                <div style="font-weight:700; font-size:14px;">اشتراك ${displayPlan}</div>
+                                <div style="font-weight:700; font-size:14px;">اشتراك ${row.plan}</div>
                                 <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
-                                <div style="font-size:11px; color:#27ae60; font-weight:600;">الإحالات المفعّلة: ${row.referralCount || 0}/3</div>
+                                <div style="font-size:11px; color:#27ae60; font-weight:600;">الإحالات: ${row.referralCount || 0}</div>
                             </div>
                             <div style="text-align: left;">
-                                <span style="font-size:11px; font-weight:700; color: ${isOk ? '#27ae60' : (isFerme ? '#e74c3c' : '#f39c12')}">
-                                    <span class="status-dot" style="background: ${isOk ? '#27ae60' : (isFerme ? '#e74c3c' : '#f39c12')}"></span>
-                                    ${isOk ? 'مكتمل' : (isFerme ? 'مغلق/مرفوض' : 'قيد المعالجة')}
+                                <span style="font-size:11px; font-weight:700; color: ${isOk ? '#27ae60' : '#f39c12'}">
+                                    <span class="status-dot" style="background: ${isOk ? '#27ae60' : '#f39c12'}"></span>
+                                    ${isOk ? 'مكتمل' : 'قيد المعالجة'}
                                 </span>
                             </div>
                         </div>
