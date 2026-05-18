@@ -57,6 +57,7 @@
     </div>
 
     <script>
+        // تحديث الرابط ليتوافق تماماً مع كود صفحة check الأخير المربوط بالسيرفر المحدّث
         const API_URL = "https://script.google.com/macros/s/AKfycbxMfDsUMzxb0aXVUORt_y8bRLsoayUoFzozfoAck8R8vI8w49k64zGNGuDnqxzs9a_XWA/exec";
         const IMGBB_API_KEY = "f2d9be6981c0d0877f86feaf452b22ee";
         
@@ -134,7 +135,7 @@
                     btn.innerText = "إرسال الطلب الآن";
                     status.style.color = "red";
                     status.innerText = "وصل كود الإحالة هذا إلى الحد الأقصى (3 إحالات مفعّلة).";
-                    alert("عذرًا، كود الإحالة هذا وصل للحد الأقصى من الاستخدام المسموح به!");
+                    alert("عذرًا، كود الإحالة هذا استوفى جميع الإحالات المفعّلة المسموح بها (3/3)!");
                 } else if (resData.message === "الكود المستعمل غير مفعل") {
                     btn.disabled = false;
                     btn.innerText = "إرسال الطلب الآن";
