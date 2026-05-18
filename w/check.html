@@ -170,7 +170,6 @@
             const input = document.getElementById('referralInput').value.trim();
             const status = document.getElementById('refStatus');
             
-            // التعديل: عند الضغط على تأكيد وحقل الإدخال فارغ يظهر النص المطلوب بالأزرق
             if(!input) {
                 status.innerText = "تم المتابعة بدون كود دعوة";
                 status.style.color = "blue";
@@ -266,12 +265,22 @@
                 const data = await res.json();
                 const myRows = data.filter(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase());
                 
-                if(myRows.length === 0) {
+                // تصفية وحذف أي طلبات تحتوي على فارغ لمنع الأخطاء
+                const filteredRows = myRows.filter(row => {
+                    const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
+                    // التعديل الرئيسي: إذا كانت الحالة "ferme" أو "refusé" يتم حذف السطر نهائياً من العرض
+                    if (label === "ferme" || label === "refusé") {
+                        return false; 
+                    }
+                    return true;
+                });
+
+                if(filteredRows.length === 0) {
                     container.innerHTML = '<p style="text-align:center; margin-top:30px; color:#bbb;">لا توجد عمليات مسجلة</p>';
                     return;
                 }
 
-                container.innerHTML = myRows.map(row => {
+                container.innerHTML = filteredRows.map(row => {
                     const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
                     const isOk = label.startsWith("ver"); 
                     
