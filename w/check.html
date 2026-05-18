@@ -170,8 +170,9 @@
             const input = document.getElementById('referralInput').value.trim();
             const status = document.getElementById('refStatus');
             
+            // التعديل: عند الضغط على تأكيد وحقل الإدخال فارغ يظهر النص المطلوب بالأزرق
             if(!input) {
-                status.innerText = "تم المتابعة بدون كود إحالة";
+                status.innerText = "تم المتابعة بدون كود دعوة";
                 status.style.color = "blue";
                 unlockPlans("نوريفيرايت", null);
                 return;
@@ -187,7 +188,6 @@
                 const found = data.find(i => i.refCode === input);
 
                 if(found) {
-                    // التحقق من أن حساب صاحب الكود مفعل وليس في الانتظار
                     const ownerStatus = found.statusLabel ? found.statusLabel.toLowerCase().trim() : "";
                     if (ownerStatus.indexOf("ver") === -1) {
                         status.innerText = "هذا الكود غير مفعل بعد، لا يمكنك استخدامه";
@@ -195,7 +195,6 @@
                         return;
                     }
 
-                    // التعديل: يتم تصفية وحساب عدد الإحالات المفعّلة فقط (التي تحتوي على ver) تماشيًا مع كود الـ Apps Script
                     const activeReferralsCount = data.filter(i => i.usedCode === input && i.statusLabel && i.statusLabel.toLowerCase().trim().indexOf("ver") !== -1).length;
                     
                     if (activeReferralsCount >= 3) {
@@ -204,7 +203,6 @@
                     } else {
                         status.innerText = "الكود صحيح! صاحب الكود: " + found.name;
                         status.style.color = "green";
-                        // تمرير باقة صاحب الكود لتصفية عرض البطاقات
                         unlockPlans(input, found.plan);
                     }
                 } else {
@@ -219,11 +217,9 @@
         function unlockPlans(code, ownerPlan) {
             confirmedRefCode = code;
             
-            // إخفاء قفل البطاقات المبدئي
             document.getElementById('lock1').style.display = "none";
             document.getElementById('lock2').style.display = "none";
             
-            // تحديد باقة 300 أو 600 للمستخدم بناءً على باقة صاحب الكود المستعمل
             if (ownerPlan) {
                 const planStr = ownerPlan.toString().toLowerCase();
                 if (planStr.indexOf("300") !== -1) {
@@ -234,7 +230,6 @@
                     document.getElementById('card2').style.display = "block";
                 }
             } else {
-                // إذا تمت المتابعة بدون كود، تظهر كل الباقات بشكل عادي
                 document.getElementById('card1').style.display = "block";
                 document.getElementById('card2').style.display = "block";
             }
