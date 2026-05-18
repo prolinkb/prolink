@@ -257,6 +257,21 @@
             window.location.href = "pyme.html";
         }
 
+        // دالة مساعدة لنسخ الكود فوراً وبشكل حركي تفاعلي
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalContent = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> تم النسخ';
+                btn.style.background = "#27ae60";
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.style.background = "#007aff";
+                }, 2000);
+            }).catch(() => {
+                alert("تنبيه: انسخ الكود يدوياً: " + text);
+            });
+        }
+
         async function loadUserOrders() {
             const container = document.getElementById('orders-container');
             container.innerHTML = '<p style="text-align:center; padding:20px; color:#999; font-size:13px;">جاري تحديث البيانات...</p>';
@@ -265,10 +280,9 @@
                 const data = await res.json();
                 const myRows = data.filter(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase());
                 
-                // تصفية وحذف أي طلبات تحتوي على فارغ لمنع الأخطاء
+                // تصفية وحذف أي طلبات تحتوي على حالة "ferme" أو "refusé" نهائياً
                 const filteredRows = myRows.filter(row => {
                     const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
-                    // التعديل الرئيسي: إذا كانت الحالة "ferme" أو "refusé" يتم حذف السطر نهائياً من العرض
                     if (label === "ferme" || label === "refusé") {
                         return false; 
                     }
@@ -283,24 +297,70 @@
                 container.innerHTML = filteredRows.map(row => {
                     const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
                     const isOk = label.startsWith("ver"); 
-                    
                     const displayPlanName = (row.plan && row.plan.trim() !== "") ? row.plan : "لا توجد باقة نشطة";
                     
-                    return `
-                        <div class="history-item">
-                            <div>
-                                <div style="font-weight:700; font-size:14px;">اشتراك ${displayPlanName}</div>
-                                <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
-                                <div style="font-size:11px; color:#27ae60; font-weight:600;">الإحالات: ${row.referralCount || 0}</div>
+                    // حساب عدد الإحالات والنسبة المئوية لتقدم الخط المخطط (الحد الأقصى 3)
+                    const referralsCount = parseInt(row.referralCount) || 0;
+                    const fillPercentage = Math.min((referralsCount / 3) * 100, 100);
+
+                    // إذا كانت الباقة مفعّلة (مكتملة) -> نعرض كود الإحالة القابل للنسخ + خط التتبع المخطط للإحالات
+                    if (isOk) {
+                        return `
+                            <div class="history-item" style="display: block; padding: 20px; margin-bottom: 15px; border-color: #27ae60;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                    <div>
+                                        <div style="font-weight:700; font-size:15px; color:#000;">اشتراك ${displayPlanName}</div>
+                                        <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
+                                    </div>
+                                    <div>
+                                        <span style="font-size:11px; font-weight:700; color: #27ae60">
+                                            <span class="status-dot" style="background: #27ae60"></span> مكتمل
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div style="background: #f5f5f7; border-radius: 12px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border: 1px dashed #ccc;">
+                                    <span style="font-size: 12px; color: #444; font-weight: 600;">كود الإحالة الخاص بك: <strong style="font-size: 14px; color: #000; margin-right: 5px; letter-spacing: 0.5px;">${row.refCode || '---'}</strong></span>
+                                    <button onclick="copyToClipboard('${row.refCode}', this)" style="background: #007aff; color: #fff; border: none; padding: 7px 14px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s;">
+                                        <i class="fas fa-copy"></i> نسخ الكود
+                                    </button>
+                                </div>
+
+                                <div style="margin-top: 10px; padding-top: 5px;">
+                                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: #555; font-weight: 700; margin-bottom: 8px;">
+                                        <span>مخطط شبكة الإحالات المتصلة</span>
+                                        <span style="color: #007aff;">${referralsCount} / 3 إحالات</span>
+                                    </div>
+                                    <div style="width: 100%; height: 6px; background: #e5e5ea; border-radius: 10px; position: relative; margin-bottom: 5px;">
+                                        <div style="width: ${fillPercentage}%; height: 100%; background: linear-gradient(90deg, #007aff, #00c6ff); border-radius: 10px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                                        
+                                        <div style="position: absolute; top: -4px; right: 0%; width: 14px; height: 14px; border-radius: 50%; background: #007aff; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></div>
+                                        <div style="position: absolute; top: -4px; right: 33.33%; width: 14px; height: 14px; border-radius: 50%; background: ${referralsCount >= 1 ? '#007aff' : '#e5e5ea'}; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></div>
+                                        <div style="position: absolute; top: -4px; right: 66.66%; width: 14px; height: 14px; border-radius: 50%; background: ${referralsCount >= 2 ? '#007aff' : '#e5e5ea'}; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></div>
+                                        <div style="position: absolute; top: -4px; right: 100%; width: 14px; height: 14px; border-radius: 50%; background: ${referralsCount >= 3 ? '#27ae60' : '#e5e5ea'}; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></div>
+                                    </div>
+                                </div>
                             </div>
-                            <div style="text-align: left;">
-                                <span style="font-size:11px; font-weight:700; color: ${isOk ? '#27ae60' : '#f39c12'}">
-                                    <span class="status-dot" style="background: ${isOk ? '#27ae60' : '#f39c12'}"></span>
-                                    ${isOk ? 'مكتمل' : 'قيد المعالجة'}
-                                </span>
+                        `;
+                    } 
+                    
+                    // إذا كانت الباقة قيد الانتظار (تحت المعالجة) -> تظهر بالشكل الطبيعي المحمي
+                    else {
+                        return `
+                            <div class="history-item">
+                                <div>
+                                    <div style="font-weight:700; font-size:14px;">اشتراك ${displayPlanName}</div>
+                                    <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
+                                    <div style="font-size:11px; color:#f39c12; font-weight:600; margin-top: 2px;">الحساب في مرحلة المراجعة والتدقيق</div>
+                                </div>
+                                <div style="text-align: left;">
+                                    <span style="font-size:11px; font-weight:700; color: #f39c12">
+                                        <span class="status-dot" style="background: #f39c12"></span> قيد المعالجة
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    }
                 }).join('');
             } catch (e) { 
                 container.innerHTML = '<p style="text-align:center; color:red;">خطأ في جلب البيانات</p>'; 
