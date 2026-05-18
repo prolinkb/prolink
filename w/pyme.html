@@ -107,7 +107,6 @@
             status.innerText = "جاري معالجة الطلب...";
 
             try {
-                // تعديل طريقة الإرسال لقراءة استجابة السيرفر وفحص قيد الحد الأقصى للإحالات
                 const uploadedImageUrl = await uploadToImgBB(base64Img);
                 const payload = {
                     name: name,
@@ -136,6 +135,12 @@
                     status.style.color = "red";
                     status.innerText = "وصل كود الإحالة هذا إلى الحد الأقصى (3 إحالات).";
                     alert("عذرًا، كود الإحالة هذا وصل للحد الأقصى من الاستخدام المسموح به!");
+                } else if (resData.message === "الكود المستعمل غير مفعل") {
+                    btn.disabled = false;
+                    btn.innerText = "إرسال الطلب الآن";
+                    status.style.color = "red";
+                    status.innerText = "خطأ: كود الإحالة المستعمل غير مفعل حالياً.";
+                    alert("عذرًا، كود الإحالة هذا غير مفعل من قبل الإدارة بعد، لا يمكنك إتمام العملية به!");
                 } else {
                     btn.disabled = false;
                     btn.innerText = "إعادة المحاولة";
