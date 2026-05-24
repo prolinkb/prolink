@@ -34,8 +34,16 @@
                 <label>البنك</label>
                 <select id="bankSelect" onchange="showBankDetails()">
                     <option value="">اختر البنك...</option>
-                    <option value="cih">CIH Bank</option>
-                    <option value="attijari">Attijariwafa Bank</option>
+                    <option value="attijari">🏦 Attijari Bank</option>
+                    <option value="bmce">🏢 BMCE BANK</option>
+                    <option value="cashplus">💳 CASH PLUS</option>
+                    <option value="barid">📮 Albarid Bank</option>
+                    <option value="bankalik">📱 Bankalik</option>
+                    <option value="jibi">💼 JIBI BANK</option>
+                    <option value="sg">🏛️ Societe Generale</option>
+                    <option value="cfg">💎 CFG BANK</option>
+                    <option value="bp">🏦 Bank Populaire</option>
+                    <option value="cih">🏧 CIH Mobile</option>
                 </select>
             </div>
         </div>
@@ -85,8 +93,16 @@
         document.getElementById('refDisplay').innerText = finalRef;
 
         const bankData = {
-            cih: { name: "CIH Bank", holder: "اسم صاحب الحساب", rib: "123456789012345678901234" },
-            attijari: { name: "Attijariwafa Bank", holder: "اسم صاحب الحساب", rib: "098765432109876543210987" }
+            attijari: { name: "Attijari Bank", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000" },
+            bmce: { name: "BMCE BANK", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000" },
+            cashplus: { name: "CASH PLUS", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000" },
+            barid: { name: "Albarid Bank", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000" },
+            bankalik: { name: "Bankalik", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000" },
+            jibi: { name: "JIBI BANK", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000" },
+            sg: { name: "Societe Generale", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000" },
+            cfg: { name: "CFG BANK", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000" },
+            bp: { name: "Bank Populaire", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000" },
+            cih: { name: "CIH Mobile", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000" }
         };
 
         function showBankDetails() {
