@@ -21,12 +21,14 @@
         .btn-confirm { background: #000; color: #fff; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s; }
         .btn-confirm:disabled { background: #666; cursor: not-allowed; opacity: 0.7; }
         #statusMsg { margin-top: 15px; font-size: 13px; font-weight: 600; min-height: 20px; }
-        .bank-details { background: #fff3cd; padding: 15px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #ffeeba; text-align: right; position: relative; }
-        .copy-btn { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); background: #000; color: #fff; border: none; padding: 5px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: bold; }
+        .bank-details { background: #fff3cd; padding: 15px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #ffeeba; text-align: right; }
+        
+        .bank-details-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px dashed #dddddd; }
+        .bank-details-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .copy-btn { background: #000000; color: #ffffff; border: none; padding: 5px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .copy-btn:active { opacity: 0.7; }
-        .bank-details-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed #ddd; padding-bottom: 5px; }
-        .bank-details-row:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
-        .bank-logo { width: 100%; max-height: 60px; object-fit: contain; margin-bottom: 15px; display: block; border-radius: 8px; }
+        .bank-logo-container { text-align: center; margin-bottom: 15px; }
+        .bank-logo-container img { max-width: 100%; max-height: 120px; border-radius: 10px; object-fit: contain; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -97,24 +99,24 @@
         document.getElementById('refDisplay').innerText = finalRef;
 
         const bankData = {
-            attijari: { name: "Attijari Bank", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", logo: "https://ibb.co/SXwSWwk9" },
-            bmce: { name: "BMCE BANK", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", logo: "https://ibb.co/v62JGcVr" },
-            cashplus: { name: "CASH PLUS", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", logo: "https://ibb.co/k2Gt81Bf" },
-            barid: { name: "Albarid Bank", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", logo: "https://ibb.co/Hf8mtGp5" },
-            bankalik: { name: "Bankalik", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", logo: "https://ibb.co/1GSXZyVT" },
-            sg: { name: "Societe Generale", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", logo: "https://ibb.co/Kc5CM8zM" },
-            cfg: { name: "CFG BANK", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", logo: "https://ibb.co/dsRtDQ6N" },
-            bp: { name: "Bank Populaire", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", logo: "https://ibb.co/Hf8mtGp5" },
-            cih: { name: "CIH Mobile", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", logo: "https://ibb.co/gMwMBLww" }
+            attijari: { name: "Attijari Bank", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/SXwSWwk9/image.png" },
+            bmce: { name: "BMCE BANK", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/v62JGcVr/image.png" },
+            cashplus: { name: "CASH PLUS", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/k2Gt81Bf/image.png" },
+            barid: { name: "Albarid Bank", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/Hf8mtGp5/image.png" },
+            bankalik: { name: "Bankalik", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/1GSXZyVT/image.png" },
+            sg: { name: "Societe Generale", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/Kc5CM8zM/image.png" },
+            cfg: { name: "CFG BANK", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/dsRtDQ6N/image.png" },
+            bp: { name: "Bank Populaire", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/Hf8mtGp5/image.png" },
+            cih: { name: "CIH Mobile", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/gMwMBLww/image.png" }
         };
 
-        function copyText(text, btn) {
+        function copyToClipboard(text, btn) {
             navigator.clipboard.writeText(text).then(() => {
-                const oldText = btn.innerText;
-                btn.innerText = "تم النسخ";
-                setTimeout(() => { btn.innerText = oldText; }, 1500);
-            }).catch(err => {
-                alert("فشل النسخ التلقائي، يمكنك نسخه يدوياً");
+                const originalText = btn.innerText;
+                btn.innerText = "تم نسخها";
+                setTimeout(() => { btn.innerText = originalText; }, 1500);
+            }).catch(() => {
+                alert("فشل النسخ التلقائي، يمكنك النسخ يدوياً");
             });
         }
 
@@ -124,17 +126,19 @@
             const b = bankData[val];
             
             document.getElementById('bankInfo').innerHTML = `
-                <img src="${b.logo}" class="bank-logo" alt="${b.name}">
+                <div class="bank-logo-container">
+                    <img src="${b.img}" alt="${b.name}">
+                </div>
                 <div class="bank-details-row">
                     <span><strong>البنك:</strong> ${b.name}</span>
                 </div>
-                <div class="bank-details-row" style="position: relative; padding-left: 60px;">
-                    <span><strong>الاسم:</strong> <span id="copyHolder">${b.holder}</span></span>
-                    <button class="copy-btn" onclick="copyText('${b.holder}', this)">نسخ</button>
+                <div class="bank-details-row">
+                    <span><strong>الاسم:</strong> ${b.holder}</span>
+                    <button class="copy-btn" onclick="copyToClipboard('${b.holder}', this)">نسخ</button>
                 </div>
-                <div class="bank-details-row" style="position: relative; padding-left: 60px;">
-                    <span><strong>RIB:</strong> <span id="copyRib">${b.rib}</span></span>
-                    <button class="copy-btn" onclick="copyText('${b.rib}', this)">نسخ</button>
+                <div class="bank-details-row">
+                    <span><strong>RIB:</strong> ${b.rib}</span>
+                    <button class="copy-btn" onclick="copyToClipboard('${b.rib}', this)">نسخ</button>
                 </div>
             `;
             
