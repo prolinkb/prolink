@@ -14,8 +14,10 @@
         .selected-plan { font-size: 22px; font-weight: 900; color: #000; }
         .input-group { text-align: right; margin-bottom: 20px; }
         .input-group label { display: block; font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; }
-        input, select { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; outline: none; background: #fff; transition: 0.3s; }
-        input:focus, select:focus { border-color: #000; }
+        input, select { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; outline: none; background: #fff; transition: 0.3s; cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+        input:focus, select:focus { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+        .select-wrapper { position: relative; }
+        .select-wrapper::after { content: '\f078'; font-family: 'Font Awesome 5 Free'; font-weight: 900; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 14px; color: #666; }
         .upload-area { border: 2px dashed #ccc; padding: 25px; border-radius: 15px; cursor: pointer; margin-bottom: 25px; position: relative; background: #fafafa; }
         #imgPreview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 10px; display: none; margin-top: 10px; }
         .btn-confirm { background: #000; color: #fff; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s; }
@@ -28,7 +30,7 @@
         .copy-btn { background: #000000; color: #ffffff; border: none; padding: 5px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .copy-btn:active { opacity: 0.7; }
         .bank-logo-container { text-align: center; margin-bottom: 15px; }
-        .bank-logo-container img { max-width: 100%; max-height: 120px; border-radius: 10px; object-fit: contain; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .bank-logo-container img { width: auto; max-width: 140px; height: 50px; max-height: 50px; border-radius: 8px; object-fit: contain; box-shadow: 0 2px 6px rgba(0,0,0,0.08); background: #fff; padding: 4px; }
     </style>
 </head>
 <body>
@@ -39,18 +41,20 @@
             <p style="font-size: 14px; color: #666; margin-bottom: 25px;">اختر البنك المناسب للتحويل</p>
             <div class="input-group">
                 <label>البنك</label>
-                <select id="bankSelect" onchange="showBankDetails()">
-                    <option value="">اختر البنك...</option>
-                    <option value="attijari">🏦 Attijari Bank</option>
-                    <option value="bmce">🏢 BMCE BANK</option>
-                    <option value="cashplus">💳 CASH PLUS</option>
-                    <option value="barid">📮 Albarid Bank</option>
-                    <option value="bankalik">📱 Bankalik</option>
-                    <option value="sg">🏛️ Societe Generale</option>
-                    <option value="cfg">💎 CFG BANK</option>
-                    <option value="bp">🏦 Bank Populaire</option>
-                    <option value="cih">🏧 CIH Mobile</option>
-                </select>
+                <div class="select-wrapper">
+                    <select id="bankSelect" onchange="showBankDetails()">
+                        <option value="">اختر البنك...</option>
+                        <option value="attijari">🏦 Attijari Bank</option>
+                        <option value="bmce">🏢 BMCE BANK</option>
+                        <option value="cashplus">💳 CASH PLUS</option>
+                        <option value="barid">📦 Albarid Bank</option>
+                        <option value="bankalik">📱 Bankalik</option>
+                        <option value="sg">💎 Societe Generale</option>
+                        <option value="cfg">👑 CFG BANK</option>
+                        <option value="bp">🏦 Bank Populaire</option>
+                        <option value="cih">🚀 CIH Mobile</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -103,7 +107,7 @@
             bmce: { name: "BMCE BANK", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/v62JGcVr/image.png" },
             cashplus: { name: "CASH PLUS", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/k2Gt81Bf/image.png" },
             barid: { name: "Albarid Bank", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/Hf8mtGp5/image.png" },
-            bankalik: { name: "Bankalik", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/1GSXZyVT/image.png" },
+            bankalik: { name: "Bankalik", holder: "يظهر here اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/1GSXZyVT/image.png" },
             sg: { name: "Societe Generale", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/Kc5CM8zM/image.png" },
             cfg: { name: "CFG BANK", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/dsRtDQ6N/image.png" },
             bp: { name: "Bank Populaire", holder: "يظهر هنا اسم صاحب الحساب", rib: "0000 0000 0000 0000 0000", img: "https://i.ibb.co/Hf8mtGp5/image.png" },
