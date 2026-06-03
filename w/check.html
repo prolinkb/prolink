@@ -64,6 +64,16 @@
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-left: 8px; }
 
         .user-info-bar { font-size: 11px; color: #999; margin-bottom: 15px; display: block; }
+
+        /* Referral List Styles */
+        .referrals-box { margin-top: 15px; background: #fff; border: 1px solid #eaeaea; border-radius: 12px; padding: 12px; }
+        .referrals-title { font-size: 12px; font-weight: 700; color: #444; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .referral-user-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 12px; }
+        .referral-user-item:last-child { border-bottom: none; }
+        .ref-user-info { display: flex; flex-direction: column; gap: 2px; }
+        .ref-user-name { font-weight: 700; color: #222; }
+        .ref-user-email { color: #666; font-size: 11px; }
+        .ref-user-date { color: #aaa; font-size: 10px; }
     </style>
 </head>
 <body>
@@ -158,7 +168,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwL3U2WknO3PoC2gxUxoT1B2nTdY3Mw5hMmx4Tb4rIy4WFSZqLqdkIpISMArCXg6kBuGg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwgyoq31xAmYq49zzJYtMQr0eC8KHZKcPto26TUy2hTUFUncZPT1bJN7-nGqGw6FFqf_Q/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -272,6 +282,34 @@
             });
         }
 
+        async function fetchReferralsList(code, containerId) {
+            try {
+                const res = await fetch(`${API_URL}?action=getReferrals&code=${encodeURIComponent(code)}&t=${new Date().getTime()}`);
+                const list = await res.json();
+                const listContainer = document.getElementById(containerId);
+                
+                if (!list || list.length === 0) {
+                    listContainer.innerHTML = '<p style="color:#aaa; font-size:11px; text-align:center; padding:5px 0;">لم يقم أي شخص بالتسجيل باستخدام كودك بعد.</p>';
+                    return;
+                }
+                
+                listContainer.innerHTML = list.map(user => {
+                    const dateStr = user.date ? new Date(user.date).toLocaleDateString('ar-MA') : '---';
+                    return `
+                        <div class="referral-user-item">
+                            <div class="ref-user-info">
+                                <span class="ref-user-name">${user.name}</span>
+                                <span class="ref-user-email">${user.email}</span>
+                            </div>
+                            <span class="ref-user-date">${dateStr}</span>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                document.getElementById(containerId).innerHTML = '<p style="color:red; font-size:11px; text-align:center;">خطأ في تحميل قائمة الإحالات</p>';
+            }
+        }
+
         async function loadUserOrders() {
             const container = document.getElementById('orders-container');
             container.innerHTML = '<p style="text-align:center; padding:20px; color:#999; font-size:13px;">جاري تحديث البيانات...</p>';
@@ -294,7 +332,7 @@
                     return;
                 }
 
-                container.innerHTML = filteredRows.map(row => {
+                container.innerHTML = filteredRows.map((row, index) => {
                     const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
                     const isOk = label.startsWith("ver"); 
                     const displayPlanName = (row.plan && row.plan.trim() !== "") ? row.plan : "لا توجد باقة نشطة";
@@ -303,8 +341,13 @@
                     const referralsCount = parseInt(row.referralCount) || 0;
                     const fillPercentage = Math.min((referralsCount / 3) * 100, 100);
 
-                    // إذا كانت الباقة مفعّلة (مكتملة) -> نعرض كود الإحالة القابل للنسخ + خط التتبع المخطط للإحالات
+                    // إذا كانت الباقة مفعّلة (مكتملة) -> نعرض كود الإحالة القابل للنسخ + خط التتبع المخطط للإحالات + قائمة الأشخاص المسجلين بكودك
                     if (isOk) {
+                        const uniqueContainerId = `ref-list-container-${index}`;
+                        setTimeout(() => {
+                            fetchReferralsList(row.refCode, uniqueContainerId);
+                        }, 50);
+
                         return `
                             <div class="history-item" style="display: block; padding: 20px; margin-bottom: 15px; border-color: #27ae60;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -331,13 +374,20 @@
                                         <span>مخطط شبكة الإحالات المتصلة</span>
                                         <span style="color: #007aff;">${referralsCount} / 3 إحالات</span>
                                     </div>
-                                    <div style="width: 100%; height: 6px; background: #e5e5ea; border-radius: 10px; position: relative; margin-bottom: 5px;">
+                                    <div style="width: 100%; height: 6px; background: #e5e5ea; border-radius: 10px; position: relative; margin-bottom: 15px;">
                                         <div style="width: ${fillPercentage}%; height: 100%; background: linear-gradient(90deg, #007aff, #00c6ff); border-radius: 10px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);"></div>
                                         
                                         <div style="position: absolute; top: -4px; right: 0%; width: 14px; height: 14px; border-radius: 50%; background: #007aff; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></div>
                                         <div style="position: absolute; top: -4px; right: 33.33%; width: 14px; height: 14px; border-radius: 50%; background: ${referralsCount >= 1 ? '#007aff' : '#e5e5ea'}; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></div>
                                         <div style="position: absolute; top: -4px; right: 66.66%; width: 14px; height: 14px; border-radius: 50%; background: ${referralsCount >= 2 ? '#007aff' : '#e5e5ea'}; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></div>
                                         <div style="position: absolute; top: -4px; right: 100%; width: 14px; height: 14px; border-radius: 50%; background: ${referralsCount >= 3 ? '#27ae60' : '#e5e5ea'}; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></div>
+                                    </div>
+                                </div>
+
+                                <div class="referrals-box">
+                                    <div class="referrals-title"><i class="fas fa-users" style="margin-left: 5px;"></i> شبكة المسجلين بكودك :</div>
+                                    <div id="${uniqueContainerId}">
+                                        <p style="color:#999; font-size:11px; text-align:center; padding:5px 0;">جاري تحميل القائمة...</p>
                                     </div>
                                 </div>
                             </div>
