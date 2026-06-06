@@ -168,7 +168,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxYjf0JvaeKZY8NafkNWuleE35dQf84SpGm-EwDZH1bRw54wJ4ZCkHQvrT4cxylcyO_gg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwjXnHMe7DLLhxH5I-J15Z9eNC74Ns5F1nfhsyX3CO3EIAkXXXIBtKsmRr3Vsa8XSHe2w/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -294,24 +294,11 @@
                 
                 listContainer.innerHTML = list.map(user => {
                     const dateStr = user.date ? new Date(user.date).toLocaleDateString('ar-MA') : '---';
-                    
-                    // تحضير زر فتح الصورة بشكل آمن إذا كان متوفراً
-                    let receiptHTML = '';
-                    if (user.receipt && user.receipt.indexOf("http") !== -1) {
-                        receiptHTML = `
-                            <a href="${user.receipt}" target="_blank" style="background: #007aff; color: #fff; text-decoration: none; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; margin-top: 5px; display: inline-block; transition: 0.2s;">
-                                <i class="fas fa-image"></i> عرض الوصل
-                            </a>`;
-                    } else {
-                        receiptHTML = '<span style="color:#aaa; font-size:10px; margin-top:5px; display:inline-block;">لا يوجد وصل</span>';
-                    }
-
                     return `
-                        <div class="referral-user-item" style="align-items: flex-start;">
+                        <div class="referral-user-item">
                             <div class="ref-user-info">
                                 <span class="ref-user-name">${user.name}</span>
                                 <span class="ref-user-email">${user.email}</span>
-                                ${receiptHTML}
                             </div>
                             <span class="ref-user-date">${dateStr}</span>
                         </div>
