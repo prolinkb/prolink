@@ -267,7 +267,6 @@
             window.location.href = "pyme.html";
         }
 
-        // دالة مساعدة لنسخ الكود فوراً وبشكل حركي تفاعلي
         function copyToClipboard(text, btn) {
             navigator.clipboard.writeText(text).then(() => {
                 const originalContent = btn.innerHTML;
@@ -295,11 +294,24 @@
                 
                 listContainer.innerHTML = list.map(user => {
                     const dateStr = user.date ? new Date(user.date).toLocaleDateString('ar-MA') : '---';
+                    
+                    // تحضير زر فتح الصورة بشكل آمن إذا كان متوفراً
+                    let receiptHTML = '';
+                    if (user.receipt && user.receipt.indexOf("http") !== -1) {
+                        receiptHTML = `
+                            <a href="${user.receipt}" target="_blank" style="background: #007aff; color: #fff; text-decoration: none; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; margin-top: 5px; display: inline-block; transition: 0.2s;">
+                                <i class="fas fa-image"></i> عرض الوصل
+                            </a>`;
+                    } else {
+                        receiptHTML = '<span style="color:#aaa; font-size:10px; margin-top:5px; display:inline-block;">لا يوجد وصل</span>';
+                    }
+
                     return `
-                        <div class="referral-user-item">
+                        <div class="referral-user-item" style="align-items: flex-start;">
                             <div class="ref-user-info">
                                 <span class="ref-user-name">${user.name}</span>
                                 <span class="ref-user-email">${user.email}</span>
+                                ${receiptHTML}
                             </div>
                             <span class="ref-user-date">${dateStr}</span>
                         </div>
@@ -318,7 +330,6 @@
                 const data = await res.json();
                 const myRows = data.filter(i => i.email && i.email.toLowerCase() === userEmail.toLowerCase());
                 
-                // تصفية وحذف أي طلبات تحتوي على حالة "ferme" أو "refusé" نهائياً
                 const filteredRows = myRows.filter(row => {
                     const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
                     if (label === "ferme" || label === "refusé") {
@@ -337,11 +348,9 @@
                     const isOk = label.startsWith("ver"); 
                     const displayPlanName = (row.plan && row.plan.trim() !== "") ? row.plan : "لا توجد باقة نشطة";
                     
-                    // حساب عدد الإحالات والنسبة المئوية لتقدم الخط المخطط (الحد الأقصى 3)
                     const referralsCount = parseInt(row.referralCount) || 0;
                     const fillPercentage = Math.min((referralsCount / 3) * 100, 100);
 
-                    // إذا كانت الباقة مفعّلة (مكتملة) -> نعرض كود الإحالة القابل للنسخ + خط التتبع المخطط للإحالات + قائمة الأشخاص المسجلين بكودك
                     if (isOk) {
                         const uniqueContainerId = `ref-list-container-${index}`;
                         setTimeout(() => {
@@ -393,8 +402,6 @@
                             </div>
                         `;
                     } 
-                    
-                    // إذا كانت الباقة قيد الانتظار (تحت المعالجة) -> تظهر بالشكل الطبيعي المحمي
                     else {
                         return `
                             <div class="history-item">
