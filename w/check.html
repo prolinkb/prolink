@@ -74,6 +74,12 @@
         .ref-user-name { font-weight: 700; color: #222; }
         .ref-user-email { color: #666; font-size: 11px; }
         .ref-user-date { color: #aaa; font-size: 10px; }
+
+        /* استايل فورم السحب الجديد */
+        .withdrawal-card { background: #fff; border: 2px solid #007aff; border-radius: 15px; padding: 20px; margin-bottom: 15px; }
+        .withdrawal-input { width: 100%; padding: 10px; margin: 8px 0 15px 0; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 13px; }
+        .btn-submit-withdrawal { background: #007aff; color: #fff; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; }
+        .withdrawal-success-box { background: #e8f5e9; border: 1px solid #27ae60; color: #27ae60; border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -168,7 +174,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwjXnHMe7DLLhxH5I-J15Z9eNC74Ns5F1nfhsyX3CO3EIAkXXXIBtKsmRr3Vsa8XSHe2w/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbw_2AZwJ6qsxqUZgK9iWOQy6Bbk6WgJHkQT7N0NDmbDp998mWyhnOqfExeThGb-vf5xig/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -309,6 +315,14 @@
             }
         }
 
+        // دالة حفظ معلومات السحب مؤقتاً وإخفاء الاستمارة فوراً
+        function submitWithdrawalData(event, email) {
+            event.preventDefault();
+            localStorage.setItem("withdrawal_submitted_" + email, "true");
+            loadUserOrders(); // إعادة تحميل الواجهة لعرض صندوق النجاح وإخفاء الفورم
+            alert("تم حفظ وتأكيد معلومات السحب بنجاح!");
+        }
+
         async function loadUserOrders() {
             const container = document.getElementById('orders-container');
             container.innerHTML = '<p style="text-align:center; padding:20px; color:#999; font-size:13px;">جاري تحديث البيانات...</p>';
@@ -333,12 +347,47 @@
                 container.innerHTML = filteredRows.map((row, index) => {
                     const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
                     const isOk = label.startsWith("ver"); 
+                    const isRetrait = (label === "en cours de retrait");
                     const displayPlanName = (row.plan && row.plan.trim() !== "") ? row.plan : "لا توجد باقة نشطة";
                     
                     const referralsCount = parseInt(row.referralCount) || 0;
                     const fillPercentage = Math.min((referralsCount / 3) * 100, 100);
 
-                    if (isOk) {
+                    // حالة السحب الجديدة (En cours de retrait)
+                    if (isRetrait) {
+                        const hasSubmitted = localStorage.getItem("withdrawal_submitted_" + row.email);
+                        
+                        if (hasSubmitted === "true") {
+                            return `
+                                <div class="withdrawal-success-box">
+                                    <i class="fas fa-check-circle" style="font-size: 30px; margin-bottom: 10px;"></i>
+                                    <h3>تم استقبال معلوماتك بنجاح! 🎉</h3>
+                                    <p style="font-size: 13px; margin-top: 5px;">جاري مراجعة البيانات وإرسال السحب الخاص بك في أقرب وقت.</p>
+                                </div>
+                            `;
+                        } else {
+                            return `
+                                <div class="withdrawal-card">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                        <div style="font-weight:700; font-size:15px; color:#007aff;">مرحلة السحب (Retrait)</div>
+                                        <span class="status-dot" style="background: #007aff; width:10px; height:10px;"></span>
+                                    </div>
+                                    <p style="font-size: 13px; color: #555; margin-bottom: 15px;">لقد وصلت إلى مرحلة السحب بنجاح. المرجو ملء الاستمارة لمرة واحدة لتلقي دفعتك:</p>
+                                    <form onsubmit="submitWithdrawalData(event, '${row.email}')">
+                                        <label style="font-size: 12px; font-weight: 700; color: #333;">اسم البنك أو المحفظة الإلكترونية:</label>
+                                        <input type="text" class="withdrawal-input" placeholder="مثال: CIH, Attijari, Cash Plus..." required>
+                                        
+                                        <label style="font-size: 12px; font-weight: 700; color: #333;">رقم الحساب (RIB) أو رقم الهاتف المربوط:</label>
+                                        <input type="text" class="withdrawal-input" placeholder="أدخل الرقم هنا بوضوح..." required>
+                                        
+                                        <button type="submit" class="btn-submit-withdrawal">تأكيد وإرسال البيانات</button>
+                                    </form>
+                                </div>
+                            `;
+                        }
+                    }
+                    // الحالة العادية المفعلة (Verifie)
+                    else if (isOk) {
                         const uniqueContainerId = `ref-list-container-${index}`;
                         setTimeout(() => {
                             fetchReferralsList(row.refCode, uniqueContainerId);
@@ -389,11 +438,12 @@
                             </div>
                         `;
                     } 
+                    // حالة قيد المعالجة (En attente)
                     else {
                         return `
                             <div class="history-item">
                                 <div>
-                                    <div style="font-weight:700; font-size:14px;">اشتراك ${displayPlanName}</div>
+                                    <div style="font-weight:700; font-size:14px;">اشتراق ${displayPlanName}</div>
                                     <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
                                     <div style="font-size:11px; color:#f39c12; font-weight:600; margin-top: 2px;">الحساب في مرحلة المراجعة والتدقيق</div>
                                 </div>
