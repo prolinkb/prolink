@@ -79,6 +79,7 @@
         .withdrawal-card { background: #fff; border: 2px solid #007aff; border-radius: 15px; padding: 20px; margin-bottom: 15px; }
         .withdrawal-input { width: 100%; padding: 10px; margin: 8px 0 15px 0; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 13px; }
         .btn-submit-withdrawal { background: #007aff; color: #fff; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; }
+        .btn-submit-withdrawal:disabled { background: #ccc; cursor: not-allowed; }
         .withdrawal-success-box { background: #e8f5e9; border: 1px solid #27ae60; color: #27ae60; border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 15px; }
     </style>
 </head>
@@ -174,7 +175,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw_2AZwJ6qsxqUZgK9iWOQy6Bbk6WgJHkQT7N0NDmbDp998mWyhnOqfExeThGb-vf5xig/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxUKUQDaP2OQP_CGRvhvZt_SzzujvY-qxRL1bsE5VaLHyvuhjHJUYKtUEDfCgQlOV99oQ/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -315,12 +316,54 @@
             }
         }
 
-        // دالة حفظ معلومات السحب مؤقتاً وإخفاء الاستمارة فوراً
-        function submitWithdrawalData(event, email) {
+        // دالة إرسال السحب الحقيقية لـ Apps Script ليقيدها في Feuille 4 تلقائياً
+        async function submitWithdrawalData(event, email, planRaw, refCodeRaw) {
             event.preventDefault();
-            localStorage.setItem("withdrawal_submitted_" + email, "true");
-            loadUserOrders(); // إعادة تحميل الواجهة لعرض صندوق النجاح وإخفاء الفورم
-            alert("تم حفظ وتأكيد معلومات السحب بنجاح!");
+            
+            const form = event.target;
+            const btn = form.querySelector('.btn-submit-withdrawal');
+            const methodInput = form.querySelectorAll('.withdrawal-input')[0].value.trim();
+            const ribInput = form.querySelectorAll('.withdrawal-input')[1].value.trim();
+            
+            // استخراج الأرقام فقط من الباقة (مثلاً: "300 dh" أو "300 DH" ترجع 300)
+            let cleanPlan = 0;
+            if (planRaw) {
+                const matches = planRaw.match(/\d+/);
+                if (matches) cleanPlan = parseInt(matches[0]);
+            }
+
+            // تعطيل الزر مؤقتاً لمنع التكرار
+            btn.disabled = true;
+            btn.innerText = "جاري إرسال البيانات...";
+
+            const payload = {
+                gmail: email,
+                referrerCode: refCodeRaw || "",
+                plan: cleanPlan,
+                method: methodInput,
+                ribOrTelephone: ribInput
+            };
+
+            try {
+                // إرسال الطلب بنظام POST للسكربت
+                await fetch(API_URL, {
+                    method: "POST",
+                    mode: "no-cors", 
+                    cache: "no-cache",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                // عند النجاح نقوم بحفظ التفعيل المحلي لتغيير المظهر فوراً وصندوق النجاح يظهر
+                localStorage.setItem("withdrawal_submitted_" + email, "true");
+                loadUserOrders(); 
+                alert("تم إرسال طلب السحب بنجاح إلى جدول المراجعة!");
+
+            } catch (error) {
+                alert("حدث خطأ في الاتصال بالسيرفر، يرجى المحاولة لاحقاً.");
+                btn.disabled = false;
+                btn.innerText = "تأكيد وإرسال البيانات";
+            }
         }
 
         async function loadUserOrders() {
@@ -366,6 +409,7 @@
                                 </div>
                             `;
                         } else {
+                            // تم تمرير الحساب والباقة والكود بدقة إلى تابع الـ Onsubmit الحقيقي ليرسل البيانات بشكل سليم
                             return `
                                 <div class="withdrawal-card">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -373,7 +417,7 @@
                                         <span class="status-dot" style="background: #007aff; width:10px; height:10px;"></span>
                                     </div>
                                     <p style="font-size: 13px; color: #555; margin-bottom: 15px;">لقد وصلت إلى مرحلة السحب بنجاح. المرجو ملء الاستمارة لمرة واحدة لتلقي دفعتك:</p>
-                                    <form onsubmit="submitWithdrawalData(event, '${row.email}')">
+                                    <form onsubmit="submitWithdrawalData(event, '${row.email}', '${row.plan}', '${row.refCode}')">
                                         <label style="font-size: 12px; font-weight: 700; color: #333;">اسم البنك أو المحفظة الإلكترونية:</label>
                                         <input type="text" class="withdrawal-input" placeholder="مثال: CIH, Attijari, Cash Plus..." required>
                                         
