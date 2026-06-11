@@ -44,10 +44,10 @@
         
         .card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
         .plan-name { font-size: 16px; font-weight: 700; color: #222; }
-        .plan-duration { font-size: 11px; color: #999; background: #f9f9f9; padding: 4px 10px; border-radius: 6px; }
+        .plan-duration { font-size: 11px; color: #aaa; background: #f9f9f9; padding: 4px 10px; border-radius: 6px; }
 
         .stats-row { display: flex; border-top: 1px solid #f9f9f9; padding-top: 20px; margin-bottom: 20px; }
-        .sidebar-item { flex: 1; } /* تم تعديل التسمية من أجل تفادي التكرار */
+        .sidebar-item { flex: 1; }
         .stat-item { flex: 1; }
         .stat-label { font-size: 10px; color: #aaa; text-transform: uppercase; display: block; margin-bottom: 4px; }
         .stat-value { font-size: 15px; font-weight: 700; color: #333; }
@@ -120,7 +120,7 @@
                 <div class="card-overlay-lock" id="lock1">يجب تأكيد الكود أولاً</div>
                 <div class="card-head">
                     <div class="plan-name">اشتراك الفئة الأولى</div>
-                    <span class="plan-duration">صلاحية 30 يوم</span>
+                    <span class="plan-duration">حساب مفعل</span>
                 </div>
                 <div class="stats-row">
                     <div class="stat-item">
@@ -145,7 +145,7 @@
                 <div class="card-overlay-lock" id="lock2">يجب تأكيد الكود أولاً</div>
                 <div class="card-head">
                     <div class="plan-name">اشتراك الفئة الثانية</div>
-                    <span class="plan-duration">صلاحية 30 يوم</span>
+                    <span class="plan-duration">حساب مفعل</span>
                 </div>
                 <div class="stats-row">
                     <div class="stat-item">
@@ -176,7 +176,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzO0Hcrsscbvfi-CWKZ4Yta0ni9oOZJiaA21IQ88HyuNETGPYnn3QycIDyX3qNIXU-Sog/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxUKUQDaP2OQP_CGRvhvZt_SzzujvY-qxRL1bsE5VaLHyvuhjHJUYKtUEDfCgQlOV99oQ/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -199,31 +199,29 @@
             status.style.color = "#666";
 
             try {
-                const res = await fetch(API_URL + "?t=" + new Date().getTime());
+                // استدعاء السيرفر مع تمرير كود الإحالة مخصص ومحمي لمنع سحب المصفوفة الكاملة
+                const res = await fetch(`${API_URL}?action=getReferrals&code=${encodeURIComponent(input)}&t=${new Date().getTime()}`);
                 const data = await res.json();
                 
-                const found = data.find(i => i.refCode === input);
-
-                if(found) {
-                    const ownerStatus = found.statusLabel ? found.statusLabel.toLowerCase().trim() : "";
-                    if (ownerStatus.indexOf("ver") === -1) {
-                        status.innerText = "هذا الكود غير مفعل بعد، لا يمكنك استخدامه";
-                        status.style.color = "red";
-                        return;
-                    }
-
-                    const activeReferralsCount = data.filter(i => i.usedCode === input && i.statusLabel && i.statusLabel.toLowerCase().trim().indexOf("ver") !== -1).length;
+                // التحقق الآمن بناءً على رد السيرفر المحدث
+                if(data && data.referrals) {
+                    // جلب قائمة الإحالات من الكائن المستلم
+                    const referralsList = data.referrals;
+                    
+                    // حساب عدد الإحالات النشطة مباشرة من طول المصفوفة الراجعة من الفلترة البرمجية المضمونة
+                    const activeReferralsCount = referralsList.length;
                     
                     if (activeReferralsCount >= 3) {
                         status.innerText = "هذا الكود وصل للحد الأقصى من الإحالات المسموح بها (3/3)";
                         status.style.color = "red";
                     } else {
-                        status.innerText = "الكود صحيح! صاحب الكود: " + found.name;
+                        status.innerText = "الكود صحيح وجاهز للاستخدام!";
                         status.style.color = "green";
-                        unlockPlans(input, found.plan);
+                        // تمرير كود الإحالة، وترك الباقة لتفتح تلقائياً حسب رغبتك
+                        unlockPlans(input, null);
                     }
                 } else {
-                    status.innerText = "كود غير موجود، المرجو التأكد";
+                    status.innerText = "كود غير موجود أو غير مفعل، المرجو التأكد";
                     status.style.color = "red";
                 }
             } catch(e) {
@@ -289,7 +287,6 @@
             });
         }
 
-        // متغير عام لحفظ حالة إتاحة لافتة السحب المستلمة من السيرفر
         let serverAllowsAlert = true;
 
         async function fetchReferralsList(code, containerId) {
@@ -298,10 +295,8 @@
                 const data = await res.json();
                 const listContainer = document.getElementById(containerId);
                 
-                // قراءة البيانات من البنية الجديدة للسيرفر (Object يحتوي على referrals و showWithdrawalAlert)
                 const referralsList = data.referrals || [];
                 
-                // تحديث المتغير العام بناءً على رد السيرفر الجديد للتحكم في اللافتة والفورم
                 if (data.showWithdrawalAlert === false) {
                     serverAllowsAlert = false;
                 } else {
@@ -396,12 +391,10 @@
                     return;
                 }
 
-                // جلب بيانات الإحالات وتحديث المتغيرات أولاً لكل كود مكتمل مفعل قبل رسم واجهة المستخدم
                 for (let k = 0; k < filteredRows.length; k++) {
                     const label = filteredRows[k].statusLabel ? filteredRows[k].statusLabel.toLowerCase().trim() : "";
                     if (label.startsWith("ver")) {
                         const uniqueContainerIdTemp = `ref-list-container-${k}`;
-                        // وضع عنصر مؤقت وهمي في الذاكرة لتفادي ضربات الجلب المتزامنة
                         const tempDiv = document.createElement('div');
                         tempDiv.id = uniqueContainerIdTemp;
                         document.body.appendChild(tempDiv);
@@ -422,7 +415,6 @@
                     if (isRetrait) {
                         const hasSubmitted = localStorage.getItem("withdrawal_submitted_" + row.email);
                         
-                        // الفحص المزدوج: إذا أرسل محلياً أو إذا السيرفر أكد وجود السحب مسبقاً (showWithdrawalAlert === false)
                         if (hasSubmitted === "true" || serverAllowsAlert === false) {
                             return `
                                 <div class="withdrawal-success-box">
