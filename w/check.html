@@ -47,6 +47,7 @@
         .plan-duration { font-size: 11px; color: #999; background: #f9f9f9; padding: 4px 10px; border-radius: 6px; }
 
         .stats-row { display: flex; border-top: 1px solid #f9f9f9; padding-top: 20px; margin-bottom: 20px; }
+        .sidebar-item { flex: 1; } /* تم تعديل التسمية من أجل تفادي التكرار */
         .stat-item { flex: 1; }
         .stat-label { font-size: 10px; color: #aaa; text-transform: uppercase; display: block; margin-bottom: 4px; }
         .stat-value { font-size: 15px; font-weight: 700; color: #333; }
@@ -175,7 +176,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxpUUZEyR8nkIJAclJ1Xw6p_ifGfddT2oGABx4c_11py6Pp1CmuEl5pnW-r1WGyj7z9Qg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzO0Hcrsscbvfi-CWKZ4Yta0ni9oOZJiaA21IQ88HyuNETGPYnn3QycIDyX3qNIXU-Sog/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -288,18 +289,31 @@
             });
         }
 
+        // متغير عام لحفظ حالة إتاحة لافتة السحب المستلمة من السيرفر
+        let serverAllowsAlert = true;
+
         async function fetchReferralsList(code, containerId) {
             try {
                 const res = await fetch(`${API_URL}?action=getReferrals&code=${encodeURIComponent(code)}&t=${new Date().getTime()}`);
-                const list = await res.json();
+                const data = await res.json();
                 const listContainer = document.getElementById(containerId);
                 
-                if (!list || list.length === 0) {
+                // قراءة البيانات من البنية الجديدة للسيرفر (Object يحتوي على referrals و showWithdrawalAlert)
+                const referralsList = data.referrals || [];
+                
+                // تحديث المتغير العام بناءً على رد السيرفر الجديد للتحكم في اللافتة والفورم
+                if (data.showWithdrawalAlert === false) {
+                    serverAllowsAlert = false;
+                } else {
+                    serverAllowsAlert = true;
+                }
+                
+                if (!referralsList || referralsList.length === 0) {
                     listContainer.innerHTML = '<p style="color:#aaa; font-size:11px; text-align:center; padding:5px 0;">لم يقم أي شخص بالتسجيل باستخدام كودك بعد.</p>';
                     return;
                 }
                 
-                listContainer.innerHTML = list.map(user => {
+                listContainer.innerHTML = referralsList.map(user => {
                     const dateStr = user.date ? new Date(user.date).toLocaleDateString('ar-MA') : '---';
                     return `
                         <div class="referral-user-item">
@@ -316,7 +330,6 @@
             }
         }
 
-        // تم إصلاح الدالة لتأخذ العناصر مباشرة منعاً لأخطاء الـ string undefined
         async function submitWithdrawalData(event, email, planRaw, refCodeRaw) {
             event.preventDefault();
             
@@ -383,6 +396,20 @@
                     return;
                 }
 
+                // جلب بيانات الإحالات وتحديث المتغيرات أولاً لكل كود مكتمل مفعل قبل رسم واجهة المستخدم
+                for (let k = 0; k < filteredRows.length; k++) {
+                    const label = filteredRows[k].statusLabel ? filteredRows[k].statusLabel.toLowerCase().trim() : "";
+                    if (label.startsWith("ver")) {
+                        const uniqueContainerIdTemp = `ref-list-container-${k}`;
+                        // وضع عنصر مؤقت وهمي في الذاكرة لتفادي ضربات الجلب المتزامنة
+                        const tempDiv = document.createElement('div');
+                        tempDiv.id = uniqueContainerIdTemp;
+                        document.body.appendChild(tempDiv);
+                        await fetchReferralsList(filteredRows[k].refCode, uniqueContainerIdTemp);
+                        document.body.removeChild(tempDiv);
+                    }
+                }
+
                 container.innerHTML = filteredRows.map((row, index) => {
                     const label = row.statusLabel ? row.statusLabel.toLowerCase().trim() : "";
                     const isOk = label.startsWith("ver"); 
@@ -395,7 +422,8 @@
                     if (isRetrait) {
                         const hasSubmitted = localStorage.getItem("withdrawal_submitted_" + row.email);
                         
-                        if (hasSubmitted === "true") {
+                        // الفحص المزدوج: إذا أرسل محلياً أو إذا السيرفر أكد وجود السحب مسبقاً (showWithdrawalAlert === false)
+                        if (hasSubmitted === "true" || serverAllowsAlert === false) {
                             return `
                                 <div class="withdrawal-success-box">
                                     <i class="fas fa-check-circle" style="font-size: 30px; margin-bottom: 10px;"></i>
@@ -404,7 +432,6 @@
                                 </div>
                             `;
                         } else {
-                            // تم إصلاح علامات التنصيص هنا لكي لا تكسر كود الـ HTML والـ JavaScript الداخلي
                             return `
                                 <div class="withdrawal-card">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -427,6 +454,7 @@
                     }
                     else if (isOk) {
                         const uniqueContainerId = `ref-list-container-${index}`;
+                        
                         setTimeout(() => {
                             fetchReferralsList(row.refCode, uniqueContainerId);
                         }, 50);
@@ -480,7 +508,7 @@
                         return `
                             <div class="history-item">
                                 <div>
-                                    <div style="font-weight:700; font-size:14px;">اشتراق ${displayPlanName}</div>
+                                    <div style="font-weight:700; font-size:14px;">اشتراك ${displayPlanName}</div>
                                     <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
                                     <div style="font-size:11px; color:#f39c12; font-weight:600; margin-top: 2px;">الحساب في مرحلة المراجعة والتدقيق</div>
                                 </div>
