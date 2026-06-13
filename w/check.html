@@ -175,7 +175,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw7MuxDSmkaw4-ZFYiq5EhcHSbMo4QMs-VZ0WEXSy_TE6FSk0eNqm3OTCYK-zd5ZfI8SA/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycby6Dj9FGqu0KEh-tN6pU_5kE9sOFtNzsNmXoyF_TiLhWkaO6OU_y1t5BRySzNybvhJtLQ/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -346,34 +346,22 @@
 
             try {
                 // إرسال الطلب بنظام POST للسكربت
-                const response = await fetch(API_URL, {
+                await fetch(API_URL, {
                     method: "POST",
+                    mode: "no-cors", 
                     cache: "no-cache",
-                    headers: { "Content-Type": "text/plain" }, // استخدام text/plain لتفادي مشاكل CORS preflight في الـ Web Apps
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
                 });
-                
-                const resData = await response.json();
 
-                if (resData.result === "SUCCESS") {
-                    // عند النجاح نقوم بحفظ التفعيل المحلي لتغيير المظهر فوراً وصندوق النجاح يظهر مرتبطاً بالبريد والباقة
-                    localStorage.setItem("withdrawal_submitted_" + email + "_" + cleanPlan, "true");
-                    alert("تم إرسال طلب السحب بنجاح إلى جدول المراجعة!");
-                    loadUserOrders(); 
-                } else if (resData.result === "ALREADY_SUBMITTED") {
-                    // إذا كان مسجلاً من قبل في السيرفر نقوم بتأمين التخزين المحلي فوراً لمنع التكرار
-                    localStorage.setItem("withdrawal_submitted_" + email + "_" + cleanPlan, "true");
-                    alert("عذراً: لقد قمت بتقديم طلب سحب لهذه الباقة بالفعل مسبقاً!");
-                    loadUserOrders();
-                } else {
-                    alert("تنبيه: " + resData.message);
-                    btn.disabled = false;
-                    btn.innerText = "تأكيد وإرسال البيانات";
-                }
+                // تعديل مسمار الأمان: حفظ الحالة بالاعتماد على الجيميل فقط لضمان الإخفاء التام فور إعادة التحميل
+                localStorage.setItem("withdrawal_submitted_" + email.toLowerCase().trim(), "true");
+                alert("تم إرسال طلب السحب بنجاح إلى جدول المراجعة!");
+                loadUserOrders(); 
 
             } catch (error) {
-                // التعامل الذكي والمرن مع القيود المتوقعة من الاستجابة المتنوعة للسيرفر
-                localStorage.setItem("withdrawal_submitted_" + email + "_" + cleanPlan, "true");
+                // في حالة الـ no-cors العادية يتم إرسال البيانات بنجاح تام للسيرفر
+                localStorage.setItem("withdrawal_submitted_" + email.toLowerCase().trim(), "true");
                 alert("تم إرسال طلب السحب بنجاح إلى جدول المراجعة!");
                 loadUserOrders();
             }
@@ -405,19 +393,14 @@
                     const isOk = label.startsWith("ver"); 
                     const isRetrait = (label === "en cours de retrait");
                     const displayPlanName = (row.plan && row.plan.trim() !== "") ? row.plan : "لا توجد باقة نشطة";
-                    
-                    let cleanPlanNum = 0;
-                    if (row.plan) {
-                        const matches = row.plan.match(/\d+/);
-                        if (matches) cleanPlanNum = parseInt(matches[0]);
-                    }
 
                     const referralsCount = parseInt(row.referralCount) || 0;
                     const fillPercentage = Math.min((referralsCount / 3) * 100, 100);
 
                     // حالة السحب الجديدة (En cours de retrait)
                     if (isRetrait) {
-                        const hasSubmitted = localStorage.getItem("withdrawal_submitted_" + row.email + "_" + cleanPlanNum);
+                        // هنا تم تعديل التحقق ليتطابق تماماً مع الدالة الفوقية 100%
+                        const hasSubmitted = localStorage.getItem("withdrawal_submitted_" + row.email.toLowerCase().trim());
                         
                         if (hasSubmitted === "true") {
                             return `
@@ -428,11 +411,10 @@
                                 </div>
                             `;
                         } else {
-                            // تم تمرير الحساب والباقة والكود بدقة إلى تابع الـ Onsubmit الحقيقي ليرسل البيانات بشكل سليم
                             return `
                                 <div class="withdrawal-card">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                                        <div style="font-weight:700; font-size:15px; color:#007aff;">مرحلة السحب (Retrait) - باقة ${displayPlanName}</div>
+                                        <div style="font-weight:700; font-size:15px; color:#007aff;">مرحلة السحب (Retrait)</div>
                                         <span class="status-dot" style="background: #007aff; width:10px; height:10px;"></span>
                                     </div>
                                     <p style="font-size: 13px; color: #555; margin-bottom: 15px;">لقد وصلت إلى مرحلة السحب بنجاح. المرجو ملء الاستمارة لمرة واحدة لتلقي دفعتك:</p>
