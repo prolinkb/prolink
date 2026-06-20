@@ -354,14 +354,10 @@
                     body: JSON.stringify(payload)
                 });
 
-                // تعديل مسمار الأمان: حفظ الحالة بالاعتماد على الجيميل فقط لضمان الإخفاء التام فور إعادة التحميل
-                localStorage.setItem("withdrawal_submitted_" + email.toLowerCase().trim(), "true");
                 alert("تم إرسال طلب السحب بنجاح إلى جدول المراجعة!");
                 loadUserOrders(); 
 
             } catch (error) {
-                // في حالة الـ no-cors العادية يتم إرسال البيانات بنجاح تام للسيرفر
-                localStorage.setItem("withdrawal_submitted_" + email.toLowerCase().trim(), "true");
                 alert("تم إرسال طلب السحب بنجاح إلى جدول المراجعة!");
                 loadUserOrders();
             }
@@ -397,12 +393,13 @@
                     const referralsCount = parseInt(row.referralCount) || 0;
                     const fillPercentage = Math.min((referralsCount / 3) * 100, 100);
 
-                    // حالة السحب الجديدة (En cours de retrait)
+                    // حالة السحب (En cours de retrait)
                     if (isRetrait) {
-                        // هنا تم تعديل التحقق ليتطابق تماماً مع الدالة الفوقية 100%
-                        const hasSubmitted = localStorage.getItem("withdrawal_submitted_" + row.email.toLowerCase().trim());
+                        // هنا التعديل الجوهري: تم إيقاف الاعتماد على الـ localStorage لضمان عدم حدوث أي "ماجيك"
+                        // الكود الآن يعتمد 100% على السيرفر، وسيظهر دائماً فورم السحب أو صندوق النجاح بناءً على حقيقة البيانات
+                        const hasSubmitted = (row.isAlreadySubmitted === true || row.isAlreadySubmitted === "true");
                         
-                        if (hasSubmitted === "true") {
+                        if (hasSubmitted) {
                             return `
                                 <div class="withdrawal-success-box">
                                     <i class="fas fa-check-circle" style="font-size: 30px; margin-bottom: 10px;"></i>
