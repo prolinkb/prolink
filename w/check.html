@@ -175,7 +175,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbznMTo-wO-Maqq45jQa7y_o9op2zpujfVdbpgHbkJWWRNdofnSjb-I7cLgrm6Sb280Q9Q/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbytTijhPDUX2RennJb_VvjnWfc_NSGPSByepQCeJ5FiXFRgUiSWTaGzlPD4CdGd5U81IQ/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -316,7 +316,6 @@
             }
         }
 
-        // دالة إرسال السحب الحقيقية لـ Apps Script ليقيدها في Feuille 4 تلقائياً
         async function submitWithdrawalData(event, email, planRaw, refCodeRaw) {
             event.preventDefault();
             
@@ -325,14 +324,12 @@
             const methodInput = form.querySelectorAll('.withdrawal-input')[0].value.trim();
             const ribInput = form.querySelectorAll('.withdrawal-input')[1].value.trim();
             
-            // استخراج الأرقام فقط من الباقة (مثلاً: "300 dh" أو "300 DH" ترجع 300)
             let cleanPlan = 0;
             if (planRaw) {
                 const matches = planRaw.match(/\d+/);
                 if (matches) cleanPlan = parseInt(matches[0]);
             }
 
-            // تعطيل الزر مؤقتاً لمنع التكرار
             btn.disabled = true;
             btn.innerText = "جاري إرسال البيانات...";
 
@@ -345,7 +342,6 @@
             };
 
             try {
-                // إرسال الطلب بنظام POST للسكربت
                 await fetch(API_URL, {
                     method: "POST",
                     mode: "no-cors", 
@@ -365,7 +361,10 @@
 
         async function loadUserOrders() {
             const container = document.getElementById('orders-container');
-            container.innerHTML = '<p style="text-align:center; padding:20px; color:#999; font-size:13px;">جاري تحديث البيانات...</p>';
+            // إذا كنا في الصفحة الرئيسية ومختفين من التبويب نقوم فقط بجلب البيانات في الخلفية
+            if(document.getElementById('history').classList.contains('active')) {
+                 container.innerHTML = '<p style="text-align:center; padding:20px; color:#999; font-size:13px;">جاري تحديث البيانات...</p>';
+            }
             try {
                 const res = await fetch(API_URL + "?t=" + new Date().getTime());
                 const data = await res.json();
@@ -393,10 +392,7 @@
                     const referralsCount = parseInt(row.referralCount) || 0;
                     const fillPercentage = Math.min((referralsCount / 3) * 100, 100);
 
-                    // حالة السحب (En cours de retrait)
                     if (isRetrait) {
-                        // هنا التعديل الجوهري: تم إيقاف الاعتماد على الـ localStorage لضمان عدم حدوث أي "ماجيك"
-                        // الكود الآن يعتمد 100% على السيرفر، وسيظهر دائماً فورم السحب أو صندوق النجاح بناءً على حقيقة البيانات
                         const hasSubmitted = (row.isAlreadySubmitted === true || row.isAlreadySubmitted === "true");
                         
                         if (hasSubmitted) {
@@ -428,7 +424,6 @@
                             `;
                         }
                     }
-                    // الحالة العادية المفعلة (Verifie)
                     else if (isOk) {
                         const uniqueContainerId = `ref-list-container-${index}`;
                         setTimeout(() => {
@@ -480,7 +475,6 @@
                             </div>
                         `;
                     } 
-                    // حالة قيد المعالجة (En attente)
                     else {
                         return `
                             <div class="history-item">
@@ -502,6 +496,9 @@
                 container.innerHTML = '<p style="text-align:center; color:red;">خطأ في جلب البيانات</p>'; 
             }
         }
+
+        // تشغيل الفحص التلقائي بمجرد دخول العميل للصفحة لضمان عمل "التحقق" فوراً
+        loadUserOrders();
 
         function logout() { localStorage.clear(); window.location.href = "../index.html"; }
     </script>
