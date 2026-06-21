@@ -175,7 +175,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbytTijhPDUX2RennJb_VvjnWfc_NSGPSByepQCeJ5FiXFRgUiSWTaGzlPD4CdGd5U81IQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyTEzGABj1ae7-QNEdsFdXjhX8YohxtHlSQgGKOzPgWLVjgyey-RAvjwKmDXSW41Ob01Q/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -361,7 +361,6 @@
 
         async function loadUserOrders() {
             const container = document.getElementById('orders-container');
-            // إذا كنا في الصفحة الرئيسية ومختفين من التبويب نقوم فقط بجلب البيانات في الخلفية
             if(document.getElementById('history').classList.contains('active')) {
                  container.innerHTML = '<p style="text-align:center; padding:20px; color:#999; font-size:13px;">جاري تحديث البيانات...</p>';
             }
