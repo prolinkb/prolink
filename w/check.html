@@ -175,7 +175,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyTEzGABj1ae7-QNEdsFdXjhX8YohxtHlSQgGKOzPgWLVjgyey-RAvjwKmDXSW41Ob01Q/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbw7MuxDSmkaw4-ZFYiq5EhcHSbMo4QMs-VZ0WEXSy_TE6FSk0eNqm3OTCYK-zd5ZfI8SA/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -350,10 +350,14 @@
                     body: JSON.stringify(payload)
                 });
 
+                // تفعيل علامة الحفظ في ديك الجلسة باش تظهر علبة النجاح
+                sessionStorage.setItem('just_submitted_withdrawal', 'true');
+
                 alert("تم إرسال طلب السحب بنجاح إلى جدول المراجعة!");
                 loadUserOrders(); 
 
             } catch (error) {
+                sessionStorage.setItem('just_submitted_withdrawal', 'true');
                 alert("تم إرسال طلب السحب بنجاح إلى جدول المراجعة!");
                 loadUserOrders();
             }
@@ -393,8 +397,10 @@
 
                     if (isRetrait) {
                         const hasSubmitted = (row.isAlreadySubmitted === true || row.isAlreadySubmitted === "true");
+                        const justSubmittedNow = sessionStorage.getItem('just_submitted_withdrawal') === 'true';
                         
-                        if (hasSubmitted) {
+                        // التعديل هنا: إذا كان ديجا مسيفط من قبل (قيمة true فالسيرفر)، ولكن دار ريفريش (justSubmittedNow كترجع false تلقائياً فالمتصفح)، متبقاش تطلع ليه العلبة الخضراء بل تظهر معلومات عادية أو يرجع لحالة المراجعة
+                        if (hasSubmitted && justSubmittedNow) {
                             return `
                                 <div class="withdrawal-success-box">
                                     <i class="fas fa-check-circle" style="font-size: 30px; margin-bottom: 10px;"></i>
@@ -402,7 +408,24 @@
                                     <p style="font-size: 13px; margin-top: 5px;">جاري مراجعة البيانات وإرسال السحب الخاص بك في أقرب وقت.</p>
                                 </div>
                             `;
+                        } else if (hasSubmitted && !justSubmittedNow) {
+                            // هادي فاش يحدث الصفحة، كيرد ليه الاشتراك فمرحلة المراجعة الآمنة بلا ما يبرزطو بالفورم أو العلبة الخضراء
+                            return `
+                                <div class="history-item">
+                                    <div>
+                                        <div style="font-weight:700; font-size:14px;">اشتراك ${displayPlanName}</div>
+                                        <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
+                                        <div style="font-size:11px; color:#007aff; font-weight:600; margin-top: 2px;">تم تقديم طلب السحب بنجاح وهو قيد المراجعة الآن.</div>
+                                    </div>
+                                    <div style="text-align: left;">
+                                        <span style="font-size:11px; font-weight:700; color: #007aff">
+                                            <span class="status-dot" style="background: #007aff"></span> قيد السحب
+                                        </span>
+                                    </div>
+                                </div>
+                            `;
                         } else {
+                            // إذا ممسيفطش كاع، كيطلع ليه الفورم عادي يعمرو لأول مرة
                             return `
                                 <div class="withdrawal-card">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
