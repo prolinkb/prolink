@@ -91,8 +91,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyHL6icCtjyAJVQHAkfRXi73A10QuR82mOQ33zdicnckEe-MUaI4e7nbFOXVOlIvXPebg/exec
-";
+        const API_URL = "https://script.google.com/macros/s/AKfycbytTijhPDUX2RennJb_VvjnWfc_NSGPSByepQCeJ5FiXFRgUiSWTaGzlPD4CdGd5U81IQ/exec";
         const IMGBB_API_KEY = "f2d9be6981c0d0877f86feaf452b22ee";
         
         const userEmail = localStorage.getItem('user_gmail');
@@ -106,7 +105,7 @@
         const bankData = {
             attijari: { name: "Attijari Bank", holder: "anas AI Rassikh", rib: "853780261836325034339350", img: "https://i.ibb.co/SXwSWwk9/image.png" },
             bmce: { name: "BMCE BANK", holder: "IIyas Sahraoui", rib: "853780262215066608687643", img: "https://i.ibb.co/v62JGcVr/image.png" },
-            cashplus: { name: "CASH PLUS", holder: "YASSINE MAJARRI", Numéro de compte: "0705804134", img: "https://i.ibb.co/k2Gt81Bf/image.png" },
+            cashplus: { name: "CASH PLUS", holder: "YASSINE MAJARRI", rib: "0705804134", img: "https://i.ibb.co/k2Gt81Bf/image.png" },
             barid: { name: "Albarid Bank", holder: "Rayan Hachmi", rib: "853780262233524306269888", img: "https://i.ibb.co/Hf8mtGp5/image.png" },
             bankalik: { name: "Bankalik", holder: "Achraf Ouardi", rib: "853780262251367830014865", img: "https://i.ibb.co/1GSXZyVT/image.png" },
             sg: { name: "Societe Generale", holder: "IIyas Sahraoui", rib: "853780262215066608687643", img: "https://i.ibb.co/Kc5CM8zM/image.png" },
@@ -130,6 +129,8 @@
             if (!val) return;
             const b = bankData[val];
             
+            const labelRIB = val === "cashplus" ? "Numéro de compte" : "RIB";
+            
             document.getElementById('bankInfo').innerHTML = `
                 <div class="bank-logo-container">
                     <img src="${b.img}" alt="${b.name}">
@@ -142,7 +143,7 @@
                     <button class="copy-btn" onclick="copyToClipboard('${b.holder}', this)">نسخ</button>
                 </div>
                 <div class="bank-details-row">
-                    <span><strong>RIB:</strong> ${b.rib}</span>
+                    <span><strong>${labelRIB}:</strong> ${b.rib}</span>
                     <button class="copy-btn" onclick="copyToClipboard('${b.rib}', this)">نسخ</button>
                 </div>
             `;
