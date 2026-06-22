@@ -115,10 +115,10 @@
                 <div id="refStatus" style="font-size: 11px; margin-top: 8px; font-weight: 600;"></div>
             </div>
 
-            <div class="biz-card" id="card0" style="display: block;">
+            <div class="biz-card" id="card0">
                 <div class="card-overlay-lock" id="lock0">يجب تأكيد الكود أولاً</div>
                 <div class="card-head">
-                    <div class="plan-name">اشتراك الباقة الاقتصادية</div>
+                    <div class="plan-name">اشتراك الفئة الثالثة</div>
                     <span class="plan-duration">صلاحية 30 يوم</span>
                 </div>
                 <div class="stats-row">
@@ -200,8 +200,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyHL6icCtjyAJVQHAkfRXi73A10QuR82mOQ33zdicnckEe-MUaI4e7nbFOXVOlIvXPebg/exec
-";
+        const API_URL = "https://script.google.com/macros/s/AKfycbw7MuxDSmkaw4-ZFYiq5EhcHSbMo4QMs-VZ0WEXSy_TE6FSk0eNqm3OTCYK-zd5ZfI8SA/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -482,7 +481,7 @@
                             fetchReferralsList(row.refCode, uniqueContainerId);
                         }, 50);
 
-                    return `
+                        return `
                             <div class="history-item" style="display: block; padding: 20px; margin-bottom: 15px; border-color: #27ae60;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                                     <div>
