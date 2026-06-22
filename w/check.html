@@ -115,6 +115,31 @@
                 <div id="refStatus" style="font-size: 11px; margin-top: 8px; font-weight: 600;"></div>
             </div>
 
+            <div class="biz-card" id="card0">
+                <div class="card-overlay-lock" id="lock0">يجب تأكيد الكود أولاً</div>
+                <div class="card-head">
+                    <div class="plan-name">اشتراك الفئة الثالثة</div>
+                    <span class="plan-duration">صلاحية 30 يوم</span>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-label">سقف الأرباح</span>
+                        <div class="stat-value profit">300.00 DH</div>
+                    </div>
+                    <div class="stat-item" style="text-align: left;">
+                        <span class="stat-label">نظام العمل</span>
+                        <div class="stat-value">تلقائي</div>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <div class="price-group">
+                        <span class="price-label">تكلفة الاشتراك</span>
+                        <span class="price-amount">150 DH</span>
+                    </div>
+                    <button class="btn-select" onclick="goToPyme('150 DH')">بدء الاشتراك</button>
+                </div>
+            </div>
+
             <div class="biz-card" id="card1">
                 <div class="card-overlay-lock" id="lock1">يجب تأكيد الكود أولاً</div>
                 <div class="card-head">
@@ -175,7 +200,8 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyTEzGABj1ae7-QNEdsFdXjhX8YohxtHlSQgGKOzPgWLVjgyey-RAvjwKmDXSW41Ob01Q/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbx9rrvntGY-yMrN4QtfBh4wAvMab3eVASbyikhRU0qEM_iKqGiFCEQGwgoIQcdPbtAsug/exec
+";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -233,19 +259,27 @@
         function unlockPlans(code, ownerPlan) {
             confirmedRefCode = code;
             
+            document.getElementById('lock0').style.display = "none";
             document.getElementById('lock1').style.display = "none";
             document.getElementById('lock2').style.display = "none";
             
             if (ownerPlan) {
                 const planStr = ownerPlan.toString().toLowerCase();
-                if (planStr.indexOf("300") !== -1) {
+                if (planStr.indexOf("150") !== -1) {
+                    document.getElementById('card0').style.display = "block";
+                    document.getElementById('card1').style.display = "none";
+                    document.getElementById('card2').style.display = "none";
+                } else if (planStr.indexOf("300") !== -1) {
+                    document.getElementById('card0').style.display = "none";
                     document.getElementById('card1').style.display = "block";
                     document.getElementById('card2').style.display = "none";
                 } else if (planStr.indexOf("600") !== -1) {
+                    document.getElementById('card0').style.display = "none";
                     document.getElementById('card1').style.display = "none";
                     document.getElementById('card2').style.display = "block";
                 }
             } else {
+                document.getElementById('card0').style.display = "block";
                 document.getElementById('card1').style.display = "block";
                 document.getElementById('card2').style.display = "block";
             }
@@ -350,7 +384,6 @@
                     body: JSON.stringify(payload)
                 });
 
-                // تفعيل علامة الحفظ في ديك الجلسة باش تظهر علبة النجاح
                 sessionStorage.setItem('just_submitted_withdrawal', 'true');
 
                 alert("تم إرسال طلب السحب بنجاح إلى جدول المراجعة!");
@@ -399,7 +432,6 @@
                         const hasSubmitted = (row.isAlreadySubmitted === true || row.isAlreadySubmitted === "true");
                         const justSubmittedNow = sessionStorage.getItem('just_submitted_withdrawal') === 'true';
                         
-                        // التعديل هنا: إذا كان ديجا مسيفط من قبل (قيمة true فالسيرفر)، ولكن دار ريفريش (justSubmittedNow كترجع false تلقائياً فالمتصفح)، متبقاش تطلع ليه العلبة الخضراء بل تظهر معلومات عادية أو يرجع لحالة المراجعة
                         if (hasSubmitted && justSubmittedNow) {
                             return `
                                 <div class="withdrawal-success-box">
@@ -409,7 +441,6 @@
                                 </div>
                             `;
                         } else if (hasSubmitted && !justSubmittedNow) {
-                            // هادي فاش يحدث الصفحة، كيرد ليه الاشتراك فمرحلة المراجعة الآمنة بلا ما يبرزطو بالفورم أو العلبة الخضراء
                             return `
                                 <div class="history-item">
                                     <div>
@@ -425,7 +456,6 @@
                                 </div>
                             `;
                         } else {
-                            // إذا ممسيفطش كاع، كيطلع ليه الفورم عادي يعمرو لأول مرة
                             return `
                                 <div class="withdrawal-card">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -519,7 +549,6 @@
             }
         }
 
-        // تشغيل الفحص التلقائي بمجرد دخول العميل للصفحة لضمان عمل "التحقق" فوراً
         loadUserOrders();
 
         function logout() { localStorage.clear(); window.location.href = "../index.html"; }
