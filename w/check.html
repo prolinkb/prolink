@@ -200,7 +200,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwwGLOWf1DJt-557qdzDIX0gYxiS9qZk-_owio_j5gN1ma5Akxguu8LHGoNuTGdS1AyQg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbw4wIAEhbQBELmbtMXNw7gGSD3vdsCHtZa2EYF6BRMUTgP2ziTdqgB6UQWjoHcS9x3y9A/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -431,7 +431,6 @@
                         const hasSubmitted = (row.isAlreadySubmitted === true || row.isAlreadySubmitted === "true");
                         const justSubmittedNow = sessionStorage.getItem('just_submitted_withdrawal') === 'true';
                         
-                        // التعديل هنا: إذا كان السحب مسجل مسبقاً في السيرفر أو تم الآن، تظهر لافتة النجاح مباشرة وتختفي الاستمارة
                         if (hasSubmitted || justSubmittedNow) {
                             return `
                                 <div class="withdrawal-success-box">
