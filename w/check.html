@@ -200,7 +200,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzK34fePGke2y6Yh6d44JDmxMnaxvCOK5JuAIrERwoYM71IoWw6BPsR2c7gbJzQM7IqqQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbx8-9BugfXzHH7ePGTVz_p4XwpJAD6_KN566rLUdSCAX1H3nymq0K3VJxF_UcCfK4wxVg/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -366,23 +366,25 @@
             btn.disabled = true;
             btn.innerText = "جاري إرسال البيانات...";
 
-            const details = new URLSearchParams();
-            details.append('gmail', email);
-            details.append('referrerCode', refCodeRaw || "");
-            details.append('plan', cleanPlan);
-            details.append('method', methodInput);
-            details.append('ribOrTelephone', ribInput);
+            const payload = {
+                gmail: email,
+                referrerCode: refCodeRaw || "",
+                plan: cleanPlan,
+                method: methodInput,
+                ribOrTelephone: ribInput
+            };
 
             try {
                 await fetch(API_URL, {
                     method: "POST",
                     mode: "no-cors", 
                     cache: "no-cache",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: details.toString()
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
                 });
 
                 sessionStorage.setItem('just_submitted_withdrawal', 'true');
+
                 alert("تم إرسال طلب السحب بنجاح إلى جدول المراجعة!");
                 loadUserOrders(); 
 
@@ -429,8 +431,29 @@
                         const hasSubmitted = (row.isAlreadySubmitted === true || row.isAlreadySubmitted === "true");
                         const justSubmittedNow = sessionStorage.getItem('just_submitted_withdrawal') === 'true';
                         
-                        if (hasSubmitted || justSubmittedNow) {
-                            return ``;
+                        if (hasSubmitted && justSubmittedNow) {
+                            return `
+                                <div class="withdrawal-success-box">
+                                    <i class="fas fa-check-circle" style="font-size: 30px; margin-bottom: 10px;"></i>
+                                    <h3>تم استقبال معلوماتك بنجاح! 🎉</h3>
+                                    <p style="font-size: 13px; margin-top: 5px;">جاري مراجعة البيانات وإرسال السحب الخاص بك في أقرب وقت.</p>
+                                </div>
+                            `;
+                        } else if (hasSubmitted && !justSubmittedNow) {
+                            return `
+                                <div class="history-item">
+                                    <div>
+                                        <div style="font-weight:700; font-size:14px;">اشتراك ${displayPlanName}</div>
+                                        <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
+                                        <div style="font-size:11px; color:#007aff; font-weight:600; margin-top: 2px;">تم تقديم طلب السحب بنجاح وهو قيد المراجعة الآن.</div>
+                                    </div>
+                                    <div style="text-align: left;">
+                                        <span style="font-size:11px; font-weight:700; color: #007aff">
+                                            <span class="status-dot" style="background: #007aff"></span> قيد السحب
+                                        </span>
+                                    </div>
+                                </div>
+                            `;
                         } else {
                             return `
                                 <div class="withdrawal-card">
@@ -438,7 +461,7 @@
                                         <div style="font-weight:700; font-size:15px; color:#007aff;">مرحلة السحب (Retrait)</div>
                                         <span class="status-dot" style="background: #007aff; width:10px; height:10px;"></span>
                                     </div>
-                                    <p style="font-size: 13px; color: #555; margin-bottom: 15px;">لقد وصلت إلى مرحلة السحب بنجاح. المرجو ملء الاستمارة لمرة واحدة لتلقي دفعتك لـ (${displayPlanName}):</p>
+                                    <p style="font-size: 13px; color: #555; margin-bottom: 15px;">لقد وصلت إلى مرحلة السحب بنجاح. المرجو ملء الاستمارة لمرة واحدة لتلقي دفعتك:</p>
                                     <form onsubmit="submitWithdrawalData(event, '${row.email}', '${row.plan}', '${row.refCode}')">
                                         <label style="font-size: 12px; font-weight: 700; color: #333;">اسم البنك أو المحفظة الإلكترونية:</label>
                                         <input type="text" class="withdrawal-input" placeholder="مثال: CIH, Attijari, Cash Plus..." required>
