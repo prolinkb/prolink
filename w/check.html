@@ -431,27 +431,13 @@
                         const hasSubmitted = (row.isAlreadySubmitted === true || row.isAlreadySubmitted === "true");
                         const justSubmittedNow = sessionStorage.getItem('just_submitted_withdrawal') === 'true';
                         
-                        if (hasSubmitted && justSubmittedNow) {
+                        // التعديل هنا: إذا كان السحب مسجل مسبقاً في السيرفر أو تم الآن، تظهر لافتة النجاح مباشرة وتختفي الاستمارة
+                        if (hasSubmitted || justSubmittedNow) {
                             return `
                                 <div class="withdrawal-success-box">
                                     <i class="fas fa-check-circle" style="font-size: 30px; margin-bottom: 10px;"></i>
                                     <h3>تم استقبال معلوماتك بنجاح! 🎉</h3>
-                                    <p style="font-size: 13px; margin-top: 5px;">جاري مراجعة البيانات وإرسال السحب الخاص بك في أقرب وقت.</p>
-                                </div>
-                            `;
-                        } else if (hasSubmitted && !justSubmittedNow) {
-                            return `
-                                <div class="history-item">
-                                    <div>
-                                        <div style="font-weight:700; font-size:14px;">اشتراك ${displayPlanName}</div>
-                                        <div style="font-size:11px; color:#999;">${new Date(row.date).toLocaleDateString('ar-MA')}</div>
-                                        <div style="font-size:11px; color:#007aff; font-weight:600; margin-top: 2px;">تم تقديم طلب السحب بنجاح وهو قيد المراجعة الآن.</div>
-                                    </div>
-                                    <div style="text-align: left;">
-                                        <span style="font-size:11px; font-weight:700; color: #007aff">
-                                            <span class="status-dot" style="background: #007aff"></span> قيد السحب
-                                        </span>
-                                    </div>
+                                    <p style="font-size: 13px; margin-top: 5px;">جاري مراجعة البيانات وإرسال السحب الخاص بك في أقرب وقت لباقتك (${displayPlanName}).</p>
                                 </div>
                             `;
                         } else {
@@ -461,7 +447,7 @@
                                         <div style="font-weight:700; font-size:15px; color:#007aff;">مرحلة السحب (Retrait)</div>
                                         <span class="status-dot" style="background: #007aff; width:10px; height:10px;"></span>
                                     </div>
-                                    <p style="font-size: 13px; color: #555; margin-bottom: 15px;">لقد وصلت إلى مرحلة السحب بنجاح. المرجو ملء الاستمارة لمرة واحدة لتلقي دفعتك:</p>
+                                    <p style="font-size: 13px; color: #555; margin-bottom: 15px;">لقد وصلت إلى مرحلة السحب بنجاح. المرجو ملء الاستمارة لمرة واحدة لتلقي دفعتك لـ (${displayPlanName}):</p>
                                     <form onsubmit="submitWithdrawalData(event, '${row.email}', '${row.plan}', '${row.refCode}')">
                                         <label style="font-size: 12px; font-weight: 700; color: #333;">اسم البنك أو المحفظة الإلكترونية:</label>
                                         <input type="text" class="withdrawal-input" placeholder="مثال: CIH, Attijari, Cash Plus..." required>
