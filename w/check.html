@@ -200,7 +200,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw4wIAEhbQBELmbtMXNw7gGSD3vdsCHtZa2EYF6BRMUTgP2ziTdqgB6UQWjoHcS9x3y9A/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzK34fePGke2y6Yh6d44JDmxMnaxvCOK5JuAIrERwoYM71IoWw6BPsR2c7gbJzQM7IqqQ/exec";
         const userEmail = localStorage.getItem('user_gmail');
 
         if (!userEmail) { window.location.href = "../index.html"; }
@@ -366,25 +366,23 @@
             btn.disabled = true;
             btn.innerText = "جاري إرسال البيانات...";
 
-            const payload = {
-                gmail: email,
-                referrerCode: refCodeRaw || "",
-                plan: cleanPlan,
-                method: methodInput,
-                ribOrTelephone: ribInput
-            };
+            const details = new URLSearchParams();
+            details.append('gmail', email);
+            details.append('referrerCode', refCodeRaw || "");
+            details.append('plan', cleanPlan);
+            details.append('method', methodInput);
+            details.append('ribOrTelephone', ribInput);
 
             try {
                 await fetch(API_URL, {
                     method: "POST",
                     mode: "no-cors", 
                     cache: "no-cache",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: details.toString()
                 });
 
                 sessionStorage.setItem('just_submitted_withdrawal', 'true');
-
                 alert("تم إرسال طلب السحب بنجاح إلى جدول المراجعة!");
                 loadUserOrders(); 
 
@@ -432,13 +430,7 @@
                         const justSubmittedNow = sessionStorage.getItem('just_submitted_withdrawal') === 'true';
                         
                         if (hasSubmitted || justSubmittedNow) {
-                            return `
-                                <div class="withdrawal-success-box">
-                                    <i class="fas fa-check-circle" style="font-size: 30px; margin-bottom: 10px;"></i>
-                                    <h3>تم استقبال معلوماتك بنجاح! 🎉</h3>
-                                    <p style="font-size: 13px; margin-top: 5px;">جاري مراجعة البيانات وإرسال السحب الخاص بك في أقرب وقت لباقتك (${displayPlanName}).</p>
-                                </div>
-                            `;
+                            return ``;
                         } else {
                             return `
                                 <div class="withdrawal-card">
